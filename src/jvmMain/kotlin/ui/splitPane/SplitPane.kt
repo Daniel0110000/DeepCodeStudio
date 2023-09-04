@@ -9,18 +9,26 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import ui.ThemeApp
 import ui.fileTree.FileTreeView
+import util.FileChooser
 import java.awt.Cursor
 
 @Composable
-fun SplitPane(splitState: SplitPaneState) {
+fun SplitPane(
+    splitState: SplitPaneState,
+    newDirectoryPath: (String?) -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+
     Box(
         modifier = Modifier
             .width(if(splitState.widthSplittable > 50)(splitState.widthSplittable).dp else 80.dp)
@@ -44,7 +52,7 @@ fun SplitPane(splitState: SplitPaneState) {
                         .size(30.dp)
                         .background(ThemeApp.colors.buttonColor, shape = RoundedCornerShape(8.dp))
                         .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)))
-                        .clickable {  },
+                        .clickable { coroutineScope.launch { newDirectoryPath(FileChooser.chooseDirectory()) } },
                     contentAlignment = Alignment.Center
                 ){
                     Icon(
