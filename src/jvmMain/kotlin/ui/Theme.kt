@@ -1,5 +1,7 @@
 package ui
 
+import androidx.compose.foundation.ScrollbarStyle
+import androidx.compose.foundation.defaultScrollbarStyle
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
@@ -8,6 +10,7 @@ object ThemeApp {
 
     val colors: Colors = Colors()
     val text: Text = Text()
+    val scrollbar: Scrollbar = Scrollbar()
 
     class Colors(
         val background: Color = Color(0xFF282C34),
@@ -21,6 +24,13 @@ object ThemeApp {
 
     class Text(
         val fontFamily: FontFamily = FontFamily(Font(resource = "font/Inter-Regular.ttf"))
+    )
+
+    class Scrollbar(
+        val scrollbarStyle: ScrollbarStyle = defaultScrollbarStyle().copy(
+            unhoverColor = colors.secondColor,
+            hoverColor = colors.secondColor
+        )
     )
 
 }
