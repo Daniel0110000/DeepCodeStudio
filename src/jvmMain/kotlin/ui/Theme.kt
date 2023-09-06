@@ -20,7 +20,8 @@ object ThemeApp {
         val folderCloseTextColor: Color = Color(0xFFD19A66),
         val buttonColor: Color = Color(0xFF3498DB),
         val asmIconColor: Color = Color(0xFFD35400),
-        val hoverTab: Color = Color(0x10FFFFFF)
+        val hoverTab: Color = Color(0x10FFFFFF),
+        val lineNumberTextColor: Color = Color(0xFF515A6C)
     )
 
     class Text(
