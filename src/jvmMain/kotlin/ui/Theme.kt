@@ -19,7 +19,8 @@ object ThemeApp {
         val folderOpenTextColor: Color = Color(0xFFFC6161),
         val folderCloseTextColor: Color = Color(0xFFD19A66),
         val buttonColor: Color = Color(0xFF3498DB),
-        val asmIconColor: Color = Color(0xFFD35400)
+        val asmIconColor: Color = Color(0xFFD35400),
+        val hoverTab: Color = Color(0x10FFFFFF)
     )
 
     class Text(
@@ -30,6 +31,10 @@ object ThemeApp {
         val scrollbarStyle: ScrollbarStyle = defaultScrollbarStyle().copy(
             unhoverColor = colors.secondColor,
             hoverColor = colors.secondColor
+        ),
+        val tabsScrollbarStyle: ScrollbarStyle = defaultScrollbarStyle().copy(
+            unhoverColor = colors.background,
+            hoverColor = colors.background
         )
     )
 

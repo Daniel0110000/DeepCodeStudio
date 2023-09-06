@@ -1,6 +1,8 @@
 package ui.fileTree
 
-class FileTree(root: File) {
+import ui.editor.tabs.TabsState
+
+class FileTree(root: File, val tabsState: TabsState) {
 
     // Create an expandable root item using the provided 'root' file
     private val expandableRoot = ExpandableFile(root, 0).apply {
@@ -35,7 +37,10 @@ class FileTree(root: File) {
          */
         fun open() = when(type){
             is ItemType.Folder -> file.toggleExpanded()
-            is ItemType.File -> println("Open in the editor")
+            is ItemType.File -> {
+                if((type as ItemType.File).ext.contains("asm")) tabsState.openTab(file.file)
+                else {}
+            }
         }
 
     }
