@@ -4,10 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ui.ThemeApp
@@ -42,7 +41,7 @@ fun EditorView(
 
             BasicTextField(
                 value = code,
-                onValueChange = { code = it },
+                onValueChange = { code = it.replace("\t", " ") },
                 modifier = Modifier.fillMaxSize(),
                 onTextLayout = {
                     val lineCount = it.lineCount
@@ -51,9 +50,11 @@ fun EditorView(
                 textStyle = TextStyle(
                     fontSize = 13.sp,
                     color = ThemeApp.colors.textColor,
-                    fontFamily = FontFamily(Font(resource = "font/JetBrainsMonoItalic.ttf")),
+                    fontFamily = ThemeApp.text.codeTextFontFamily,
                     fontWeight = FontWeight.W500
-                )
+                ),
+                cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
+                visualTransformation = EditorVisualTransformation()
             )
         }
 
