@@ -51,7 +51,8 @@ object SyntaxKeywordHighlighter {
                 "bsf|bsr|cdq|cwd|rsp|hlt|fxch|fnstenv|fnstcw|fnop|fmul|fld|fist|" +
                 "fcmovne|fcmovu|eax|ebx|edx|esl|edi|edp|esp|rbx|rbp|r8|r9|r10|r11|" +
                 "r12|r13|r14|r15|rflags|rip|mm0|mm1|mm2|mm3|mm4|mm5|mm6|mm7|" +
-                "xmm0|xmm1|xmm2|xmm3|xmm4|xmm5|xmm6|xmm7" +
+                "xmm0|xmm1|xmm2|xmm3|xmm4|xmm5|xmm6|xmm7|jnz|jl|jle|jge|nop|imul|shr|" +
+                "shl|addpd|subpd|mulpd|devpd|rdtsc|cpuid|jb|ja|ecx" +
                 ")\\b")
         val variable = Regex("\\b(" +
                 "db|dw|dd|dq|dt|do|dy|dz|qword|dword|equ|resb|resw|resq|resy|resz|" +
