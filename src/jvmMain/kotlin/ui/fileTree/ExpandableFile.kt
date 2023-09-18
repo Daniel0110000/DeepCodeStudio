@@ -20,7 +20,7 @@ class ExpandableFile(
      *
      * If the children list is empty, this function expands the node by populating the
      * children list and sorting them
-     * If the children list is not empty, it collapse the node by setting the children
+     * If the children list is not empty, its collapse the node by setting the children
      * list to an empty list
      */
     fun toggleExpanded(){

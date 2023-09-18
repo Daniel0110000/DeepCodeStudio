@@ -1,5 +1,8 @@
 package util
 
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
+
 object TextUtils {
 
     /**
@@ -48,4 +51,19 @@ object TextUtils {
         // Combine the end text, new text, and the remaining part of the current text
         return endText + newText + currentText.substring(cursorPosition)
     }
+
+    /**
+     * Inserts spaces and text at a specified index in the original text and return a new [TextFieldValue]
+     *
+     * @param originalText The original text where spaces and text will be inserted
+     * @param insertionIndex The index at which the insertion should occur
+     * @param textToInsert The text to insert at the specified index
+     * @return A new [TextFieldValue] with the inserted text and updated cursor position
+     */
+    fun insertSpacesInText(originalText: String, insertionIndex: Int, textToInsert: String): TextFieldValue{
+        val textBeforeInsertion = originalText.substring(0, insertionIndex)
+        val newTextWithSpaces = textBeforeInsertion + textToInsert + originalText.substring(insertionIndex)
+        return TextFieldValue(newTextWithSpaces, TextRange(insertionIndex + textToInsert.length))
+    }
+
 }
