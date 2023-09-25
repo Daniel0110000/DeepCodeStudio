@@ -71,14 +71,16 @@ fun EditorView(
                             val selectedWord = TextUtils.extractSurroundingWord(it.selection.start, it.text)
                             editorState.wordToSearch.value = selectedWord
 
-                            editorState.autoCompleteSuggestions.value = KeywordAutoCompleteUtil.autoCompleteKeywords(selectedWord)
+                            editorState.autoCompleteSuggestions.value = KeywordAutoCompleteUtil.autoCompleteKeywords(selectedWord) +
+                                    KeywordAutoCompleteUtil.filterVariableNamesForAutocomplete(TextUtils.extractVariableNames(editorState.codeText.value.text), selectedWord)
+
                             editorState.isAutoCompleteVisible.value = editorState.autoCompleteSuggestions.value.isNotEmpty()
                         } else {
                             editorState.autoCompleteSuggestions.value = emptyList()
                             editorState.isAutoCompleteVisible.value = false
                         }
 
-                        editorState.codeText.value = it //TextFieldValue(it.text.replace("\t", " "), TextRange(it.selection.start, it.selection.end))
+                        editorState.codeText.value = it
 
                     },
                     onTextLayout = {
@@ -159,6 +161,7 @@ fun EditorView(
                 if(editorState.isAutoCompleteVisible.value){
                     AutoCompleteDropdown(
                         items = editorState.autoCompleteSuggestions.value,
+                        editorState = editorState,
                         cursorX = editorState.cursorXCoordinate.value,
                         cursorY = editorState.cursorYCoordinate.value - scrollState.value,
                         selectedItemIndex = editorState.selectedItemIndex.value

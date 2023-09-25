@@ -66,4 +66,16 @@ object TextUtils {
         return TextFieldValue(newTextWithSpaces, TextRange(insertionIndex + textToInsert.length))
     }
 
+    /**
+     * Extracts variable names declared in assembly code
+     *
+     * @param str The assembly code where variable declarations are searched
+     * @return A list of variable names declared in the assembly code
+     */
+    fun extractVariableNames(str: String): List<String>{
+        val pattern = Regex("""\s+(\w+)\s+(db|dw|dd|dq|dt|do|dy|dz|qword|dword|equ|resb|resw|resq|resy|resz|resd|rest|reso|tbyte|real4|real8|real10|real16|dwordptr|qwordptr|tbyteptr|real4ptr|real8ptr|real10ptr|real16ptr)\s+""".trimMargin())
+        val con = pattern.findAll(str)
+        return con.map { it.groupValues[1] }.toList()
+    }
+
 }

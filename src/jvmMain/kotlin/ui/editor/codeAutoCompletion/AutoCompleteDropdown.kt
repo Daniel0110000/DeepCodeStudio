@@ -1,18 +1,38 @@
 package ui.editor.codeAutoCompletion
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ScrollbarAdapter
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.defaultScrollbarStyle
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ui.ThemeApp
+import ui.editor.EditorState
+import util.TextUtils
 
 /**
  * Composable function to display an auto-complete dropdown
@@ -25,6 +45,7 @@ import ui.ThemeApp
 @Composable
 fun AutoCompleteDropdown(
     items: List<String>,
+    editorState: EditorState,
     cursorX: Int,
     cursorY: Int,
     selectedItemIndex: Int
@@ -56,7 +77,7 @@ fun AutoCompleteDropdown(
             ){
 
                 Icon(
-                    painterResource("images/ic_cube.svg"),
+                    getAutoCompleteItemIconForSuggestion(suggestion, editorState.codeText.value.text),
                     contentDescription = "Cube icon",
                     tint = if(selectedItemIndex == index) ThemeApp.colors.textColor else ThemeApp.colors.buttonColor,
                     modifier = Modifier.size(15.dp)
@@ -93,4 +114,17 @@ fun AutoCompleteDropdown(
     // Automatically scroll to the selected item when it changes
     LaunchedEffect(selectedItemIndex){ scrollState.scrollTo(selectedItemIndex * 25) }
 
+}
+
+/**
+ * Assigns an icon to autocomplete suggestions based on whether they match variable names or ASM keywords
+ *
+ * @param suggestion The autocomplete suggestion text
+ * @param sourceCode THe source code use to determine if the suggestion matches variable names
+ * @return A [Painter] representing the icon to display for the suggestion
+ */
+@Composable
+fun getAutoCompleteItemIconForSuggestion(suggestion: String, sourceCode: String): Painter {
+    val definedWords = TextUtils.extractVariableNames(sourceCode)
+    return if(definedWords.contains(suggestion)) painterResource("images/ic_variable.svg") else painterResource("images/ic_cube.svg")
 }

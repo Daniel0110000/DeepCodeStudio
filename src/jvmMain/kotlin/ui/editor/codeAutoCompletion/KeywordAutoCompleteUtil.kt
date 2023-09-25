@@ -25,4 +25,15 @@ object KeywordAutoCompleteUtil {
             "shr", "shl", "addpd", "subpd", "mulpd", "devpd", "rdtsc", "cpuid", "jb", "ja", "int 0x80")
         return if(input.isBlank()) emptyList() else keywords.filter { it.contains(input) }
     }
+
+    /**
+     * Filters a list of variable names to provide autocomplete suggestions based on user input.
+     *
+     * @param variableNames The list of variable names to filter
+     * @param input The input text provided by the user for filtering
+     * @return A list of variable names that match the user's input
+     */
+    fun filterVariableNamesForAutocomplete(variableNames: List<String>, input: String): List<String> =
+        if(input.isBlank()) emptyList() else variableNames.filter { it.contains(input) }
+
 }
