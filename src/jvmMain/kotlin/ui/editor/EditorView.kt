@@ -170,12 +170,10 @@ fun EditorView(
 
                 VerticalScrollbar(
                     ScrollbarAdapter(scrollState),
-                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                    style = defaultScrollbarStyle().copy(
-                        unhoverColor = ThemeApp.colors.secondColor,
-                        hoverColor = ThemeApp.colors.secondColor,
-                        thickness = 5.dp
-                    )
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight(),
+                    style = ThemeApp.scrollbar.scrollbarStyle
                 )
             }
         }

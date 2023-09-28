@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
+import androidx.compose.ui.unit.dp
 
 object ThemeApp {
 
@@ -32,9 +33,10 @@ object ThemeApp {
     )
 
     class Scrollbar(
-        val scrollbarStyle: ScrollbarStyle = defaultScrollbarStyle().copy(
-            unhoverColor = colors.secondColor,
-            hoverColor = colors.secondColor
+        val scrollbarStyle: ScrollbarStyle =  defaultScrollbarStyle().copy(
+            unhoverColor = Color(0x20FFFFFF),
+            hoverColor = Color(0x20FFFFFF),
+            thickness = 8.dp
         ),
         val tabsScrollbarStyle: ScrollbarStyle = defaultScrollbarStyle().copy(
             unhoverColor = colors.background,
