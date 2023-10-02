@@ -10,23 +10,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ui.ThemeApp
-import ui.fileTree.FileTree
+import ui.fileTree.FileInfo
 
-/**
- * Composable function to display an icon for a file or folder in a file tree
- *
- * @param model The FileTree.Item model representing the file or folder
- */
+
 @Composable
-fun FileItemIcon(model: FileTree.Item) = when(val type = model.type){
-    is FileTree.ItemType.Folder -> when{
-        !type.canExpand -> Unit
-        type.isExpandable -> ItemIcon("images/ic_folder.svg", "File icon")
-        else -> Icon(Icons.Rounded.KeyboardArrowRight, contentDescription = "Keyboard arrow right icon", tint = ThemeApp.colors.buttonColor, modifier = Modifier.size(18.dp))
-    }
-    is FileTree.ItemType.File -> when(type.ext){
-        "asm" -> ItemIcon("images/ic_asm.svg", "Asm icon", ThemeApp.colors.asmIconColor)
-        else -> ItemIcon("images/ic_unknown.svg", "Unknown icon")
+fun FileItemIcon(model: FileInfo){
+    if(model.file.isDirectory){
+        if(model.isExpanded) Icon(Icons.Rounded.KeyboardArrowRight, contentDescription = "Keyboard arrow right icon", tint = ThemeApp.colors.buttonColor, modifier = Modifier.size(18.dp))
+        else ItemIcon("images/ic_folder.svg", "Folder icon")
+    } else {
+        if(model.file.extension == "asm") ItemIcon("images/ic_asm.svg", "ASM icon", color = ThemeApp.colors.asmIconColor)
+        else ItemIcon("images/ic_unknown.svg", "Unknown icon")
     }
 }
 

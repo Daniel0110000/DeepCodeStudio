@@ -5,10 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import ui.editor.tabs.TabsState
 import ui.fileTree.FileTree
-import util.toProjectFile
-import java.io.File
 
 class SplitPaneState(directoryPath: String, state: TabsState) {
+    // The initial width of the splittable area
     var widthSplittable by mutableStateOf(300f)
-    val fileTreeState = FileTree(File(directoryPath).toProjectFile(), state)
+    // Create a FileTree state for the directory path and tabs state
+    val fileTreeState = FileTree(directoryPath, state)
 }

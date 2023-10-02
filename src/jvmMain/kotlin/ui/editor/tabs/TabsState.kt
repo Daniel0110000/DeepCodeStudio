@@ -1,7 +1,7 @@
 package ui.editor.tabs
 
 import androidx.compose.runtime.mutableStateListOf
-import ui.fileTree.File
+import java.io.File
 
 class TabsState {
 
@@ -16,7 +16,7 @@ class TabsState {
      * @param file The file to be opened in a new tab
      */
     fun openTab(file: File){
-        val newTab = EditorTabsModel(file.name, file.filePath)
+        val newTab = EditorTabsModel(file.name, file.absolutePath)
         if(!tabs.contains(newTab)) tabs.add(newTab)
     }
 

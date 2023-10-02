@@ -6,15 +6,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ui.fileTree.FileTree
+import ui.fileTree.FileInfo
 
 @Composable
-fun FileTreeItemView(model: FileTree.Item) {
+fun FileTreeItemView(model: FileInfo, onClickListener: () -> Unit) {
     Row(
         modifier = Modifier
             .wrapContentHeight()
-            .clickable { model.open() }
-            .padding(start = 24.dp * model.level)
+            .clickable { onClickListener() }
+            .padding(start = 24.dp * model.depthLevel)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {

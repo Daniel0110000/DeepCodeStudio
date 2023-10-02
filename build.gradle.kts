@@ -35,6 +35,9 @@ kotlin {
                         runtimeOnly("org.lwjgl:${lwjglDep}:${lwjglVersion}:${native}")
                     }
                 }
+
+                implementation("commons-io:commons-io:2.14.0")
+
             }
         }
         val jvmTest by getting
