@@ -1,4 +1,4 @@
-package ui.components.lazy.filetree
+package ui.fileTree.lazy
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable

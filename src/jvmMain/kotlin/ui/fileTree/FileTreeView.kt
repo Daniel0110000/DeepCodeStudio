@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ui.ThemeApp
-import ui.components.lazy.filetree.FileTreeItemView
+import ui.fileTree.lazy.FileTreeItemView
 
 @Composable
 fun FileTreeView(state: FileTree) {

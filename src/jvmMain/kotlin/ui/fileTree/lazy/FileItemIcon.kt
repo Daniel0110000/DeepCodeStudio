@@ -1,4 +1,4 @@
-package ui.components.lazy.filetree
+package ui.fileTree.lazy
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
