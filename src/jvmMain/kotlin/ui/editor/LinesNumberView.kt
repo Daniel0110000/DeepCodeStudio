@@ -12,14 +12,8 @@ import androidx.compose.ui.unit.sp
 import ui.ThemeApp
 
 @Composable
-fun LinesNumberView(
-    countLines: Int,
-    scrollState: ScrollState
-) = Column(
-    modifier = Modifier
-        .fillMaxHeight()
-        .verticalScroll(scrollState)
-        .width(30.dp),
+fun LinesNumberView(countLines: Int) = Column(
+    modifier = Modifier.width(30.dp),
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
     for (i in 1..countLines){
