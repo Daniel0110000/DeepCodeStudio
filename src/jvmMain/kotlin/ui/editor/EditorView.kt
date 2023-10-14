@@ -55,9 +55,6 @@ fun EditorView(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        // Write the editor content to the associated file
-        DocumentsManager.writeFile(File(editorState.filePath.value), editorState.codeText.value.text)
-
         TabsView(tabsState){
             editorState.codeText.value = TextFieldValue(File(it).readText())
             editorState.filePath.value = it
@@ -67,6 +64,10 @@ fun EditorView(
 
         // Here
         if(showEditor){
+
+            // Write the editor content to the associated file
+            DocumentsManager.writeFile(File(editorState.filePath.value), editorState.codeText.value.text)
+
             Box(modifier = Modifier.fillMaxSize()){
                 Column(
                     modifier = Modifier

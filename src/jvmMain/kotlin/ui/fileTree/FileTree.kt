@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ui.editor.tabs.EditorTabsModel
 import ui.editor.tabs.TabsState
 import java.io.File
 
@@ -30,6 +31,10 @@ class FileTree(private val path: String, private val tabsState: TabsState) {
                     val filePath = file.absolutePath
                     // Remove the deleted file from the list of FileInfo and its subdirectories
                     listFiles.value = listFiles.value.filter { it.file != file && !it.file.absolutePath.contains(filePath) }
+
+                    // If the deleted file is open, its tab is closed
+                    tabsState.closeTab(EditorTabsModel(file.name, file.absolutePath))
+
                 }
             )
         }
