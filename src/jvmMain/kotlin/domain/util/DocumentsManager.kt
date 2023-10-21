@@ -1,4 +1,4 @@
-package util
+package domain.util
 
 import org.apache.commons.io.FileUtils
 import java.io.File

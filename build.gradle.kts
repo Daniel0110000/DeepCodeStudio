@@ -38,6 +38,16 @@ kotlin {
 
                 implementation("commons-io:commons-io:2.14.0")
 
+                // Koin
+                implementation("io.insert-koin:koin-core-jvm:3.5.0")
+                implementation("io.insert-koin:koin-core:3.5.0")
+
+                // SQLite
+                implementation("org.xerial:sqlite-jdbc:3.30.1")
+
+                // Exposed
+                implementation("org.jetbrains.exposed:exposed-jdbc:0.44.0")
+
             }
         }
         val jvmTest by getting

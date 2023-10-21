@@ -19,7 +19,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.WindowPosition
 import ui.ThemeApp
-import util.DocumentsManager
+import domain.util.DocumentsManager
 import java.io.File
 
 @OptIn(ExperimentalComposeUiApi::class)

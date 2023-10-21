@@ -9,7 +9,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import kotlinx.coroutines.launch
-import util.DocumentsManager
+import domain.util.DocumentsManager
 import java.awt.Toolkit
 
 fun main() = application {

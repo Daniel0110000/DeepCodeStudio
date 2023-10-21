@@ -1,4 +1,4 @@
-package util
+package domain.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -7,7 +7,7 @@ import org.lwjgl.util.nfd.NativeFileDialog
 import javax.swing.JFileChooser
 import javax.swing.UIManager
 
-object FileChooser {
+object DirectoryChooser {
 
     /**
      * Suspend function to choose a directory using native dialogs if available,
@@ -22,7 +22,7 @@ object FileChooser {
 
                 return kotlin.runCatching { chooseDirectorySwing() }
                     .onFailure { swingException ->
-                        println("A call to chooseDirectorySwing failed ${swingException.message}")
+                        println("A call to chooseDirectorySwing failed: ${swingException.message}")
                     }
                     .getOrNull()
             }
@@ -54,7 +54,7 @@ object FileChooser {
     }
 
     /**
-     * Suspended function to choose a .directory using a Swing-based dialog
+     * Suspended function to choose a directory using a Swing-based dialog
      *
      * @return The selected directory path or `null` if canceled or an error occurred
      */

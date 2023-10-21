@@ -29,7 +29,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ui.ThemeApp
-import util.FileChooser
+import ui.settings.Settings
+import domain.util.DirectoryChooser
 import java.awt.Cursor
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -43,6 +44,8 @@ fun verticalBarOptions(
     var hoverSelectFolderButton by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
+
+    var showSettings by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -82,7 +85,7 @@ fun verticalBarOptions(
                 .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)))
                 .onPointerEvent(PointerEventType.Enter){ hoverSelectFolderButton = true }
                 .onPointerEvent(PointerEventType.Exit){ hoverSelectFolderButton = false }
-                .clickable { coroutineScope.launch { newDirectoryPath(FileChooser.chooseDirectory()) }},
+                .clickable { coroutineScope.launch { newDirectoryPath(DirectoryChooser.chooseDirectory()) }},
             contentAlignment = Alignment.Center
         ){
             Icon(
@@ -92,6 +95,31 @@ fun verticalBarOptions(
                 modifier = Modifier.size(22.dp)
             )
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Box(
+            modifier = Modifier
+                .height(30.dp)
+                .width(35.dp)
+                .background(if(hoverSelectFolderButton) ThemeApp.colors.background else Color.Transparent, shape = RoundedCornerShape(8.dp))
+                .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)))
+                .onPointerEvent(PointerEventType.Enter){ hoverSelectFolderButton = true }
+                .onPointerEvent(PointerEventType.Exit){ hoverSelectFolderButton = false }
+                .clickable { showSettings = true },
+            contentAlignment = Alignment.Center
+        ){
+            Icon(
+                painterResource("images/ic_settings.svg"),
+                contentDescription = "Collapse icon",
+                tint = ThemeApp.colors.textColor,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
     }
 
+    if(showSettings) Settings{ showSettings = false }
 }

@@ -10,8 +10,8 @@ import ui.editor.EditorView
 import ui.editor.tabs.TabsState
 import ui.splitPane.SplitPane
 import ui.splitPane.SplitPaneState
-import util.Constants
-import util.DocumentsManager
+import domain.util.Constants
+import domain.util.DocumentsManager
 
 @Composable
 fun CodeEditorScreen() {

@@ -24,8 +24,8 @@ import ui.editor.codeAutoCompletion.AutoCompleteDropdown
 import ui.editor.codeAutoCompletion.KeywordAutoCompleteUtil
 import ui.editor.tabs.TabsState
 import ui.editor.tabs.TabsView
-import util.DocumentsManager
-import util.TextUtils
+import domain.util.DocumentsManager
+import domain.util.TextUtils
 import java.io.File
 
 /**
