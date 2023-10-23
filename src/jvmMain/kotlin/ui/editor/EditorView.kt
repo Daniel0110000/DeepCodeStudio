@@ -46,11 +46,14 @@ fun EditorView(
     // Coroutine scope for handling coroutines within the Composable
     val coroutineScope = rememberCoroutineScope()
 
-    var showEditor by remember { mutableStateOf(false) }
+//    var showEditor by remember { mutableStateOf(false) }
+//
+//    var showAllAutocompleteOptions by remember { mutableStateOf(false) }
 
     LaunchedEffect(tabsState.tabs.size){
         // If the tab size is different from 0, the editor is displayed; otherwise, the welcome screen is shown
-        showEditor = tabsState.tabs.size != 0
+        editorState.displayEditor.value = tabsState.tabs.size != 0
+        if(tabsState.tabs.size != 0) editorState.displayAllAutocompleteOptions.value = true
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -63,7 +66,7 @@ fun EditorView(
         Spacer(modifier = Modifier.height(5.dp))
 
         // Here
-        if(showEditor){
+        if(editorState.displayEditor.value){
 
             // Write the editor content to the associated file
             DocumentsManager.writeFile(File(editorState.filePath.value), editorState.codeText.value.text)
@@ -221,5 +224,11 @@ fun EditorView(
 
             }
         }
+
+        if(editorState.displayAllAutocompleteOptions.value){
+            AllAutocompleteOptions{ editorState.displayAllAutocompleteOptions.value = false }
+        }
+
+
     }
 }

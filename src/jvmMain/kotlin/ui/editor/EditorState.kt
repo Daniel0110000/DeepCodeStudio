@@ -34,4 +34,10 @@ class EditorState {
     val textFieldFocusRequester = mutableStateOf(FocusRequester())
     // The word to search within the editor content
     val wordToSearch = mutableStateOf("")
+
+    // Flag indicating whether editor is visible
+    val displayEditor = mutableStateOf(false)
+    // Flag indicating whether all autocomplete options dialog are visible
+    val displayAllAutocompleteOptions = mutableStateOf(false)
+
 }

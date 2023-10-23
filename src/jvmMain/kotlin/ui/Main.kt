@@ -8,13 +8,24 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import domain.di.domainModule
 import kotlinx.coroutines.launch
 import domain.util.DocumentsManager
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import java.awt.Toolkit
 
 fun main() = application {
+
     val toolkit = Toolkit.getDefaultToolkit().screenSize
     rememberCoroutineScope().launch { DocumentsManager.createDefaultProjectsDirectory() }
+
+    // Initialize Koin
+    rememberCoroutineScope().launch {
+        stopKoin()
+        startKoin { modules(domainModule) }
+    }
+
     Window(
         onCloseRequest = ::exitApplication,
         title = "DeepCode Studio",

@@ -16,19 +16,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import domain.di.domainModule
 import domain.model.AutocompleteOptionModel
 import domain.repository.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.java.KoinJavaComponent
 import ui.ThemeApp
 import ui.settings.lazy.AutocompleteOptionItem
@@ -51,12 +47,6 @@ fun AutocompleteSettings(modifier: Modifier) {
 
     // Coroutine scope for asynchronous operations
     val scope = CoroutineScope(Dispatchers.IO)
-
-    // Initialize Koin
-    rememberCoroutineScope().launch {
-        stopKoin()
-        startKoin { modules(domainModule) }
-    }
 
     // Inject the repository using Koin
     val repository: SettingRepository by KoinJavaComponent.inject(SettingRepository::class.java)

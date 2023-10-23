@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ui.ThemeApp
+import ui.editor.AllAutocompleteOptions
 
 @Composable
 fun TabsView(
@@ -21,6 +22,8 @@ fun TabsView(
     val scrollState = rememberScrollState()
     // Remember the currently selected tav
     var tabSelected by remember { mutableStateOf("") }
+
+    var displayAllAutocompleteOptions by remember { mutableStateOf(false) }
 
     // Use LaunchedEffect to perform actions when the number of tabs changes
     LaunchedEffect(tabsState.tabs.size){
@@ -48,6 +51,7 @@ fun TabsView(
                     onClickListenerTabSelected = {
                         tabSelected = it
                         filePathSelected(it)
+                        displayAllAutocompleteOptions = true
                     }
                 )
             }
@@ -58,6 +62,9 @@ fun TabsView(
             modifier = Modifier.align(Alignment.TopCenter),
             style = ThemeApp.scrollbar.tabsScrollbarStyle
         )
+
+        // If [displayAllAutocompleteOptions] is true, display a dialog with all autocomplete options
+        if(displayAllAutocompleteOptions) AllAutocompleteOptions{ displayAllAutocompleteOptions = false }
 
     }
 }
