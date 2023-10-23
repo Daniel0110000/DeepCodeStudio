@@ -64,7 +64,8 @@ class FileTree(private val path: String, private val tabsState: TabsState) {
             }
         } else{
             // If it's an ASM file, open it in the editor tab using [tabsState.openTab]
-            if(item.file.extension == "asm") tabsState.openTab(item.file)
+            if(item.file.extension == "asm" ||
+                item.file.extension == "s") tabsState.openTab(item.file)
         }
     }
 
