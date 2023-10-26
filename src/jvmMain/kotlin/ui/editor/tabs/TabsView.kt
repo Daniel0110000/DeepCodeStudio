@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ui.ThemeApp
-import ui.editor.AllAutocompleteOptions
 
 @Composable
 fun TabsView(
@@ -62,9 +61,5 @@ fun TabsView(
             modifier = Modifier.align(Alignment.TopCenter),
             style = ThemeApp.scrollbar.tabsScrollbarStyle
         )
-
-        // If [displayAllAutocompleteOptions] is true, display a dialog with all autocomplete options
-        if(displayAllAutocompleteOptions) AllAutocompleteOptions{ displayAllAutocompleteOptions = false }
-
     }
 }

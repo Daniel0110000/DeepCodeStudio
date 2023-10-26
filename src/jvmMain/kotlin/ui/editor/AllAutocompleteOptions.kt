@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.WindowPosition
+import domain.model.AutocompleteOptionModel
 import domain.repository.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +48,7 @@ import java.awt.event.MouseEvent
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun AllAutocompleteOptions(
-    onCloseRequest: () -> Unit
+    selectedOption: (AutocompleteOptionModel) -> Unit
 ) {
 
     // Inject the [SettingRepository] using Koin
@@ -67,7 +68,7 @@ fun AllAutocompleteOptions(
     Dialog(
         visible = true,
         state = DialogState(position = WindowPosition(Alignment.Center), width = 500.dp, height = 300.dp),
-        onCloseRequest = { onCloseRequest() },
+        onCloseRequest = { },
         title = "Choose Option",
         onPreviewKeyEvent = {
             if(it.key == Key.DirectionDown && !isKeyBeingPressed){
@@ -84,7 +85,7 @@ fun AllAutocompleteOptions(
                 true
             } else if(it.key == Key.Enter && !isKeyBeingPressed){
                 // Handle the 'Enter' key press
-                println(allOptions[selectedItem])
+                selectedOption(allOptions[selectedItem])
                 isKeyBeingPressed = true
               true
             } else if(it.type == KeyEventType.KeyUp){
@@ -113,7 +114,7 @@ fun AllAutocompleteOptions(
                             .onPointerEvent(PointerEventType.Press){
                                   when(it.awtEventOrNull?.button){
                                       MouseEvent.BUTTON1 -> when (it.awtEventOrNull?.clickCount){
-                                          2 -> { println(allOptions[selectedItem]) }
+                                          2 -> { selectedOption(allOptions[selectedItem]) }
                                       }
                                   }
                             },

@@ -25,6 +25,7 @@ import ui.editor.codeAutoCompletion.KeywordAutoCompleteUtil
 import ui.editor.tabs.TabsState
 import ui.editor.tabs.TabsView
 import domain.util.DocumentsManager
+import domain.util.JsonUtils
 import domain.util.TextUtils
 import java.io.File
 
@@ -41,14 +42,10 @@ fun EditorView(
     editorState: EditorState
 ) {
 
-    // CScroll state for the text editor
+    // Scroll state for the text editor
     val scrollState = rememberScrollState()
     // Coroutine scope for handling coroutines within the Composable
     val coroutineScope = rememberCoroutineScope()
-
-//    var showEditor by remember { mutableStateOf(false) }
-//
-//    var showAllAutocompleteOptions by remember { mutableStateOf(false) }
 
     LaunchedEffect(tabsState.tabs.size){
         // If the tab size is different from 0, the editor is displayed; otherwise, the welcome screen is shown
@@ -65,7 +62,6 @@ fun EditorView(
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        // Here
         if(editorState.displayEditor.value){
 
             // Write the editor content to the associated file
@@ -90,8 +86,9 @@ fun EditorView(
                                     val selectedWord = TextUtils.extractSurroundingWord(it.selection.start, it.text)
                                     editorState.wordToSearch.value = selectedWord
 
-                                    editorState.autoCompleteSuggestions.value = KeywordAutoCompleteUtil.autoCompleteKeywords(selectedWord) +
-                                            KeywordAutoCompleteUtil.filterVariableNamesForAutocomplete(TextUtils.extractVariableNames(editorState.codeText.value.text), selectedWord)
+                                    editorState.autoCompleteSuggestions.value = KeywordAutoCompleteUtil.autocompleteKeywords(selectedWord, editorState.keywords.value) +
+                                            KeywordAutoCompleteUtil.filterVariableNamesForAutocomplete(TextUtils.extractVariableNames(editorState.codeText.value.text, editorState.variableDirectives.value), selectedWord) +
+                                            KeywordAutoCompleteUtil.filterFunctionNamesForAutocomplete(TextUtils.extractFunctionNames(editorState.codeText.value.text), selectedWord)
 
                                     editorState.isAutoCompleteVisible.value = editorState.autoCompleteSuggestions.value.isNotEmpty()
                                 } else {
@@ -149,7 +146,7 @@ fun EditorView(
                                         val wordsInText = textBeforeCursor.split("\\s+".toRegex())
 
                                         // Check if specific conditions are met to determine whether to add spaces and newlines
-                                        if(codeText.isNotEmpty() &&
+                                        if(codeText.isNotBlank() &&
                                             textBeforeCursor.last() == ':' ||
                                             (lastLine.contains("   ") && lastLine != "   ") ||
                                             wordsInText.last() == ".data" ||
@@ -188,7 +185,8 @@ fun EditorView(
                         editorState = editorState,
                         cursorX = editorState.cursorXCoordinate.value,
                         cursorY = editorState.cursorYCoordinate.value - scrollState.value,
-                        selectedItemIndex = editorState.selectedItemIndex.value
+                        selectedItemIndex = editorState.selectedItemIndex.value,
+                        editorState.variableDirectives.value
                     )
                 } else editorState.selectedItemIndex.value = 0
 
@@ -226,7 +224,13 @@ fun EditorView(
         }
 
         if(editorState.displayAllAutocompleteOptions.value){
-            AllAutocompleteOptions{ editorState.displayAllAutocompleteOptions.value = false }
+            AllAutocompleteOptions(
+                selectedOption = {
+                    editorState.keywords.value = JsonUtils.jsonToAutocompleteModel(it.jsonPath).data.keywords
+                    editorState.variableDirectives.value = JsonUtils.jsonToAutocompleteModel(it.jsonPath).data.variableDirectives
+                    editorState.displayAllAutocompleteOptions.value = false
+                }
+            )
         }
 
 

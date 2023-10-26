@@ -39,7 +39,6 @@ kotlin {
                 implementation("commons-io:commons-io:2.14.0")
 
                 // Koin
-                implementation("io.insert-koin:koin-core-jvm:3.5.0")
                 implementation("io.insert-koin:koin-core:3.5.0")
 
                 // SQLite
@@ -47,6 +46,10 @@ kotlin {
 
                 // Exposed
                 implementation("org.jetbrains.exposed:exposed-jdbc:0.44.0")
+
+                // Gson & Json
+                implementation("com.google.code.gson:gson:2.10.1")
+                implementation("org.json:json:20231013")
 
             }
         }

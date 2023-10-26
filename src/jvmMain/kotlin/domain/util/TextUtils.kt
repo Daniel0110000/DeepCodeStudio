@@ -45,7 +45,7 @@ object TextUtils {
         val words = subString.split("\\s+".toRegex())
         // Find the position of the last space in the substring
         val lastSpace = subString.lastIndexOf(words.last().toString())
-        // Extract the text before the last space
+        // Extract the text before the last space new Str
         val endText = subString.substring(0, lastSpace)
 
         // Combine the end text, new text, and the remaining part of the current text
@@ -67,15 +67,38 @@ object TextUtils {
     }
 
     /**
-     * Extracts variable names declared in assembly code
+     * Extracts variable names from a given [str] using a regular expression specified by [regexValue]
      *
      * @param str The assembly code where variable declarations are searched
+     * @param regexValue The regular expression pattern used to match variable names
      * @return A list of variable names declared in the assembly code
      */
-    fun extractVariableNames(str: String): List<String>{
-        val pattern = Regex("""\s+(\w+)\s+(db|dw|dd|dq|dt|do|dy|dz|qword|dword|equ|resb|resw|resq|resy|resz|resd|rest|reso|tbyte|real4|real8|real10|real16|dwordptr|qwordptr|tbyteptr|real4ptr|real8ptr|real10ptr|real16ptr)\s+""".trimMargin())
-        val con = pattern.findAll(str)
+    fun extractVariableNames(str: String, regexValue: String): List<String>{
+        val strWithoutColon = str.replace(":", "")
+        val pattern = Regex("""\s+(\w+)\s+($regexValue)\s+""".trimMargin())
+        val con = pattern.findAll(strWithoutColon)
         return con.map { it.groupValues[1] }.toList()
+    }
+
+    /**
+     * Extracts function name declared in assembly code
+     *
+     * @param str The assembly code where function declarations are searched
+     * @return A list of function names declared in the assembly code
+     */
+    fun extractFunctionNames(str: String): List<String>{
+        val lines = str.split("\n")
+        val pattern = Regex("""(\w+):$""".trimMargin())
+        val functionNames = mutableListOf<String>()
+
+        for (line in lines){
+            val match = pattern.find(line.trim())
+            match?.let {
+                functionNames.add(match.groupValues[1])
+            }
+        }
+
+        return functionNames
     }
 
 }

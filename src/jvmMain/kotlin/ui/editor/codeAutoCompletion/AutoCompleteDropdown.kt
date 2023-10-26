@@ -41,6 +41,7 @@ import domain.util.TextUtils
  * @param cursorX X-coordinate of the cursor position
  * @param cursorY Y-coordinate of the cursor position
  * @param selectedItemIndex Index of the currently selected item
+ * @param directives String with variable declaration directives for extracting variable names
  */
 @Composable
 fun AutoCompleteDropdown(
@@ -48,7 +49,8 @@ fun AutoCompleteDropdown(
     editorState: EditorState,
     cursorX: Int,
     cursorY: Int,
-    selectedItemIndex: Int
+    selectedItemIndex: Int,
+    directives: String
 ) = Box(
     modifier = Modifier
         .absoluteOffset { IntOffset(cursorX, cursorY) }
@@ -77,7 +79,7 @@ fun AutoCompleteDropdown(
             ){
 
                 Icon(
-                    getAutoCompleteItemIconForSuggestion(suggestion, editorState.codeText.value.text),
+                    getAutoCompleteItemIconForSuggestion(suggestion, editorState.codeText.value.text, directives),
                     contentDescription = "Cube icon",
                     tint = if(selectedItemIndex == index) ThemeApp.colors.textColor else ThemeApp.colors.buttonColor,
                     modifier = Modifier.size(15.dp)
@@ -120,11 +122,19 @@ fun AutoCompleteDropdown(
  * Assigns an icon to autocomplete suggestions based on whether they match variable names or ASM keywords
  *
  * @param suggestion The autocomplete suggestion text
- * @param sourceCode THe source code use to determine if the suggestion matches variable names
+ * @param sourceCode The source code use to determine if the suggestion matches variable names
+ * @param directives String with variable declaration directives for extracting variable names
  * @return A [Painter] representing the icon to display for the suggestion
  */
 @Composable
-fun getAutoCompleteItemIconForSuggestion(suggestion: String, sourceCode: String): Painter {
-    val definedWords = TextUtils.extractVariableNames(sourceCode)
-    return if(definedWords.contains(suggestion)) painterResource("images/ic_variable.svg") else painterResource("images/ic_cube.svg")
+fun getAutoCompleteItemIconForSuggestion(
+    suggestion: String,
+    sourceCode: String,
+    directives: String
+): Painter {
+    val definedWords = TextUtils.extractVariableNames(sourceCode, directives)
+    val functionNames = TextUtils.extractFunctionNames(sourceCode)
+    return if(definedWords.contains(suggestion)) painterResource("images/ic_variable.svg")
+        else if(functionNames.contains(suggestion)) painterResource("images/ic_function.svg")
+        else painterResource("images/ic_cube.svg")
 }

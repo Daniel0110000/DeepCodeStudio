@@ -1,5 +1,3 @@
-package ui
-
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.DpSize
@@ -13,6 +11,7 @@ import kotlinx.coroutines.launch
 import domain.util.DocumentsManager
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import ui.CodeEditorScreen
 import java.awt.Toolkit
 
 fun main() = application {
