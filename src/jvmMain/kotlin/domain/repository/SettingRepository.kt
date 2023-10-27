@@ -1,6 +1,7 @@
 package domain.repository
 
 import domain.model.AutocompleteOptionModel
+import domain.model.SelectedAutocompleteOptionModel
 
 interface SettingRepository {
 
@@ -11,4 +12,9 @@ interface SettingRepository {
     suspend fun updateAutocompleteOptionJsonPath(jsonPath: String, model: AutocompleteOptionModel)
 
     fun getAllAutocompleteOptions(): List<AutocompleteOptionModel>
+
+    fun existsAutocompleteOption(asmFilePath: String): Boolean
+
+    suspend fun addSelectedAutocompleteOption(model: SelectedAutocompleteOptionModel)
+
 }

@@ -18,6 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import domain.model.SelectedAutocompleteOptionModel
+import domain.repository.SettingRepository
 import kotlinx.coroutines.launch
 import ui.ThemeApp
 import ui.editor.codeAutoCompletion.AutoCompleteDropdown
@@ -27,6 +29,7 @@ import ui.editor.tabs.TabsView
 import domain.util.DocumentsManager
 import domain.util.JsonUtils
 import domain.util.TextUtils
+import org.koin.java.KoinJavaComponent
 import java.io.File
 
 /**
@@ -47,10 +50,12 @@ fun EditorView(
     // Coroutine scope for handling coroutines within the Composable
     val coroutineScope = rememberCoroutineScope()
 
+    // Inject the repository using Koin
+    val repository: SettingRepository by KoinJavaComponent.inject(SettingRepository::class.java)
+
     LaunchedEffect(tabsState.tabs.size){
         // If the tab size is different from 0, the editor is displayed; otherwise, the welcome screen is shown
         editorState.displayEditor.value = tabsState.tabs.size != 0
-        if(tabsState.tabs.size != 0) editorState.displayAllAutocompleteOptions.value = true
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -58,6 +63,9 @@ fun EditorView(
         TabsView(tabsState){
             editorState.codeText.value = TextFieldValue(File(it).readText())
             editorState.filePath.value = it
+
+            // Toggle the visibility of all autocomplete options based on whether autocomplete options exist for the selected file
+            editorState.displayAllAutocompleteOptions.value = !repository.existsAutocompleteOption(it)
         }
 
         Spacer(modifier = Modifier.height(5.dp))
@@ -229,6 +237,15 @@ fun EditorView(
                     editorState.keywords.value = JsonUtils.jsonToAutocompleteModel(it.jsonPath).data.keywords
                     editorState.variableDirectives.value = JsonUtils.jsonToAutocompleteModel(it.jsonPath).data.variableDirectives
                     editorState.displayAllAutocompleteOptions.value = false
+
+                    coroutineScope.launch {
+                        // Add the selected option to the history of selected autocomplete options
+                        repository.addSelectedAutocompleteOption(SelectedAutocompleteOptionModel(
+                            asmFilePath = editorState.filePath.value,
+                            optionName = it.optionName,
+                            jsonPath = it.jsonPath
+                        ))
+                    }
                 }
             )
         }
