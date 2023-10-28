@@ -1,9 +1,11 @@
 package ui.fileTree
 
 import androidx.compose.runtime.mutableStateOf
+import domain.repository.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent
 import ui.editor.tabs.EditorTabsModel
 import ui.editor.tabs.TabsState
 import java.io.File
@@ -14,6 +16,9 @@ class FileTree(private val path: String, private val tabsState: TabsState) {
     private val rootFile = FileInfo(File(path), 0, true)
     // Initializes the list of files starting with the root directory and its expanded subdirectories.
     val listFiles = mutableStateOf(listOf(rootFile) + expandDirectory(rootFile))
+
+    // Inject the repository using Koin
+    private val repository: SettingRepository by KoinJavaComponent.inject(SettingRepository::class.java)
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -35,6 +40,10 @@ class FileTree(private val path: String, private val tabsState: TabsState) {
                     // If the deleted file is open, its tab is closed
                     tabsState.closeTab(EditorTabsModel(file.name, file.absolutePath))
 
+                    if(file.extension == "asm" || file.extension == "s"){
+                        // If the extension of the deleted file is 'asm' or 's', delete the selected autocomplete option from the database
+                        CoroutineScope(Dispatchers.IO).launch { repository.deleteSelectedAutocompleteOption(file.absolutePath) }
+                    }
                 }
             )
         }

@@ -159,4 +159,19 @@ class SettingRepositoryImpl: SettingRepository {
         }
     }
 
+    /**
+     * Delete the selected autocomplete option specified by the [asmFilePath] parameter
+     *
+     * @param asmFilePath The ASM file path for deleting the selected option
+     */
+    override suspend fun deleteSelectedAutocompleteOption(asmFilePath: String) {
+        CallHandler.callHandler {
+            transaction {
+                HistorySelectedAutocompleteOptionsTable.deleteWhere {
+                    HistorySelectedAutocompleteOptionsTable.asmFilePath eq asmFilePath
+                }
+            }
+        }
+    }
+
 }

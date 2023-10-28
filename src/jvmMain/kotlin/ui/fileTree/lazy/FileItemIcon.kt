@@ -19,7 +19,7 @@ fun FileItemIcon(model: FileInfo){
         if(model.isExpanded) Icon(Icons.Rounded.KeyboardArrowRight, contentDescription = "Keyboard arrow right icon", tint = ThemeApp.colors.buttonColor, modifier = Modifier.size(18.dp))
         else ItemIcon("images/ic_folder.svg", "Folder icon")
     } else {
-        if(model.file.extension == "asm") ItemIcon("images/ic_asm.svg", "ASM icon", color = ThemeApp.colors.asmIconColor)
+        if(model.file.extension == "asm" || model.file.extension == "s") ItemIcon("images/ic_asm.svg", "ASM icon", color = ThemeApp.colors.asmIconColor)
         else ItemIcon("images/ic_unknown.svg", "Unknown icon")
     }
 }

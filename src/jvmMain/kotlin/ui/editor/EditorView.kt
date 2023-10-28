@@ -1,6 +1,5 @@
 package ui.editor
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollbarAdapter
 import androidx.compose.foundation.VerticalScrollbar
@@ -60,7 +59,7 @@ import java.io.File
  * @param tabsState The state of editor tabs
  * @param editorState The state of the code editor
  */
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EditorView(
     tabsState: TabsState,
@@ -102,8 +101,8 @@ fun EditorView(
 
         if(editorState.displayEditor.value){
 
-            // Write the editor content to the associated file
-            DocumentsManager.writeFile(File(editorState.filePath.value), editorState.codeText.value.text)
+            // If the current file exists, write the editor content to the associated file
+            if(File(editorState.filePath.value).exists()) DocumentsManager.writeFile(File(editorState.filePath.value), editorState.codeText.value.text)
 
             Column(modifier = Modifier.fillMaxSize()) {
                 Box(modifier = Modifier.weight(1f)) {

@@ -21,4 +21,6 @@ interface SettingRepository {
 
     suspend fun updateSelectedAutocompleteOption(model: SelectedAutocompleteOptionModel)
 
+    suspend fun deleteSelectedAutocompleteOption(asmFilePath: String)
+
 }
