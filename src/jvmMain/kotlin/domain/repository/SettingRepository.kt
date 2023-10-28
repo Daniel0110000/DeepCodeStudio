@@ -17,4 +17,8 @@ interface SettingRepository {
 
     suspend fun addSelectedAutocompleteOption(model: SelectedAutocompleteOptionModel)
 
+    fun getSelectedAutocompleteOption(asmFilePath: String): SelectedAutocompleteOptionModel
+
+    suspend fun updateSelectedAutocompleteOption(model: SelectedAutocompleteOptionModel)
+
 }

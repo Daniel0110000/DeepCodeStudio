@@ -120,4 +120,43 @@ class SettingRepositoryImpl: SettingRepository {
             }
         }
     }
+
+    /**
+     * Retrieves the selected autocomplete option for a specific ASM file
+     *
+     * @param asmFilePath The path of the ASM file for which the option was selected
+     * @return The selected autocomplete option for the specified ASM file
+     */
+    override fun getSelectedAutocompleteOption(asmFilePath: String): SelectedAutocompleteOptionModel = transaction {
+        val result = HistorySelectedAutocompleteOptionsTable
+            .select { HistorySelectedAutocompleteOptionsTable.asmFilePath eq asmFilePath }
+            .map {
+                SelectedAutocompleteOptionModel(
+                    asmFilePath = it[HistorySelectedAutocompleteOptionsTable.asmFilePath],
+                    optionName = it[HistorySelectedAutocompleteOptionsTable.optionName],
+                    jsonPath = it[HistorySelectedAutocompleteOptionsTable.jsonPath]
+                )
+            }
+        if (result.isNotEmpty()) result[0]
+        else SelectedAutocompleteOptionModel(0, "", "", "")
+    }
+
+    /**
+     * Updates the selected autocomplete option for a specific ASM file
+     *
+     * @param model The model containing the updated information for the selected autocomplete option
+     */
+    override suspend fun updateSelectedAutocompleteOption(model: SelectedAutocompleteOptionModel) {
+        CallHandler.callHandler {
+            transaction {
+                HistorySelectedAutocompleteOptionsTable.update({
+                    HistorySelectedAutocompleteOptionsTable.asmFilePath eq model.asmFilePath
+                }){
+                    it[optionName] = model.optionName
+                    it[jsonPath] = model.jsonPath
+                }
+            }
+        }
+    }
+
 }
