@@ -1,6 +1,7 @@
 package ui.editor.tabs
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import java.io.File
 
 class TabsState {
@@ -9,6 +10,8 @@ class TabsState {
     var tabs = mutableStateListOf<EditorTabsModel>()
         private set
 
+    // Mutable state that holds the file path of a recently closed tab
+    val closedTabFilePath = mutableStateOf("")
 
     /**
      * Opens a new tav for the given file
@@ -24,9 +27,14 @@ class TabsState {
      * Close the specified tab
      *
      * @param editorTabsModel The EditorTabsModel representing the tab to be closed
+     * @param index A function to handle the index of the close tab
      */
-    fun closeTab(editorTabsModel: EditorTabsModel){
-        if(tabs.contains(editorTabsModel)) tabs.remove(editorTabsModel)
+    fun closeTab(editorTabsModel: EditorTabsModel, index: (Int) -> Unit){
+        if(tabs.contains(editorTabsModel)){
+            closedTabFilePath.value = editorTabsModel.filePath
+            index(tabs.indexOf(editorTabsModel))
+            tabs.remove(editorTabsModel)
+        }
     }
 
 }

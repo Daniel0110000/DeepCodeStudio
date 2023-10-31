@@ -9,11 +9,11 @@ class EditorState {
     // The content of the code editor
     val codeText = mutableStateOf(TextFieldValue(""))
     // Count of lines in the code editor
-    var linesCount = mutableStateOf(0)
+    var linesCount = mutableStateOf(1)
     // File path associated with the editor content
     val filePath = mutableStateOf("")
 
-    // Suggestions for aut-complete
+    // Suggestions for auto-complete
     var autoCompleteSuggestions = mutableStateOf<List<String>>(emptyList())
     // Result of text layout calculations
     var textLayoutResult = mutableStateOf<TextLayoutResult?>(null)
@@ -36,7 +36,7 @@ class EditorState {
     val wordToSearch = mutableStateOf("")
 
     // Flag indicating whether editor is visible
-    val displayEditor = mutableStateOf(false)
+    val isDisplayEditor = mutableStateOf(false)
     // Flag indicating whether all autocomplete options dialog are visible
     val displayAllAutocompleteOptions = mutableStateOf(false)
 

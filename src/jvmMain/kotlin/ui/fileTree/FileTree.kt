@@ -38,7 +38,7 @@ class FileTree(private val path: String, private val tabsState: TabsState) {
                     listFiles.value = listFiles.value.filter { it.file != file && !it.file.absolutePath.contains(filePath) }
 
                     // If the deleted file is open, its tab is closed
-                    tabsState.closeTab(EditorTabsModel(file.name, file.absolutePath))
+                    tabsState.closeTab(EditorTabsModel(file.name, filePath)){ _ -> }
 
                     if(file.extension == "asm" || file.extension == "s"){
                         // If the extension of the deleted file is 'asm' or 's', delete the selected autocomplete option from the database

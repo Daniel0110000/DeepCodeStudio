@@ -14,23 +14,48 @@ import ui.ThemeApp
 @Composable
 fun TabsView(
     tabsState: TabsState,
-    filePathSelected: (String) -> Unit
+    onNewTab: (String) -> Unit,
+    onDeleteTab: (Int, String) -> Unit,
+    onChangeSelectedTab: (Int) -> Unit
 ) {
 
     // Remember the scroll state for the horizontal scrollbar
     val scrollState = rememberScrollState()
-    // Remember the currently selected tav
+    // Remember the currently selected tab
     var tabSelected by remember { mutableStateOf("") }
 
-    var displayAllAutocompleteOptions by remember { mutableStateOf(false) }
+    // Variable that contains the old value of the tab count
+    var previousTabCount by remember { mutableStateOf(0) }
+
+    // Variable that contains the index of the closed tab
+    var closedTabIndex by remember { mutableStateOf(0) }
+    // Variable that contains the file path of the closed tab
+    var closedTabFilePath by remember { mutableStateOf("") }
+
 
     // Use LaunchedEffect to perform actions when the number of tabs changes
     LaunchedEffect(tabsState.tabs.size){
-        if(tabsState.tabs.isNotEmpty()){
-            // Select the last opened tab by default
-            filePathSelected(tabsState.tabs.last().filePath)
+
+        if(tabsState.tabs.size > previousTabCount){
+            // A new tab was added, update the selected tab and trigger the [onNewTab] callback
             tabSelected = tabsState.tabs.last().filePath
+            onNewTab(tabsState.tabs.last().filePath)
         }
+
+        if(tabsState.tabs.size < previousTabCount){
+            //  A tab was closed. Update the necessary states and trigger the "onDeleteTab" callback
+            closedTabFilePath = tabsState.closedTabFilePath.value
+            onDeleteTab(closedTabIndex, closedTabFilePath)
+
+            if(tabsState.tabs.isNotEmpty()){
+                // If there are remaining tabs, set the selected tab to the last one
+                tabSelected = tabsState.tabs.last().filePath
+            }
+        }
+
+        // Update the previous tab count for future comparisons
+        previousTabCount = tabsState.tabs.size
+
     }
 
     Box {
@@ -42,15 +67,19 @@ fun TabsView(
                 .background(ThemeApp.colors.secondColor)
                 .horizontalScroll(scrollState)
         ) {
-            tabsState.tabs.forEach { tabsModel ->
+            tabsState.tabs.forEachIndexed { index, tabsModel ->
                 TabItem(
                     tabsModel,
                     tabSelected,
-                    onClickListenerTabClose = { tabsState.closeTab(tabsModel) },
+                    onClickListenerTabClose = {
+                        tabsState.closeTab(tabsModel) { index ->
+                            closedTabIndex = index
+                            closedTabFilePath = tabsState.closedTabFilePath.value
+                        }
+                    },
                     onClickListenerTabSelected = {
                         tabSelected = it
-                        filePathSelected(it)
-                        displayAllAutocompleteOptions = true
+                        onChangeSelectedTab(index)
                     }
                 )
             }
