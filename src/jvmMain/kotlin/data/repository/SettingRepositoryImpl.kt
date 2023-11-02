@@ -3,8 +3,10 @@ package data.repository
 import data.local.databaseConnection
 import data.local.tables.AutocompleteTable
 import data.local.tables.HistorySelectedAutocompleteOptionsTable
+import data.local.tables.SyntaxHighlightTable
 import domain.model.AutocompleteOptionModel
 import domain.model.SelectedAutocompleteOptionModel
+import domain.model.SyntaxHighlightConfigModel
 import domain.repository.SettingRepository
 import domain.util.CallHandler
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -22,8 +24,8 @@ class SettingRepositoryImpl: SettingRepository {
     init {
         // Execute the database connection
         databaseConnection()
-        // Creating the table [AutocompleteTable]
-        transaction { SchemaUtils.create(AutocompleteTable, HistorySelectedAutocompleteOptionsTable) }
+        // Creating the tables
+        transaction { SchemaUtils.create(AutocompleteTable, HistorySelectedAutocompleteOptionsTable, SyntaxHighlightTable) }
     }
 
     /**
@@ -173,5 +175,109 @@ class SettingRepositoryImpl: SettingRepository {
             }
         }
     }
+
+    /**
+     * Creates a new syntax highlight configuration by inserting it into the database
+     *
+     * @param model The [SyntaxHighlightConfigModel] containing the configurations details to be created
+     */
+    override suspend fun createSyntaxHighlightConfig(model: SyntaxHighlightConfigModel) {
+        CallHandler.callHandler {
+            transaction {
+                SyntaxHighlightTable.insert{
+                    it[optionName] = model.optionName
+                    it[jsonPath] = model.jsonPath
+                    it[keywordColor] = model.keywordColor
+                    it[variableColor] = model.variableColor
+                    it[numberColor] = model.numberColor
+                    it[sectionColor] = model.sectionColor
+                    it[commentColor] = model.commentColor
+                    it[stringColor] = model.stringColor
+                    it[labelColor] = model.labelColor
+                }
+            }
+        }
+    }
+
+    /**
+     * Retrieves all syntax highlight configurations from the database
+     *
+     * @return A list of [SyntaxHighlightConfigModel] objects representing the configurations
+     */
+    override fun getAllSyntaxHighlightConfigs(): List<SyntaxHighlightConfigModel> = transaction {
+        SyntaxHighlightTable.selectAll().map {
+            SyntaxHighlightConfigModel(
+                it[SyntaxHighlightTable.id],
+                it[SyntaxHighlightTable.optionName],
+                it[SyntaxHighlightTable.jsonPath],
+                it[SyntaxHighlightTable.keywordColor],
+                it[SyntaxHighlightTable.variableColor],
+                it[SyntaxHighlightTable.numberColor],
+                it[SyntaxHighlightTable.sectionColor],
+                it[SyntaxHighlightTable.commentColor],
+                it[SyntaxHighlightTable.stringColor],
+                it[SyntaxHighlightTable.labelColor],
+            )
+        }
+    }
+
+    /**
+     * Updates a syntax highlight configuration with the provided [model]
+     *
+     * @param model The [SyntaxHighlightConfigModel] containing the upload configuration
+     */
+    override suspend fun updateSyntaxHighlightConfig(model: SyntaxHighlightConfigModel) {
+        CallHandler.callHandler {
+            transaction {
+                SyntaxHighlightTable.update({
+                    SyntaxHighlightTable.jsonPath eq model.jsonPath
+                }){
+                    it[keywordColor] = model.keywordColor
+                    it[variableColor] = model.variableColor
+                    it[numberColor] = model.numberColor
+                    it[sectionColor] = model.sectionColor
+                    it[commentColor] = model.commentColor
+                    it[stringColor] = model.stringColor
+                    it[labelColor] = model.labelColor
+                }
+            }
+        }
+    }
+
+    /**
+     * Deletes a syntax highlight configuration by it8s JSON path
+     *
+     * @param jsonPath The JSON path of the configuration to delete
+     */
+    override suspend fun deleteSyntaxHighlightConfig(jsonPath: String) {
+        CallHandler.callHandler {
+            transaction {
+                SyntaxHighlightTable.deleteWhere { SyntaxHighlightTable.jsonPath eq jsonPath }
+            }
+        }
+    }
+
+
+    /**
+     * Updates the JSON path of a syntax highlight configuration for a specific option
+     *
+     * @param newJsonPath The new JSON path to update to
+     * @param oldJsonPath The existing JSON path to identify the configuration
+     * @param optionName The name of the option associated with the configuration
+     */
+    override suspend fun updateSyntaxHighlightConfigJsonPath(
+        newJsonPath: String,
+        oldJsonPath: String,
+        optionName: String
+    ) {
+        CallHandler.callHandler {
+            transaction {
+                SyntaxHighlightTable.update({ (SyntaxHighlightTable.jsonPath eq oldJsonPath) and (SyntaxHighlightTable.optionName eq optionName) }){
+                    it[jsonPath] = newJsonPath
+                }
+            }
+        }
+    }
+
 
 }

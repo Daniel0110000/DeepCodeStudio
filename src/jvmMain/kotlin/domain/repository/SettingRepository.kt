@@ -2,6 +2,7 @@ package domain.repository
 
 import domain.model.AutocompleteOptionModel
 import domain.model.SelectedAutocompleteOptionModel
+import domain.model.SyntaxHighlightConfigModel
 
 interface SettingRepository {
 
@@ -22,5 +23,16 @@ interface SettingRepository {
     suspend fun updateSelectedAutocompleteOption(model: SelectedAutocompleteOptionModel)
 
     suspend fun deleteSelectedAutocompleteOption(asmFilePath: String)
+
+    suspend fun createSyntaxHighlightConfig(model: SyntaxHighlightConfigModel)
+
+    fun getAllSyntaxHighlightConfigs(): List<SyntaxHighlightConfigModel>
+
+    suspend fun updateSyntaxHighlightConfig(model: SyntaxHighlightConfigModel)
+
+    suspend fun deleteSyntaxHighlightConfig(jsonPath: String)
+
+    // Change the name
+    suspend fun updateSyntaxHighlightConfigJsonPath(newJsonPath: String, oldJsonPath: String, optionName: String)
 
 }

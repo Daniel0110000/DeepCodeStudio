@@ -31,7 +31,7 @@ import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.WindowPosition
 import ui.ThemeApp
 import ui.settings.screens.AutocompleteSettings
-import ui.settings.screens.SyntaxKeywordHighlighterSettings
+import ui.settings.screens.syntaxHighlight.SyntaxHighlightSettings
 
 @Composable
 fun Settings(
@@ -58,7 +58,7 @@ fun Settings(
                 .fillMaxHeight()
 
             when(screen){
-                Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS -> SyntaxKeywordHighlighterSettings(modifier)
+                Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS -> SyntaxHighlightSettings(modifier)
                 Screens.AUTOCOMPLETE_SETTINGS -> AutocompleteSettings(modifier)
             }
 

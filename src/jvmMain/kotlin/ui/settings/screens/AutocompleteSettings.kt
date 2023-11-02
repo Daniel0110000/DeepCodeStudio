@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import domain.model.AutocompleteOptionModel
+import domain.model.SyntaxHighlightConfigModel
 import domain.repository.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,13 +68,17 @@ fun AutocompleteSettings(modifier: Modifier) {
                     onDeleteOptionClick = {
                         scope.launch {
                             repository.deleteAutocompleteOption(it)
+                            repository.deleteSyntaxHighlightConfig(it.jsonPath)
                             options = repository.getAllAutocompleteOptions()
                         }
                     },
                     onUpdateJsonPathClick = { newJsonPath ->
                         scope.launch {
                             if(newJsonPath.isNotBlank()){
+                                // When the callback is executed, and [newJsonPath] is not black, update the autocomplete JSON path
+                                // ... and the syntax highlight JSON path
                                 repository.updateAutocompleteOptionJsonPath(newJsonPath, it)
+                                repository.updateSyntaxHighlightConfigJsonPath(newJsonPath, it.jsonPath, it.optionName)
                                 options = repository.getAllAutocompleteOptions()
                             }
                         }
@@ -87,7 +92,11 @@ fun AutocompleteSettings(modifier: Modifier) {
                     onAddOptionClick = {
                         scope.launch {
                             if(optionName.isNotBlank() && jsonPath.isNotBlank()){
+                                // If [optionName] and [jsonPath] are not blank, create a new autocomplete option and a syntax highlight configuration
                                 repository.addAutocompleteOption(AutocompleteOptionModel(optionName = optionName, jsonPath = jsonPath))
+                                repository.createSyntaxHighlightConfig(SyntaxHighlightConfigModel(optionName = optionName, jsonPath = jsonPath))
+
+                                // Refresh all autocomplete options
                                 options = repository.getAllAutocompleteOptions()
 
                                 optionName = ""
