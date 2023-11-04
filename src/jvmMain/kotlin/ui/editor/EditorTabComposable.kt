@@ -252,8 +252,8 @@ val EditorTabComposable: EditorComposable = { editorState ->
             val option = repository.getSelectedAutocompleteOption(editorState.filePath.value)
 
             // Set the autocomplete keywords and variable directives from the selected option
-            editorState.keywords.value = JsonUtils.jsonToAutocompleteModel(option.jsonPath).data.keywords
-            editorState.variableDirectives.value = JsonUtils.jsonToAutocompleteModel(option.jsonPath).data.variableDirectives
+            editorState.keywords.value = JsonUtils.jsonToListString(option.jsonPath)
+            editorState.variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath)
         }
 
     }

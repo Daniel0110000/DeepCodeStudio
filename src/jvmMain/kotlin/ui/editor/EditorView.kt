@@ -78,8 +78,8 @@ fun EditorView(
                     } else {
                         // If an option exists, retrieve and set the autocomplete data
                         val option = repository.getSelectedAutocompleteOption(it)
-                        editorStates[selectedTabIndex].keywords.value = JsonUtils.jsonToAutocompleteModel(option.jsonPath).data.keywords
-                        editorStates[selectedTabIndex].variableDirectives.value = JsonUtils.jsonToAutocompleteModel(option.jsonPath).data.variableDirectives
+                        editorStates[selectedTabIndex].keywords.value = JsonUtils.jsonToListString(option.jsonPath)
+                        editorStates[selectedTabIndex].variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath)
                     }
                 },
                 onDeleteTab = { i, path ->
@@ -125,8 +125,8 @@ fun EditorView(
         AllAutocompleteOptions(
             selectedOption = {
                 // Configure the autocomplete option using the selected choice
-                editorStates[selectedTabIndex].keywords.value = JsonUtils.jsonToAutocompleteModel(it.jsonPath).data.keywords
-                editorStates[selectedTabIndex].variableDirectives.value = JsonUtils.jsonToAutocompleteModel(it.jsonPath).data.variableDirectives
+                editorStates[selectedTabIndex].keywords.value = JsonUtils.jsonToListString(it.jsonPath)
+                editorStates[selectedTabIndex].variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(it.jsonPath)
 
                 // Close the window displaying all autocomplete options
                 editorState.displayAllAutocompleteOptions.value = false
