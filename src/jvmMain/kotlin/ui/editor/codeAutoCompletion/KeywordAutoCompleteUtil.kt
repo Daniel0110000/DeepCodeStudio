@@ -2,13 +2,6 @@ package ui.editor.codeAutoCompletion
 
 object KeywordAutoCompleteUtil {
 
-//    /**
-//     * Generates auto-complete suggestions for keywords based on teh user's input
-//     *
-//     * @param input The user's input for auto-completion
-//     * @return A list of auto-complete suggestions matching the input
-//     */
-
     /**
      * Generates autocomplete suggestions for keywords based on the user's input
      *

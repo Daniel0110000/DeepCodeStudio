@@ -18,14 +18,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domain.util.ColorUtils
 import ui.ThemeApp
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ColorOptionItem(
     title: String,
@@ -35,11 +40,17 @@ fun ColorOptionItem(
 
     // Contains the newly selected color
     var selectedColor by remember { mutableStateOf(currentColor) }
+    // A boolean variable to track the hover state
+    var isHover by remember { mutableStateOf(false) }
+
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(30.dp),
+            .height(30.dp)
+            .background(if(isHover) ThemeApp.colors.hoverTab else Color.Transparent, shape = RoundedCornerShape(5.dp))
+            .onPointerEvent(PointerEventType.Enter){ isHover = true }
+            .onPointerEvent(PointerEventType.Exit){ isHover = false },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(

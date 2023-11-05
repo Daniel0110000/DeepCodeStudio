@@ -85,29 +85,54 @@ fun SyntaxKeywordHighlighterConfigItem(
         }
 
         if (isExpandColorOptions) {
-            var keywordDisplaySaveColors by remember { mutableStateOf(false) }
+            var simpleDisplaySaveColors by remember { mutableStateOf(false) }
+            var instructionDisplaySaveColors by remember { mutableStateOf(false) }
             var variableDisplaySaveColors by remember { mutableStateOf(false) }
+            var constantDisplaySaveColors by remember { mutableStateOf(false) }
+            var segmentDisplaySaveColors by remember { mutableStateOf(false) }
+            var systemCallDisplaySaveColors by remember { mutableStateOf(false) }
+            var registerDisplaySaveColors by remember { mutableStateOf(false) }
+            var arithmeticInstructionDisplaySaveColors by remember { mutableStateOf(false) }
+            var logicalInstructionDisplaySaveColors by remember { mutableStateOf(false) }
+            var conditionDisplaySaveColors by remember { mutableStateOf(false) }
+            var loopDisplaySaveColors by remember { mutableStateOf(false) }
+            var memoryManagementDisplaySaveColors by remember { mutableStateOf(false) }
             var numberDisplaySaveColors by remember { mutableStateOf(false) }
-            var sectionDisplaySaveColors by remember { mutableStateOf(false) }
             var commentDisplaySaveColors by remember { mutableStateOf(false) }
             var stringDisplaySaveColors by remember { mutableStateOf(false) }
             var labelDisplaySaveColors by remember { mutableStateOf(false) }
 
-            var newKeywordColor by remember { mutableStateOf("") }
+            var newSimpleColor by remember { mutableStateOf("") }
+            var newInstructionColor by remember { mutableStateOf("") }
             var newVariableColor by remember { mutableStateOf("") }
+            var newConstantColor by remember { mutableStateOf("") }
+            var newSegmentColor by remember { mutableStateOf("") }
+            var newSystemCallColor by remember { mutableStateOf("") }
+            var newRegisterColor by remember { mutableStateOf("") }
+            var newArithmeticInstructionColor by remember { mutableStateOf("") }
+            var newLogicalInstructionColor by remember { mutableStateOf("") }
+            var newConditionColor by remember { mutableStateOf("") }
+            var newLoopColor by remember { mutableStateOf("") }
+            var newMemoryManagementColor by remember { mutableStateOf("") }
             var newNumberColor by remember { mutableStateOf("") }
-            var newSectionColor by remember { mutableStateOf("") }
             var newCommentColor by remember { mutableStateOf("") }
             var newStringColor by remember { mutableStateOf("") }
             var newLabelColor by remember { mutableStateOf("") }
 
-            // Color option items for keyword, variable, number, section, comment, string, and label
             ColorOptionItem(
-                "Keyword",
-                config.keywordColor
+                "Simple",
+                config.simpleColor
             ) {
-                newKeywordColor = it
-                keywordDisplaySaveColors = it != config.keywordColor
+                newSimpleColor = it
+                simpleDisplaySaveColors = it != config.simpleColor
+            }
+
+            ColorOptionItem(
+                "Instruction",
+                config.instructionColor
+            ) {
+                newInstructionColor = it
+                instructionDisplaySaveColors = it != config.instructionColor
             }
 
             ColorOptionItem(
@@ -119,19 +144,83 @@ fun SyntaxKeywordHighlighterConfigItem(
             }
 
             ColorOptionItem(
+                "Constant",
+                config.constantColor
+            ) {
+                newConstantColor = it
+                constantDisplaySaveColors = it != config.constantColor
+            }
+
+            ColorOptionItem(
+                "Segment",
+                config.segmentColor
+            ) {
+                newSegmentColor = it
+                segmentDisplaySaveColors = it != config.segmentColor
+            }
+
+            ColorOptionItem(
+                "System Call",
+                config.systemCallColor
+            ) {
+                newSystemCallColor = it
+                systemCallDisplaySaveColors = it != config.systemCallColor
+            }
+
+            ColorOptionItem(
+                "Register",
+                config.registerColor
+            ) {
+                newRegisterColor = it
+                registerDisplaySaveColors = it != config.registerColor
+            }
+
+            ColorOptionItem(
+                "Arithmetic Instruction",
+                config.arithmeticInstructionColor
+            ) {
+                newArithmeticInstructionColor = it
+                arithmeticInstructionDisplaySaveColors = it != config.arithmeticInstructionColor
+            }
+
+            ColorOptionItem(
+                "Logical Instruction",
+                config.logicalInstructionColor
+            ) {
+                newLogicalInstructionColor = it
+                logicalInstructionDisplaySaveColors = it != config.logicalInstructionColor
+            }
+
+            ColorOptionItem(
+                "Condition",
+                config.conditionColor
+            ) {
+                newConditionColor = it
+                conditionDisplaySaveColors = it != config.conditionColor
+            }
+
+            ColorOptionItem(
+                "Loop",
+                config.loopColor
+            ) {
+                newLoopColor = it
+                loopDisplaySaveColors = it != config.loopColor
+            }
+
+            ColorOptionItem(
+                "Memory Management",
+                config.memoryManagementColor
+            ) {
+                newMemoryManagementColor = it
+                memoryManagementDisplaySaveColors = it != config.memoryManagementColor
+            }
+
+            ColorOptionItem(
                 "Number",
                 config.numberColor
             ) {
                 newNumberColor = it
                 numberDisplaySaveColors = it != config.numberColor
-            }
-
-            ColorOptionItem(
-                "Section",
-                config.sectionColor
-            ) {
-                newSectionColor = it
-                sectionDisplaySaveColors = it != config.sectionColor
             }
 
             ColorOptionItem(
@@ -160,9 +249,11 @@ fun SyntaxKeywordHighlighterConfigItem(
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            if(keywordDisplaySaveColors || variableDisplaySaveColors ||
-                numberDisplaySaveColors || sectionDisplaySaveColors ||
-                commentDisplaySaveColors || stringDisplaySaveColors ||
+            if(simpleDisplaySaveColors || instructionDisplaySaveColors || variableDisplaySaveColors ||
+                constantDisplaySaveColors || segmentDisplaySaveColors || systemCallDisplaySaveColors ||
+                registerDisplaySaveColors || arithmeticInstructionDisplaySaveColors || logicalInstructionDisplaySaveColors ||
+                conditionDisplaySaveColors || loopDisplaySaveColors || memoryManagementDisplaySaveColors ||
+                numberDisplaySaveColors || commentDisplaySaveColors || stringDisplaySaveColors ||
                 labelDisplaySaveColors){
                 // Display "Save" button if there are unsaved color changes
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -173,11 +264,21 @@ fun SyntaxKeywordHighlighterConfigItem(
                             CoroutineScope(Dispatchers.IO).launch {
                                 settingRepository.updateSyntaxHighlightConfig(
                                     SyntaxHighlightConfigModel(
+                                        id = config.id,
                                         jsonPath = config.jsonPath,
-                                        keywordColor = newKeywordColor,
+                                        simpleColor = newSimpleColor,
+                                        instructionColor = newInstructionColor,
                                         variableColor = newVariableColor,
+                                        constantColor = newConstantColor,
                                         numberColor = newNumberColor,
-                                        sectionColor = newSectionColor,
+                                        segmentColor = newSegmentColor,
+                                        systemCallColor = newSystemCallColor,
+                                        registerColor = newRegisterColor,
+                                        arithmeticInstructionColor = newArithmeticInstructionColor,
+                                        logicalInstructionColor = newLogicalInstructionColor,
+                                        conditionColor = newConditionColor,
+                                        loopColor = newLoopColor,
+                                        memoryManagementColor = newMemoryManagementColor,
                                         commentColor = newCommentColor,
                                         stringColor = newStringColor,
                                         labelColor = newLabelColor

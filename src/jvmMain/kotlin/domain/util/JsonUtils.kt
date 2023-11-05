@@ -1,5 +1,7 @@
 package domain.util
 
+import domain.model.SyntaxHighlightRegexModel
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
@@ -42,5 +44,53 @@ object JsonUtils {
         return variablesList.joinToString("|"){ it.toString() } + "|" + constantsList.joinToString("|"){ it.toString() }
 
     }
+
+    /**
+     * Converts a JSON file into a [SyntaxHighlightRegexModel] object
+     *
+     * @param jsonPath The path to the JSON file
+     * @return The [SyntaxHighlightRegexModel] parsed from the JSON
+     */
+    fun jsonToSyntaxHighlightRegexModel(jsonPath: String): SyntaxHighlightRegexModel{
+        val jsonString = File(jsonPath).readText()
+
+        val jsonObject = JSONObject(jsonString)
+        val dataObject = jsonObject.getJSONObject("data")
+
+        val instructionsList = dataObject.getJSONArray("instructions")
+        val variablesList = dataObject.getJSONArray("variables")
+        val constantsList = dataObject.getJSONArray("constants")
+        val segmentsList = dataObject.getJSONArray("segments")
+        val registersList = dataObject.getJSONArray("registers")
+        val systemCallsList = dataObject.getJSONArray("systemCall")
+        val arithmeticInstructionsList = dataObject.getJSONArray("arithmeticInstructions")
+        val logicalInstructionsList = dataObject.getJSONArray("logicalInstructions")
+        val conditionsList = dataObject.getJSONArray("conditions")
+        val loopsList = dataObject.getJSONArray("loops")
+        val memoryManagementList = dataObject.getJSONArray("memoryManagement")
+
+        return SyntaxHighlightRegexModel(
+            instructionsList.joinToString(),
+            variablesList.joinToString(),
+            constantsList.joinToString(),
+            segmentsList.joinToString(),
+            registersList.joinToString(),
+            systemCallsList.joinToString(),
+            arithmeticInstructionsList.joinToString(),
+            logicalInstructionsList.joinToString(),
+            conditionsList.joinToString(),
+            loopsList.joinToString(),
+            memoryManagementList.joinToString(),
+        )
+
+    }
+
+    /**
+     * Helper function to join elements of a JSONArray into a single string separated by '|'
+     *
+     * @receiver The JSONArray to join
+     * @return The joined string
+     */
+    private fun JSONArray.joinToString() = joinToString("|"){ it.toString() }
 
 }

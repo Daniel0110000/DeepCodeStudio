@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import domain.repository.SettingRepository
 import org.koin.java.KoinJavaComponent
 import ui.ThemeApp
-import ui.editor.EditorVisualTransformation
+import ui.editor.EditorVisualTransformationPreviewColors
 import ui.settings.lazy.SyntaxKeywordHighlighterConfigItem
 
 @Composable
@@ -94,28 +95,39 @@ fun SyntaxHighlightSettings(modifier: Modifier) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
-                .background(ThemeApp.colors.secondColor)
-                .border(1.dp, SolidColor(ThemeApp.colors.hoverTab), RoundedCornerShape(0.dp))
-        ) {
-            BasicTextField(
-                value = codeText,
-                onValueChange = { codeText = it },
-                textStyle = TextStyle(
-                    fontSize = 13.sp,
-                    color = ThemeApp.colors.textColor,
-                    fontFamily = ThemeApp.text.codeTextFontFamily,
-                    fontWeight = FontWeight.W500
-                ),
-                cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
-                visualTransformation = EditorVisualTransformation(),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 10.dp, horizontal = 20.dp)
+        if(allSyntaxHighlightConfigs.isNotEmpty()){
+            Text(
+                allSyntaxHighlightConfigs[selectedOptionIndex].optionName,
+                color = ThemeApp.colors.textColor,
+                fontFamily = ThemeApp.text.fontFamily,
+                fontSize = 13.sp
             )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .background(ThemeApp.colors.secondColor)
+                    .border(1.dp, SolidColor(ThemeApp.colors.hoverTab), RoundedCornerShape(0.dp))
+            ) {
+                BasicTextField(
+                    value = codeText,
+                    onValueChange = { codeText = it },
+                    textStyle = TextStyle(
+                        fontSize = 13.sp,
+                        color = ThemeApp.colors.textColor,
+                        fontFamily = ThemeApp.text.codeTextFontFamily,
+                        fontWeight = FontWeight.W500
+                    ),
+                    cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
+                    visualTransformation = EditorVisualTransformationPreviewColors(allSyntaxHighlightConfigs[selectedOptionIndex]),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 10.dp, horizontal = 20.dp)
+                )
+            }
         }
     }
 }

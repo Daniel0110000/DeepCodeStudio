@@ -187,10 +187,19 @@ class SettingRepositoryImpl: SettingRepository {
                 SyntaxHighlightTable.insert{
                     it[optionName] = model.optionName
                     it[jsonPath] = model.jsonPath
-                    it[keywordColor] = model.keywordColor
+                    it[simpleColor] = model.simpleColor
+                    it[instructionColor] = model.instructionColor
                     it[variableColor] = model.variableColor
+                    it[constantColor] = model.constantColor
                     it[numberColor] = model.numberColor
-                    it[sectionColor] = model.sectionColor
+                    it[segmentColor] = model.segmentColor
+                    it[systemCallColor] = model.systemCallColor
+                    it[registerColor] = model.registerColor
+                    it[arithmeticInstructionColor] = model.arithmeticInstructionColor
+                    it[logicalInstructionColor] = model.logicalInstructionColor
+                    it[conditionColor] = model.conditionColor
+                    it[loopColor] = model.loopColor
+                    it[memoryManagementColor] = model.memoryManagementColor
                     it[commentColor] = model.commentColor
                     it[stringColor] = model.stringColor
                     it[labelColor] = model.labelColor
@@ -210,13 +219,22 @@ class SettingRepositoryImpl: SettingRepository {
                 it[SyntaxHighlightTable.id],
                 it[SyntaxHighlightTable.optionName],
                 it[SyntaxHighlightTable.jsonPath],
-                it[SyntaxHighlightTable.keywordColor],
+                it[SyntaxHighlightTable.simpleColor],
+                it[SyntaxHighlightTable.instructionColor],
                 it[SyntaxHighlightTable.variableColor],
+                it[SyntaxHighlightTable.constantColor],
                 it[SyntaxHighlightTable.numberColor],
-                it[SyntaxHighlightTable.sectionColor],
+                it[SyntaxHighlightTable.segmentColor],
+                it[SyntaxHighlightTable.systemCallColor],
+                it[SyntaxHighlightTable.registerColor],
+                it[SyntaxHighlightTable.arithmeticInstructionColor],
+                it[SyntaxHighlightTable.logicalInstructionColor],
+                it[SyntaxHighlightTable.conditionColor],
+                it[SyntaxHighlightTable.loopColor],
+                it[SyntaxHighlightTable.memoryManagementColor],
                 it[SyntaxHighlightTable.commentColor],
                 it[SyntaxHighlightTable.stringColor],
-                it[SyntaxHighlightTable.labelColor],
+                it[SyntaxHighlightTable.labelColor]
             )
         }
     }
@@ -230,12 +248,21 @@ class SettingRepositoryImpl: SettingRepository {
         CallHandler.callHandler {
             transaction {
                 SyntaxHighlightTable.update({
-                    SyntaxHighlightTable.jsonPath eq model.jsonPath
+                    (SyntaxHighlightTable.jsonPath eq model.jsonPath) and (SyntaxHighlightTable.id eq model.id)
                 }){
-                    it[keywordColor] = model.keywordColor
+                    it[simpleColor] = model.simpleColor
+                    it[instructionColor] = model.instructionColor
                     it[variableColor] = model.variableColor
+                    it[constantColor] = model.constantColor
                     it[numberColor] = model.numberColor
-                    it[sectionColor] = model.sectionColor
+                    it[segmentColor] = model.segmentColor
+                    it[systemCallColor] = model.systemCallColor
+                    it[registerColor] = model.registerColor
+                    it[arithmeticInstructionColor] = model.arithmeticInstructionColor
+                    it[logicalInstructionColor] = model.logicalInstructionColor
+                    it[conditionColor] = model.conditionColor
+                    it[loopColor] = model.loopColor
+                    it[memoryManagementColor] = model.memoryManagementColor
                     it[commentColor] = model.commentColor
                     it[stringColor] = model.stringColor
                     it[labelColor] = model.labelColor

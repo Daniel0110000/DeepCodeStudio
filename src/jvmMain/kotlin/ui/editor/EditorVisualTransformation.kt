@@ -4,6 +4,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import domain.model.SyntaxHighlightConfigModel
 
 class EditorVisualTransformation: VisualTransformation {
     /**
@@ -14,6 +15,19 @@ class EditorVisualTransformation: VisualTransformation {
      */
     override fun filter(text: AnnotatedString): TransformedText = TransformedText(
         text = SyntaxKeywordHighlighter.codeString(text.text),
+        offsetMapping = OffsetMapping.Identity
+    )
+}
+
+class EditorVisualTransformationPreviewColors(private val colors: SyntaxHighlightConfigModel): VisualTransformation {
+    /**
+     * Apply the syntax keyword highlighting to the input text
+     *
+     * @param text The input to be transformed
+     * @return TransformedText containing the modified text and offset mapping
+     */
+    override fun filter(text: AnnotatedString): TransformedText = TransformedText(
+        text = SyntaxKeywordHighlighter.codeStringPreviewColors(text.text, colors),
         offsetMapping = OffsetMapping.Identity
     )
 }
