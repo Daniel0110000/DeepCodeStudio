@@ -1,5 +1,6 @@
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import ui.viewModels.settings.AutocompleteSettingsViewModel
 import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
 
 /**
@@ -8,4 +9,7 @@ import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
 class App: KoinComponent {
     // Inject [SyntaxHighlightViewModel]
     val syntaxHighlightSettingsViewModel: SyntaxHighlightSettingsViewModel by inject()
+
+    // Inject [AutocompleteSettingsViewModel]
+    val autocompleteSettingsViewModel: AutocompleteSettingsViewModel by inject()
 }

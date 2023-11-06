@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import domain.model.AutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
 import domain.repository.SettingRepository
@@ -39,10 +40,6 @@ import ui.settings.lazy.NewAutocompleteOptionInput
  */
 @Composable
 fun AutocompleteSettings(modifier: Modifier) {
-    // State variables for input fields and options list
-    var optionName by remember { mutableStateOf("") }
-    var jsonPath by remember { mutableStateOf("") }
-    var options by remember { mutableStateOf<List<AutocompleteOptionModel>>(emptyList()) }
 
     // Scroll state for the LazyColumn
     val scrollState = rememberLazyListState()
@@ -50,14 +47,16 @@ fun AutocompleteSettings(modifier: Modifier) {
     // Coroutine scope for asynchronous operations
     val scope = CoroutineScope(Dispatchers.IO)
 
-    // Inject the repository using Koin
-    val repository: SettingRepository by KoinJavaComponent.inject(SettingRepository::class.java)
-
-    // Inject [SyntaxHighlightViewModel]
+    // Inject [AutocompleteSettingsViewModel] and [AutocompleteSettingsViewModel]
+    val autocompleteSettingsViewModel = App().autocompleteSettingsViewModel
     val syntaxHighlightViewModel = App().syntaxHighlightSettingsViewModel
 
-    // Fetch options from the repository
-    LaunchedEffect(Unit){ options = repository.getAllAutocompleteOptions() }
+    // Observe the list of all autocomplete options through the ViewModel
+    val allOptions = autocompleteSettingsViewModel.allAutocompleteOptions.observeAsState()
+    // Observe the option name through the viewModel
+    val optionName = autocompleteSettingsViewModel.optionName.observeAsState()
+    // Observe the JSON path through viewModel
+    val jsonPath = autocompleteSettingsViewModel.jsonPath.observeAsState()
 
     Box(modifier = Modifier.fillMaxSize()){
 
@@ -65,16 +64,19 @@ fun AutocompleteSettings(modifier: Modifier) {
             modifier.padding(10.dp),
             state = scrollState
         ) {
-            items(options){
+            items(allOptions.value){
                 AutocompleteOptionItem(
                     it.optionName,
                     it.jsonPath,
                     onDeleteOptionClick = {
                         scope.launch {
-                            repository.deleteAutocompleteOption(it)
-                            repository.deleteSyntaxHighlightConfig(it.jsonPath)
+                            // Delete the selected Autocomplete Option and its associated Syntax Highlight Configuration
+                            autocompleteSettingsViewModel.deleteAutocompleteOptionAndroidSyntaxHighlightConfig(it)
+
+                            // Update the Syntax Highlight configurations
                             syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
-                            options = repository.getAllAutocompleteOptions()
+                            // Update the autocomplete options
+                            autocompleteSettingsViewModel.updateAutocompleteOptions()
                         }
                     },
                     onUpdateJsonPathClick = { newJsonPath ->
@@ -82,10 +84,15 @@ fun AutocompleteSettings(modifier: Modifier) {
                             if(newJsonPath.isNotBlank()){
                                 // When the callback is executed, and [newJsonPath] is not black, update the autocomplete JSON path
                                 // ... and the syntax highlight JSON path
-                                repository.updateAutocompleteOptionJsonPath(newJsonPath, it)
-                                repository.updateSyntaxHighlightConfigJsonPath(newJsonPath, it.jsonPath, it.optionName)
+                                autocompleteSettingsViewModel.updateAutocompleteAndSyntaxHighlightJsonPath(
+                                    newJsonPath,
+                                    it
+                                )
+
+                                // Update the Syntax Highlight configurations
                                 syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
-                                options = repository.getAllAutocompleteOptions()
+                                // Update the autocomplete options
+                                autocompleteSettingsViewModel.updateAutocompleteOptions()
                             }
                         }
                     }
@@ -97,24 +104,28 @@ fun AutocompleteSettings(modifier: Modifier) {
                 NewAutocompleteOptionInput(
                     onAddOptionClick = {
                         scope.launch {
-                            if(optionName.isNotBlank() && jsonPath.isNotBlank()){
-                                // If [optionName] and [jsonPath] are not blank, create a new autocomplete option and a syntax highlight configuration
-                                repository.addAutocompleteOption(AutocompleteOptionModel(optionName = optionName, jsonPath = jsonPath))
-                                repository.createSyntaxHighlightConfig(SyntaxHighlightConfigModel(optionName = optionName, jsonPath = jsonPath))
+                            if(optionName.value.isNotBlank() && jsonPath.value.isNotBlank()){
+                                // Add a new Autocomplete Option and its corresponding Syntax Highlight Configuration
+                                autocompleteSettingsViewModel.addAutocompleteOptionAndSyntaxHighlightConfig(
+                                    AutocompleteOptionModel(optionName = optionName.value, jsonPath = jsonPath.value),
+                                    SyntaxHighlightConfigModel(optionName = optionName.value, jsonPath = jsonPath.value)
+                                )
+
+                                // Update the Syntax Highlight configurations
                                 syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
+                                // Update the autocomplete options
+                                autocompleteSettingsViewModel.updateAutocompleteOptions()
 
-                                // Refresh all autocomplete options
-                                options = repository.getAllAutocompleteOptions()
-
-                                optionName = ""
-                                jsonPath = ""
+                                // Clear the input fields for option name and JSON path
+                                autocompleteSettingsViewModel.updateOptionName("")
+                                autocompleteSettingsViewModel.updateJsonPath("")
                             }
                         }
                     },
-                    onOptionNameChange = { optionName = it },
-                    onJsonPathSelection = { jsonPath = it },
-                    optionName = optionName,
-                    jsonPath = jsonPath
+                    onOptionNameChange = { autocompleteSettingsViewModel.updateOptionName(it) },
+                    onJsonPathSelection = { autocompleteSettingsViewModel.updateJsonPath(it) },
+                    optionName = optionName.value,
+                    jsonPath = jsonPath.value
                 )
             }
         }
