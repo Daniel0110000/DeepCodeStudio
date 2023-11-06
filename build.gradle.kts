@@ -51,6 +51,14 @@ kotlin {
                 implementation("com.google.code.gson:gson:2.10.1")
                 implementation("org.json:json:20231013")
 
+                // MVVM
+                implementation("dev.icerock.moko:mvvm-compose:0.16.1")
+                implementation("dev.icerock.moko:mvvm-flow-compose:0.16.1")
+                implementation("dev.icerock.moko:mvvm-livedata-compose:0.16.1")
+
+                // Coroutines
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+
             }
         }
         val jvmTest by getting

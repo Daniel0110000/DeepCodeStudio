@@ -1,5 +1,6 @@
 package ui.settings.screens.syntaxHighlight
 
+import App
 import androidx.compose.foundation.ScrollbarAdapter
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
@@ -18,10 +19,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -29,8 +26,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import domain.repository.SettingRepository
-import org.koin.java.KoinJavaComponent
+import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
 import ui.editor.EditorVisualTransformationPreviewColors
 import ui.settings.lazy.SyntaxKeywordHighlighterConfigItem
@@ -38,20 +34,19 @@ import ui.settings.lazy.SyntaxKeywordHighlighterConfigItem
 @Composable
 fun SyntaxHighlightSettings(modifier: Modifier) {
 
-    // Index of the selected item
-    var selectedOptionIndex by remember { mutableStateOf(0) }
+    // Inject [SyntaxHighlightViewModel]
+    val viewModel = App().syntaxHighlightSettingsViewModel
 
-    // Inject [SettingRepository] using Koin
-    val settingRepository: SettingRepository by KoinJavaComponent.inject(SettingRepository::class.java)
-
-    // All syntax highlight configurations
-    var allSyntaxHighlightConfigs by remember {
-        mutableStateOf(settingRepository.getAllSyntaxHighlightConfigs())
-    }
+    // Observe the list of all syntax highlight configurations
+    val configs = viewModel.allSyntaxHighlightConfigs.observeAsState()
+    // Observe the selected option index
+    val selectedOptionIndex = viewModel.selectedOptionIndex.observeAsState()
+    //Observe the state of the color options list expansion
+    val isExpandColorOptionsList = viewModel.isExpandColorOptionsList.observeAsState()
+    // Observe the code text form the view model
+    val codeText = viewModel.codeText.observeAsState()
 
     Column(modifier.padding(8.dp)) {
-
-        var codeText by remember { mutableStateOf("") }
 
         Box(
             modifier = Modifier
@@ -67,18 +62,16 @@ fun SyntaxHighlightSettings(modifier: Modifier) {
                     .verticalScroll(scrollState)
                     .padding(8.dp)
             ) {
-                allSyntaxHighlightConfigs.forEachIndexed { index, config ->
+                configs.value.forEachIndexed { index, config ->
 
                     SyntaxKeywordHighlighterConfigItem(
                         config,
-                        settingRepository,
-                        onUpdateConfigs = {
-                            // Retrieve all configurations to display the modified colors again
-                            allSyntaxHighlightConfigs = settingRepository.getAllSyntaxHighlightConfigs()
-                        },
+                        viewModel,
+                        onUpdateConfigs = { viewModel.updateSyntaxHighlightConfigs() },
                         index,
-                        selectedOptionIndex,
-                        onSelectedOptionIndexChanged = { selectedOptionIndex = it }
+                        isExpandColorOptionsList.value[index],
+                        selectedOptionIndex.value,
+                        onSelectedOptionIndexChanged = { viewModel.updateSelectedIndex(it) }
                     )
                 }
             }
@@ -95,9 +88,9 @@ fun SyntaxHighlightSettings(modifier: Modifier) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        if(allSyntaxHighlightConfigs.isNotEmpty()){
+        if(configs.value.isNotEmpty()){
             Text(
-                allSyntaxHighlightConfigs[selectedOptionIndex].optionName,
+                configs.value[selectedOptionIndex.value].optionName,
                 color = ThemeApp.colors.textColor,
                 fontFamily = ThemeApp.text.fontFamily,
                 fontSize = 13.sp
@@ -113,8 +106,8 @@ fun SyntaxHighlightSettings(modifier: Modifier) {
                     .border(1.dp, SolidColor(ThemeApp.colors.hoverTab), RoundedCornerShape(0.dp))
             ) {
                 BasicTextField(
-                    value = codeText,
-                    onValueChange = { codeText = it },
+                    value = codeText.value,
+                    onValueChange = { viewModel.updateCodeTex(it) },
                     textStyle = TextStyle(
                         fontSize = 13.sp,
                         color = ThemeApp.colors.textColor,
@@ -122,7 +115,7 @@ fun SyntaxHighlightSettings(modifier: Modifier) {
                         fontWeight = FontWeight.W500
                     ),
                     cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
-                    visualTransformation = EditorVisualTransformationPreviewColors(allSyntaxHighlightConfigs[selectedOptionIndex]),
+                    visualTransformation = EditorVisualTransformationPreviewColors(configs.value[selectedOptionIndex.value]),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 10.dp, horizontal = 20.dp)

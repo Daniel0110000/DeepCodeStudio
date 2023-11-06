@@ -31,29 +31,26 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domain.model.SyntaxHighlightConfigModel
-import domain.repository.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ui.ThemeApp
 import ui.settings.screens.syntaxHighlight.ColorOptionItem
+import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
 import java.awt.event.MouseEvent
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SyntaxKeywordHighlighterConfigItem(
     config: SyntaxHighlightConfigModel,
-    settingRepository: SettingRepository,
+    viewModel: SyntaxHighlightSettingsViewModel,
     onUpdateConfigs: () -> Unit,
     index: Int,
+    isExpandColorOptions: Boolean,
     selectedOptionIndex: Int,
     onSelectedOptionIndexChanged: (Int) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-
-        // Manage expansion of color options
-        var isExpandColorOptions by remember { mutableStateOf(false) }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -61,7 +58,7 @@ fun SyntaxKeywordHighlighterConfigItem(
                     when(it.awtEventOrNull?.button){
                         MouseEvent.BUTTON1 -> when (it.awtEventOrNull?.clickCount){
                             1 -> { onSelectedOptionIndexChanged(index) }
-                            2 -> { isExpandColorOptions = !isExpandColorOptions }
+                            2 -> { viewModel.updateIsExpanded(index, !isExpandColorOptions) }
                         }
                     }
                 }
@@ -262,7 +259,7 @@ fun SyntaxKeywordHighlighterConfigItem(
                     Button(
                         onClick = {
                             CoroutineScope(Dispatchers.IO).launch {
-                                settingRepository.updateSyntaxHighlightConfig(
+                                viewModel.updateSyntaxHighlightConfig(
                                     SyntaxHighlightConfigModel(
                                         id = config.id,
                                         jsonPath = config.jsonPath,
@@ -286,7 +283,6 @@ fun SyntaxKeywordHighlighterConfigItem(
                                 )
 
                                 onUpdateConfigs()
-
                             }
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = ThemeApp.colors.secondColor),

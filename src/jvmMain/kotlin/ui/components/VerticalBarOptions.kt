@@ -42,6 +42,7 @@ fun verticalBarOptions(
 ) {
     var hoverCollapseButton by remember { mutableStateOf(false) }
     var hoverSelectFolderButton by remember { mutableStateOf(false) }
+    var hoverOpenSettings by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -102,16 +103,16 @@ fun verticalBarOptions(
             modifier = Modifier
                 .height(30.dp)
                 .width(35.dp)
-                .background(if(hoverSelectFolderButton) ThemeApp.colors.background else Color.Transparent, shape = RoundedCornerShape(8.dp))
+                .background(if(hoverOpenSettings) ThemeApp.colors.background else Color.Transparent, shape = RoundedCornerShape(8.dp))
                 .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)))
-                .onPointerEvent(PointerEventType.Enter){ hoverSelectFolderButton = true }
-                .onPointerEvent(PointerEventType.Exit){ hoverSelectFolderButton = false }
+                .onPointerEvent(PointerEventType.Enter){ hoverOpenSettings = true }
+                .onPointerEvent(PointerEventType.Exit){ hoverOpenSettings = false }
                 .clickable { showSettings = true },
             contentAlignment = Alignment.Center
         ){
             Icon(
                 painterResource("images/ic_settings.svg"),
-                contentDescription = "Collapse icon",
+                contentDescription = "Settings icon",
                 tint = ThemeApp.colors.textColor,
                 modifier = Modifier.size(22.dp)
             )

@@ -1,5 +1,6 @@
 package ui.settings.screens
 
+import App
 import androidx.compose.foundation.ScrollbarAdapter
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,9 @@ fun AutocompleteSettings(modifier: Modifier) {
     // Inject the repository using Koin
     val repository: SettingRepository by KoinJavaComponent.inject(SettingRepository::class.java)
 
+    // Inject [SyntaxHighlightViewModel]
+    val syntaxHighlightViewModel = App().syntaxHighlightSettingsViewModel
+
     // Fetch options from the repository
     LaunchedEffect(Unit){ options = repository.getAllAutocompleteOptions() }
 
@@ -69,6 +73,7 @@ fun AutocompleteSettings(modifier: Modifier) {
                         scope.launch {
                             repository.deleteAutocompleteOption(it)
                             repository.deleteSyntaxHighlightConfig(it.jsonPath)
+                            syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
                             options = repository.getAllAutocompleteOptions()
                         }
                     },
@@ -79,6 +84,7 @@ fun AutocompleteSettings(modifier: Modifier) {
                                 // ... and the syntax highlight JSON path
                                 repository.updateAutocompleteOptionJsonPath(newJsonPath, it)
                                 repository.updateSyntaxHighlightConfigJsonPath(newJsonPath, it.jsonPath, it.optionName)
+                                syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
                                 options = repository.getAllAutocompleteOptions()
                             }
                         }
@@ -95,6 +101,7 @@ fun AutocompleteSettings(modifier: Modifier) {
                                 // If [optionName] and [jsonPath] are not blank, create a new autocomplete option and a syntax highlight configuration
                                 repository.addAutocompleteOption(AutocompleteOptionModel(optionName = optionName, jsonPath = jsonPath))
                                 repository.createSyntaxHighlightConfig(SyntaxHighlightConfigModel(optionName = optionName, jsonPath = jsonPath))
+                                syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
 
                                 // Refresh all autocomplete options
                                 options = repository.getAllAutocompleteOptions()

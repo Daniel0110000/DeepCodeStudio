@@ -6,7 +6,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import domain.di.domainModule
+import di.appModule
 import kotlinx.coroutines.launch
 import domain.util.DocumentsManager
 import org.koin.core.context.startKoin
@@ -22,7 +22,7 @@ fun main() = application {
     // Initialize Koin
     rememberCoroutineScope().launch {
         stopKoin()
-        startKoin { modules(domainModule) }
+        startKoin { modules(appModule) }
     }
 
     Window(
