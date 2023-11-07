@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -65,7 +64,8 @@ fun ColorOptionItem(
 
         Box(
             modifier = Modifier
-                .size(20.dp)
+                .height(20.dp)
+                .width(100.dp)
                 .background(
                     // Check if the selected color is a valid hexadecimal color
                     if(ColorUtils.isHexadecimalColor(selectedColor) && selectedColor.length == 7){

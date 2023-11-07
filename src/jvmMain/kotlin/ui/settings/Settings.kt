@@ -64,37 +64,6 @@ fun Settings(
 
         }
 
-//        AlertDialog(
-//            onDismissRequest = {},
-//            title = {
-//                Text(
-//                    "File Not Found",
-//                    fontFamily = ThemeApp.text.fontFamily,
-//                    fontSize = 15.sp,
-//                    fontWeight = FontWeight.Bold,
-//                    color = ThemeApp.colors.textColor
-//                )
-//            },
-//            text = {
-//                Text("A text")
-//            },
-//            confirmButton = {
-//                Button(
-//                    onClick = {},
-//                    colors = ButtonDefaults.buttonColors(backgroundColor = ThemeApp.colors.buttonColor),
-//                    modifier = Modifier.fillMaxWidth()
-//                ) {
-//                    Text(
-//                        "Ok",
-//                        fontFamily = ThemeApp.text.fontFamily,
-//                        fontSize = 13.sp,
-//                        color = ThemeApp.colors.textColor
-//                    )
-//                }
-//            },
-//            backgroundColor = ThemeApp.colors.background,
-//            modifier = Modifier.width(250.dp).background(ThemeApp.colors.background)
-//        )
     }
 }
 
