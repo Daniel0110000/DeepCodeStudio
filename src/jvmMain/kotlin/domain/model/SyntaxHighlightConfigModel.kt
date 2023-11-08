@@ -3,7 +3,7 @@ package domain.model
 import domain.util.Constants
 
 data class SyntaxHighlightConfigModel(
-    val id: Int = 0,
+    val uuid: String = "",
     val optionName: String = "",
     val jsonPath: String,
     val simpleColor: String = Constants.DEFAULT_SIMPLE_COLOR,

@@ -42,7 +42,7 @@ class FileTree(private val path: String, private val tabsState: TabsState) {
 
                     if(file.extension == "asm" || file.extension == "s"){
                         // If the extension of the deleted file is 'asm' or 's', delete the selected autocomplete option from the database
-                        CoroutineScope(Dispatchers.IO).launch { repository.deleteSelectedAutocompleteOption(file.absolutePath) }
+                        CoroutineScope(Dispatchers.IO).launch { repository.deleteSelectedAutocompleteOption(asmFilePath = file.absolutePath) }
                     }
                 }
             )

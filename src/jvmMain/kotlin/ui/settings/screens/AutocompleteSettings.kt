@@ -3,32 +3,20 @@ package ui.settings.screens
 import App
 import androidx.compose.foundation.ScrollbarAdapter
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import domain.model.AutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
-import domain.repository.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.java.KoinJavaComponent
 import ui.ThemeApp
 import ui.settings.lazy.AutocompleteOptionItem
 import ui.settings.lazy.NewAutocompleteOptionInput
@@ -70,8 +58,7 @@ fun AutocompleteSettings(modifier: Modifier) {
                     it.jsonPath,
                     onDeleteOptionClick = {
                         scope.launch {
-                            // Delete the selected Autocomplete Option and its associated Syntax Highlight Configuration
-                            autocompleteSettingsViewModel.deleteAutocompleteOptionAndroidSyntaxHighlightConfig(it)
+                            autocompleteSettingsViewModel.deleteConfig(it)
 
                             // Update the Syntax Highlight configurations
                             syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
@@ -82,9 +69,9 @@ fun AutocompleteSettings(modifier: Modifier) {
                     onUpdateJsonPathClick = { newJsonPath ->
                         scope.launch {
                             if(newJsonPath.isNotBlank()){
-                                // When the callback is executed, and [newJsonPath] is not black, update the autocomplete JSON path
-                                // ... and the syntax highlight JSON path
-                                autocompleteSettingsViewModel.updateAutocompleteAndSyntaxHighlightJsonPath(
+                                // When the callback is executed, and [newJsonPath] is not black, update the autocomplete JSON path,
+                                // ... the syntax highlight JSON path and the selected autocompleted option json path
+                                autocompleteSettingsViewModel.updateJsonPath(
                                     newJsonPath,
                                     it
                                 )
@@ -105,8 +92,7 @@ fun AutocompleteSettings(modifier: Modifier) {
                     onAddOptionClick = {
                         scope.launch {
                             if(optionName.value.isNotBlank() && jsonPath.value.isNotBlank()){
-                                // Add a new Autocomplete Option and its corresponding Syntax Highlight Configuration
-                                autocompleteSettingsViewModel.addAutocompleteOptionAndSyntaxHighlightConfig(
+                                autocompleteSettingsViewModel.addConfig(
                                     AutocompleteOptionModel(optionName = optionName.value, jsonPath = jsonPath.value),
                                     SyntaxHighlightConfigModel(optionName = optionName.value, jsonPath = jsonPath.value)
                                 )
@@ -117,13 +103,13 @@ fun AutocompleteSettings(modifier: Modifier) {
                                 autocompleteSettingsViewModel.updateAutocompleteOptions()
 
                                 // Clear the input fields for option name and JSON path
-                                autocompleteSettingsViewModel.updateOptionName("")
-                                autocompleteSettingsViewModel.updateJsonPath("")
+                                autocompleteSettingsViewModel.setJsonPath("")
+                                autocompleteSettingsViewModel.setJsonPath("")
                             }
                         }
                     },
-                    onOptionNameChange = { autocompleteSettingsViewModel.updateOptionName(it) },
-                    onJsonPathSelection = { autocompleteSettingsViewModel.updateJsonPath(it) },
+                    onOptionNameChange = { autocompleteSettingsViewModel.setOptionName(it) },
+                    onJsonPathSelection = { autocompleteSettingsViewModel.setJsonPath(it) },
                     optionName = optionName.value,
                     jsonPath = jsonPath.value
                 )

@@ -261,7 +261,7 @@ fun SyntaxKeywordHighlighterConfigItem(
                             CoroutineScope(Dispatchers.IO).launch {
                                 viewModel.updateSyntaxHighlightConfig(
                                     SyntaxHighlightConfigModel(
-                                        id = config.id,
+                                        uuid = config.uuid,
                                         jsonPath = config.jsonPath,
                                         simpleColor = newSimpleColor,
                                         instructionColor = newInstructionColor,

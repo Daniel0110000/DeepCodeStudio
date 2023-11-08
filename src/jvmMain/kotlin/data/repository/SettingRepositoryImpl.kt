@@ -9,15 +9,9 @@ import domain.model.SelectedAutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
 import domain.repository.SettingRepository
 import domain.util.CallHandler
-import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
 class SettingRepositoryImpl: SettingRepository {
 
@@ -37,6 +31,7 @@ class SettingRepositoryImpl: SettingRepository {
         CallHandler.callHandler {
             transaction {
                 AutocompleteTable.insert {
+                    it[uuid] = model.uuid
                     it[optionName] = model.optionName
                     it[jsonPath] = model.jsonPath
                 }
@@ -45,30 +40,28 @@ class SettingRepositoryImpl: SettingRepository {
     }
 
     /**
-     * Deletes an autocomplete option specified by the [model] parameter
+     * Deletes an autocomplete option with the specified [uuid] from the database
      *
-     * @param model The autocomplete option to delete
+     * @param uuid The UUID of the autocomplete option to delete
      */
-    override suspend fun deleteAutocompleteOption(model: AutocompleteOptionModel) {
+    override suspend fun deleteAutocompleteOption(uuid: String) {
         CallHandler.callHandler {
             transaction {
-                AutocompleteTable.deleteWhere {
-                    (id eq model.id) and (optionName eq model.optionName) and (jsonPath eq model.jsonPath)
-                }
+                AutocompleteTable.deleteWhere { AutocompleteTable.uuid eq uuid }
             }
         }
     }
 
     /**
-     * Updates the JSOn path pf an autocomplete option specified by the [model] parameter
+     * Updates the JSOn path of an autocomplete option specified by the [uuid]
      *
      * @param jsonPath The new JSON path to set for the autocomplete option
-     * @param model The autocomplete option to delete
+     * @param uuid The UUID of the autocomplete option to update
      */
-    override suspend fun updateAutocompleteOptionJsonPath(jsonPath: String, model: AutocompleteOptionModel) {
+    override suspend fun updateAutocompleteOptionJsonPath(jsonPath: String, uuid: String) {
         CallHandler.callHandler {
             transaction {
-                AutocompleteTable.update({ (AutocompleteTable.id eq model.id) and (AutocompleteTable.optionName eq model.optionName) }){
+                AutocompleteTable.update({ AutocompleteTable.uuid eq uuid }){
                     it[AutocompleteTable.jsonPath] = jsonPath
                 }
             }
@@ -82,7 +75,11 @@ class SettingRepositoryImpl: SettingRepository {
      */
     override fun getAllAutocompleteOptions(): List<AutocompleteOptionModel> = transaction {
         AutocompleteTable.selectAll().map {
-            AutocompleteOptionModel(it[AutocompleteTable.id], it[AutocompleteTable.optionName], it[AutocompleteTable.jsonPath])
+            AutocompleteOptionModel(
+                it[AutocompleteTable.uuid],
+                it[AutocompleteTable.optionName],
+                it[AutocompleteTable.jsonPath]
+            )
         }
     }
 
@@ -92,11 +89,12 @@ class SettingRepositoryImpl: SettingRepository {
      * @param asmFilePath The parameter to check if the option already exists in the database
      * @return Returns 'true' if the option exists, and 'false' if it does not.
      */
-    override fun existsAutocompleteOption(asmFilePath: String): Boolean = transaction {
+    override fun existsSelectedAutocompleteOption(asmFilePath: String): Boolean = transaction {
          val result = HistorySelectedAutocompleteOptionsTable
             .select { HistorySelectedAutocompleteOptionsTable.asmFilePath eq asmFilePath }
             .map {
                 SelectedAutocompleteOptionModel(
+                    uuid = it[HistorySelectedAutocompleteOptionsTable.uuid],
                     asmFilePath = it[HistorySelectedAutocompleteOptionsTable.asmFilePath],
                     optionName = it[HistorySelectedAutocompleteOptionsTable.optionName],
                     jsonPath = it[HistorySelectedAutocompleteOptionsTable.jsonPath]
@@ -115,6 +113,7 @@ class SettingRepositoryImpl: SettingRepository {
         CallHandler.callHandler {
             transaction {
                 HistorySelectedAutocompleteOptionsTable.insert{
+                    it[uuid] = model.uuid
                     it[asmFilePath] = model.asmFilePath
                     it[optionName] = model.optionName
                     it[jsonPath] = model.jsonPath
@@ -134,13 +133,14 @@ class SettingRepositoryImpl: SettingRepository {
             .select { HistorySelectedAutocompleteOptionsTable.asmFilePath eq asmFilePath }
             .map {
                 SelectedAutocompleteOptionModel(
+                    uuid = it[HistorySelectedAutocompleteOptionsTable.uuid],
                     asmFilePath = it[HistorySelectedAutocompleteOptionsTable.asmFilePath],
                     optionName = it[HistorySelectedAutocompleteOptionsTable.optionName],
                     jsonPath = it[HistorySelectedAutocompleteOptionsTable.jsonPath]
                 )
             }
         if (result.isNotEmpty()) result[0]
-        else SelectedAutocompleteOptionModel(0, "", "", "")
+        else SelectedAutocompleteOptionModel("", "", "", "")
     }
 
     /**
@@ -162,15 +162,35 @@ class SettingRepositoryImpl: SettingRepository {
     }
 
     /**
-     * Delete the selected autocomplete option specified by the [asmFilePath] parameter
+     * Update the JSON path of a selected autocomplete option specified by the [uuid]
      *
-     * @param asmFilePath The ASM file path for deleting the selected option
+     * @param jsonPath The new JSON path to set for the selected autocomplete option
+     * @param uuid The UUID of the selected autocomplete option to update
      */
-    override suspend fun deleteSelectedAutocompleteOption(asmFilePath: String) {
+    override suspend fun updateSelectedAutocompleteOptionJsonPath(jsonPath: String, uuid: String) {
+        CallHandler.callHandler {
+            transaction {
+                HistorySelectedAutocompleteOptionsTable.update(
+                    { HistorySelectedAutocompleteOptionsTable.uuid eq uuid }
+                ) {
+                    it[HistorySelectedAutocompleteOptionsTable.jsonPath] = jsonPath
+                }
+            }
+        }
+    }
+
+    /**
+     * Deletes a selected autocomplete option specified by the [asmFilePath] and [uuid]
+     *
+     * @param asmFilePath The ASM file path for which selected option is associated
+     * @param uuid The UUID of the selected autocomplete option to delete
+     */
+    override suspend fun deleteSelectedAutocompleteOption(asmFilePath: String, uuid: String) {
         CallHandler.callHandler {
             transaction {
                 HistorySelectedAutocompleteOptionsTable.deleteWhere {
-                    HistorySelectedAutocompleteOptionsTable.asmFilePath eq asmFilePath
+                    (HistorySelectedAutocompleteOptionsTable.asmFilePath eq asmFilePath) or
+                    (HistorySelectedAutocompleteOptionsTable.uuid eq uuid)
                 }
             }
         }
@@ -185,6 +205,7 @@ class SettingRepositoryImpl: SettingRepository {
         CallHandler.callHandler {
             transaction {
                 SyntaxHighlightTable.insert{
+                    it[uuid] = model.uuid
                     it[optionName] = model.optionName
                     it[jsonPath] = model.jsonPath
                     it[simpleColor] = model.simpleColor
@@ -216,7 +237,7 @@ class SettingRepositoryImpl: SettingRepository {
     override fun getAllSyntaxHighlightConfigs(): List<SyntaxHighlightConfigModel> = transaction {
         SyntaxHighlightTable.selectAll().map {
             SyntaxHighlightConfigModel(
-                it[SyntaxHighlightTable.id],
+                it[SyntaxHighlightTable.uuid],
                 it[SyntaxHighlightTable.optionName],
                 it[SyntaxHighlightTable.jsonPath],
                 it[SyntaxHighlightTable.simpleColor],
@@ -247,9 +268,7 @@ class SettingRepositoryImpl: SettingRepository {
     override suspend fun updateSyntaxHighlightConfig(model: SyntaxHighlightConfigModel) {
         CallHandler.callHandler {
             transaction {
-                SyntaxHighlightTable.update({
-                    (SyntaxHighlightTable.jsonPath eq model.jsonPath) and (SyntaxHighlightTable.id eq model.id)
-                }){
+                SyntaxHighlightTable.update({ AutocompleteTable.uuid eq model.uuid }){
                     it[simpleColor] = model.simpleColor
                     it[instructionColor] = model.instructionColor
                     it[variableColor] = model.variableColor
@@ -272,35 +291,33 @@ class SettingRepositoryImpl: SettingRepository {
     }
 
     /**
-     * Deletes a syntax highlight configuration by it8s JSON path
+     * Deletes a syntax highlight configuration specified by the [uuid]
      *
-     * @param jsonPath The JSON path of the configuration to delete
+     * @param uuid The UUID of the syntax highlight configuration to delete
      */
-    override suspend fun deleteSyntaxHighlightConfig(jsonPath: String) {
+    override suspend fun deleteSyntaxHighlightConfig(uuid: String) {
         CallHandler.callHandler {
             transaction {
-                SyntaxHighlightTable.deleteWhere { SyntaxHighlightTable.jsonPath eq jsonPath }
+                SyntaxHighlightTable.deleteWhere { SyntaxHighlightTable.uuid eq uuid }
             }
         }
     }
 
 
     /**
-     * Updates the JSON path of a syntax highlight configuration for a specific option
+     * Updates the JSON path of a syntax highlight configuration specified by the [uuid]
      *
-     * @param newJsonPath The new JSON path to update to
-     * @param oldJsonPath The existing JSON path to identify the configuration
-     * @param optionName The name of the option associated with the configuration
+     * @param jsonPath The new JSON path to set for the syntax highlight configuration
+     * @param uuid The UUID of the syntax highlight configuration to update
      */
     override suspend fun updateSyntaxHighlightConfigJsonPath(
-        newJsonPath: String,
-        oldJsonPath: String,
-        optionName: String
+        jsonPath: String,
+        uuid: String,
     ) {
         CallHandler.callHandler {
             transaction {
-                SyntaxHighlightTable.update({ (SyntaxHighlightTable.jsonPath eq oldJsonPath) and (SyntaxHighlightTable.optionName eq optionName) }){
-                    it[jsonPath] = newJsonPath
+                SyntaxHighlightTable.update({ SyntaxHighlightTable.uuid eq uuid }){
+                    it[SyntaxHighlightTable.jsonPath] = jsonPath
                 }
             }
         }

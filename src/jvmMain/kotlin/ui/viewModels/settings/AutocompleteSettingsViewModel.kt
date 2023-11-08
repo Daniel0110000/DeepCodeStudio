@@ -6,6 +6,7 @@ import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.model.AutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
 import domain.repository.SettingRepository
+import java.util.UUID
 
 class AutocompleteSettingsViewModel(
     private val repository: SettingRepository
@@ -33,60 +34,63 @@ class AutocompleteSettingsViewModel(
     }
 
     /**
-     * Add a new autocomplete option and its corresponding syntax  highlight configuration to the repository
+     * Adds a configuration by creating both an autocomplete option and a syntax highlight configuration
      *
      * @param autocompleteModel The [AutocompleteOptionModel] to be added
      * @param syntaxHighlightModel The [SyntaxHighlightConfigModel] to be added
      */
-    suspend fun addAutocompleteOptionAndSyntaxHighlightConfig(
+    suspend fun addConfig(
         autocompleteModel: AutocompleteOptionModel,
         syntaxHighlightModel: SyntaxHighlightConfigModel
     ){
-        repository.addAutocompleteOption(autocompleteModel)
-        repository.createSyntaxHighlightConfig(syntaxHighlightModel)
+        val uuid = UUID.randomUUID().toString()
+        repository.addAutocompleteOption(autocompleteModel.copy(uuid = uuid))
+        repository.createSyntaxHighlightConfig(syntaxHighlightModel.copy(uuid = uuid))
     }
 
     /**
-     * Updates the jSON path of an existing autocomplete option and its corresponding syntax highlight configuration
+     * Updates the JSON path for an autocomplete option and related entities
      *
-     * @param newJsonPath The new JSON path
-     * @param model The [AutocompleteOptionModel] containing the current JSON path and option details
+     * @param newJsonPath The new JSON path to set for the autocomplete option
+     * @param model The [AutocompleteOptionModel] to be updated
      */
-    suspend fun updateAutocompleteAndSyntaxHighlightJsonPath(
+    suspend fun updateJsonPath(
         newJsonPath: String,
         model: AutocompleteOptionModel
     ){
-        repository.updateAutocompleteOptionJsonPath(newJsonPath, model)
-        repository.updateSyntaxHighlightConfigJsonPath(newJsonPath, model.jsonPath, model.optionName)
+        repository.updateAutocompleteOptionJsonPath(newJsonPath, model.uuid)
+        repository.updateSyntaxHighlightConfigJsonPath(newJsonPath, model.uuid)
+        repository.updateSelectedAutocompleteOptionJsonPath(newJsonPath, model.uuid)
     }
 
     /**
-     * Suspended function to delete an autocomplete option and its associated syntax highlight configuration
+     * Deletes an autocomplete option and its related entities
      *
-     * @param model The [AutocompleteOptionModel] to be deleted, which contains option information and JSON path
+     * @param model The [AutocompleteOptionModel] to be deleted
      */
-    suspend fun deleteAutocompleteOptionAndroidSyntaxHighlightConfig(
+    suspend fun deleteConfig(
         model: AutocompleteOptionModel
     ){
-        repository.deleteAutocompleteOption(model)
-        repository.deleteSyntaxHighlightConfig(model.jsonPath)
+        repository.deleteAutocompleteOption(model.uuid)
+        repository.deleteSyntaxHighlightConfig(model.uuid)
+        repository.deleteSelectedAutocompleteOption(uuid = model.uuid)
     }
 
     /**
-     * Updates the option name with the provided [value]
+     * Sets the option name using the provided [value]
      *
-     * @param value The new option name
+     * @param value The value to assign
      */
-    fun updateOptionName(value: String){
+    fun setOptionName(value: String){
         _optionName.value = value
     }
 
     /**
-     * Updates the JSON path with the provided [value]
+     * Sets the JSON path using the provided [value]
      *
-     * @param value The new JSON path
+     * @param value The value to assign
      */
-    fun updateJsonPath(value: String){
+    fun setJsonPath(value: String){
         _jsonPath.value = value
     }
 

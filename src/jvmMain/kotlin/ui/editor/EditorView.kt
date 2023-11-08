@@ -72,7 +72,7 @@ fun EditorView(
                     // Read the content of the current tab's file and assign it to the state of the selected tab
                     editorStates[selectedTabIndex].codeText.value = TextFieldValue(File(it).readText())
 
-                    if(!repository.existsAutocompleteOption(it)){
+                    if(!repository.existsSelectedAutocompleteOption(it)){
                         // If no option exists, set the flag to display all autocomplete options
                         editorState.displayAllAutocompleteOptions.value = true
                     } else {
@@ -135,6 +135,7 @@ fun EditorView(
                     // Add the selected option to the history of selected autocomplete options
                     repository.addSelectedAutocompleteOption(
                         SelectedAutocompleteOptionModel(
+                            uuid = it.uuid,
                             asmFilePath = editorStates[selectedTabIndex].filePath.value,
                             optionName = it.optionName,
                             jsonPath = it.jsonPath)

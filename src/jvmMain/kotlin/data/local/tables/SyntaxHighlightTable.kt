@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.Table
  */
 object SyntaxHighlightTable: Table() {
     val id: Column<Int> = integer("id").autoIncrement()
+    val uuid: Column<String> = varchar("uuid", 200)
     val optionName: Column<String> = varchar("optionName", 100)
     val jsonPath: Column<String> = varchar("jsonPath", 1000)
     val simpleColor: Column<String> = varchar("simpleColor", 10)
