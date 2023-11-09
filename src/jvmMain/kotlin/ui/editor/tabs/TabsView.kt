@@ -1,5 +1,6 @@
 package ui.editor.tabs
 
+import App
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
 
 @Composable
@@ -21,40 +23,38 @@ fun TabsView(
 
     // Remember the scroll state for the horizontal scrollbar
     val scrollState = rememberScrollState()
-    // Remember the currently selected tab
-    var tabSelected by remember { mutableStateOf("") }
 
-    // Variable that contains the old value of the tab count
-    var previousTabCount by remember { mutableStateOf(0) }
+    // Inject [TabsViewModel]
+    val viewModel = App().tabsViewModel
 
-    // Variable that contains the index of the closed tab
-    var closedTabIndex by remember { mutableStateOf(0) }
-    // Variable that contains the file path of the closed tab
-    var closedTabFilePath by remember { mutableStateOf("") }
-
+    // Value observers
+    val tabSelected = viewModel.tabSelected.observeAsState()
+    val previousTabCount = viewModel.previousTabCount.observeAsState()
+    val closedTabIndex = viewModel.closedTabIndex.observeAsState()
+    val closedTabFilePath = viewModel.closedTabFilePath.observeAsState()
 
     // Use LaunchedEffect to perform actions when the number of tabs changes
     LaunchedEffect(tabsState.tabs.size){
 
-        if(tabsState.tabs.size > previousTabCount){
+        if(tabsState.tabs.size > previousTabCount.value){
             // A new tab was added, update the selected tab and trigger the [onNewTab] callback
-            tabSelected = tabsState.tabs.last().filePath
+            viewModel.setTabSelected(tabsState.tabs.last().filePath)
             onNewTab(tabsState.tabs.last().filePath)
         }
 
-        if(tabsState.tabs.size < previousTabCount){
-            //  A tab was closed. Update the necessary states and trigger the "onDeleteTab" callback
-            closedTabFilePath = tabsState.closedTabFilePath.value
-            onDeleteTab(closedTabIndex, closedTabFilePath)
+        if(tabsState.tabs.size < previousTabCount.value){
+            // A tab was closed. Update the necessary states and trigger the "onDeleteTab" callback
+            viewModel.setClosedTabFilePath(tabsState.closedTabFilePath.value)
+            onDeleteTab(closedTabIndex.value, closedTabFilePath.value)
 
             if(tabsState.tabs.isNotEmpty()){
                 // If there are remaining tabs, set the selected tab to the last one
-                tabSelected = tabsState.tabs.last().filePath
+                viewModel.setTabSelected(tabsState.tabs.last().filePath)
             }
         }
 
         // Update the previous tab count for future comparisons
-        previousTabCount = tabsState.tabs.size
+        viewModel.setPreviousTabCount(tabsState.tabs.size)
 
     }
 
@@ -70,15 +70,15 @@ fun TabsView(
             tabsState.tabs.forEachIndexed { index, tabsModel ->
                 TabItem(
                     tabsModel,
-                    tabSelected,
+                    tabSelected.value,
                     onClickListenerTabClose = {
                         tabsState.closeTab(tabsModel) { index ->
-                            closedTabIndex = index
-                            closedTabFilePath = tabsState.closedTabFilePath.value
+                            viewModel.setClosedTabIndex(index)
+                            viewModel.setClosedTabFilePath(tabsState.closedTabFilePath.value)
                         }
                     },
                     onClickListenerTabSelected = {
-                        tabSelected = it
+                        viewModel.setTabSelected(it)
                         onChangeSelectedTab(index)
                     }
                 )

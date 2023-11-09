@@ -3,6 +3,7 @@ package di
 import data.repository.SettingRepositoryImpl
 import domain.repository.SettingRepository
 import org.koin.dsl.module
+import ui.viewModels.editor.TabsViewModel
 import ui.viewModels.settings.AutocompleteSettingsViewModel
 import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
 
@@ -14,4 +15,5 @@ val appModule = module {
 
     single { SyntaxHighlightSettingsViewModel(get()) }
     single { AutocompleteSettingsViewModel(get()) }
+    single { TabsViewModel() }
 }
