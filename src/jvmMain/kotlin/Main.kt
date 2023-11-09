@@ -10,7 +10,6 @@ import di.appModule
 import kotlinx.coroutines.launch
 import domain.util.DocumentsManager
 import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import ui.CodeEditorScreen
 import java.awt.Toolkit
 
@@ -20,10 +19,7 @@ fun main() = application {
     rememberCoroutineScope().launch { DocumentsManager.createDefaultProjectsDirectory() }
 
     // Initialize Koin
-    rememberCoroutineScope().launch {
-        stopKoin()
-        startKoin { modules(appModule) }
-    }
+    startKoin { modules(appModule) }
 
     Window(
         onCloseRequest = ::exitApplication,

@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import domain.util.Constants
 import domain.util.DocumentsManager
 import ui.components.verticalBarOptions
-import ui.editor.EditorState
 import ui.editor.EditorView
 import ui.editor.tabs.TabsState
 import ui.splitPane.SplitPane
@@ -22,8 +21,6 @@ import ui.splitPane.SplitPaneState
 fun CodeEditorScreen() {
     // Create and remember the state for managing tabs in the editor
     val tabsState = remember { TabsState() }
-    // Create and remember the state for managing teh editor content
-    val editorState = remember { EditorState() }
 
     var isCollapseSplitPane by remember { mutableStateOf(false) }
 
@@ -49,6 +46,6 @@ fun CodeEditorScreen() {
 
         if(!isCollapseSplitPane) SplitPane(splitPaneState){ isCollapseSplitPane = true }
 
-        EditorView(tabsState, editorState)
+        EditorView(tabsState)
     }
 }

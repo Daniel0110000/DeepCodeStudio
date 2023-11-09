@@ -35,11 +35,6 @@ class EditorState {
     // The word to search within the editor content
     val wordToSearch = mutableStateOf("")
 
-    // Flag indicating whether editor is visible
-    val isDisplayEditor = mutableStateOf(false)
-    // Flag indicating whether all autocomplete options dialog are visible
-    val displayAllAutocompleteOptions = mutableStateOf(false)
-
     // List of keywords for autocompletion
     var keywords = mutableStateOf<List<String>>(emptyList())
     // String with variable declaration directives for extracting variable names
