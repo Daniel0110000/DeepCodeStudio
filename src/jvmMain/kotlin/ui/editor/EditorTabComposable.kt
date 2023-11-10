@@ -1,16 +1,9 @@
 package ui.editor
 
+import App
 import androidx.compose.foundation.ScrollbarAdapter
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
@@ -21,23 +14,17 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import domain.repository.SettingRepository
 import domain.util.DocumentsManager
 import domain.util.JsonUtils
 import domain.util.TextUtils
 import kotlinx.coroutines.launch
-import org.koin.java.KoinJavaComponent
 import ui.ThemeApp
 import ui.components.bottomActionsRow
 import ui.editor.codeAutoCompletion.AutoCompleteDropdown
@@ -53,8 +40,8 @@ typealias EditorComposable = @Composable (EditorState) -> Unit
 @OptIn(ExperimentalComposeUiApi::class)
 val EditorTabComposable: EditorComposable = { editorState ->
 
-    // Inject the repository using Koin
-    val repository: SettingRepository by KoinJavaComponent.inject(SettingRepository::class.java)
+    // Inject [SettingRepository]
+    val repository = App().settingRepository
 
     // Scroll state for the text editor
     val scrollState = rememberScrollState()
@@ -131,7 +118,7 @@ val EditorTabComposable: EditorComposable = { editorState ->
                             fontWeight = FontWeight.W500
                         ),
                         cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
-                        visualTransformation = EditorVisualTransformation(),
+                        visualTransformation = EditorVisualTransformation(editorState.syntaxHighlightConfig.value),
                         modifier = Modifier
                             .fillMaxWidth()
                             .focusRequester(editorState.textFieldFocusRequester.value)
@@ -251,7 +238,8 @@ val EditorTabComposable: EditorComposable = { editorState ->
             // Retrieve the selected autocomplete option for the current file
             val option = repository.getSelectedAutocompleteOption(editorState.filePath.value)
 
-            // Set the autocomplete keywords and variable directives from the selected option
+            // Set the autocomplete keywords, syntax highlight configuration and variable directives from the selected option
+            editorState.syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(option.uuid)
             editorState.keywords.value = JsonUtils.jsonToListString(option.jsonPath)
             editorState.variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath)
         }

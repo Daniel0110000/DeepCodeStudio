@@ -8,22 +8,17 @@ import domain.model.SyntaxHighlightConfigModel
 import domain.model.SyntaxHighlightRegexModel
 import domain.util.ColorUtils
 import domain.util.JsonUtils
-import ui.ThemeApp
 
 object SyntaxKeywordHighlighter {
-    /**
-     * Highlight syntax keywords, variables, numbers, strings, comments, and labels in the code
-     *
-     * @param str The input code string to be highlighted
-     * @return An annotated string with syntax highlighting applied
-     */
-    fun codeString(str: String) = buildAnnotatedString {
-        withStyle(ThemeApp.code.simple){
-            append(str)
-        }
-    }
 
-    fun codeStringPreviewColors(
+    /**
+     * Generates an annotated string applying syntax highlighting styles based on the provided [SyntaxHighlightConfigModel]
+     *
+     * @param str The input string to be highlighted
+     * @param colors The [SyntaxHighlightConfigModel] containing color information for different syntax elements
+     * @return [AnnotatedString] with applied syntax highlighting styles
+     */
+    fun codeString(
         str: String,
         colors: SyntaxHighlightConfigModel
     ) = buildAnnotatedString {

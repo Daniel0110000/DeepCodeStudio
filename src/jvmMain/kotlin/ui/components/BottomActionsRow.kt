@@ -99,6 +99,7 @@ fun bottomActionsRow(
                                         CoroutineScope(Dispatchers.IO).launch {
                                             // Update the selected autocomplete option for the current file
                                             repository.updateSelectedAutocompleteOption(SelectedAutocompleteOptionModel(
+                                                uuid = option.uuid,
                                                 asmFilePath = filePath,
                                                 optionName = option.optionName,
                                                 jsonPath = option.jsonPath

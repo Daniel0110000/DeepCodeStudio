@@ -30,6 +30,8 @@ interface SettingRepository {
 
     fun getAllSyntaxHighlightConfigs(): List<SyntaxHighlightConfigModel>
 
+    fun getSyntaxHighlightConfig(uuid: String): SyntaxHighlightConfigModel
+
     suspend fun updateSyntaxHighlightConfig(model: SyntaxHighlightConfigModel)
 
     suspend fun deleteSyntaxHighlightConfig(uuid: String)

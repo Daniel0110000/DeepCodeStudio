@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.input.TextFieldValue
+import domain.model.SyntaxHighlightConfigModel
 
 class EditorState {
     // The content of the code editor
@@ -39,5 +40,8 @@ class EditorState {
     var keywords = mutableStateOf<List<String>>(emptyList())
     // String with variable declaration directives for extracting variable names
     var variableDirectives = mutableStateOf("")
+
+    // Syntax Highlighting Configuration for the Editor
+    var syntaxHighlightConfig = mutableStateOf(SyntaxHighlightConfigModel())
 
 }

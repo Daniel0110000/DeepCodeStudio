@@ -56,8 +56,11 @@ class EditorViewModel(
         if(!repository.existsSelectedAutocompleteOption(filePath)){
             _displayAllAutocompleteOptions.value = true
         } else {
-            // If a selected autocomplete option exists, load keywords and variable directives
+            // If a selected autocomplete option exists, load its associated syntax highlight configuration
             val option = repository.getSelectedAutocompleteOption(filePath)
+            _editorStates.value[_selectedTabIndex.value].syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(option.uuid)
+
+            // Load keywords and variable directives from the JSON path specified in the selected autocomplete option
             _editorStates.value[_selectedTabIndex.value].keywords.value = JsonUtils.jsonToListString(option.jsonPath)
             _editorStates.value[_selectedTabIndex.value].variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath)
         }
@@ -70,7 +73,8 @@ class EditorViewModel(
      * @param model The [AutocompleteOptionModel] representing rhe selected autocomplete option
      */
     fun selectedOption(model: AutocompleteOptionModel){
-        // Sets keywords and variable directives based on the selected autocomplete option
+        // Sets syntax highlight configuration, keywords and variable directives based on the selected autocomplete option
+        _editorStates.value[_selectedTabIndex.value].syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(model.uuid)
         _editorStates.value[_selectedTabIndex.value].keywords.value = JsonUtils.jsonToListString(model.jsonPath)
         _editorStates.value[_selectedTabIndex.value].variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath)
 

@@ -5,7 +5,7 @@ import domain.util.Constants
 data class SyntaxHighlightConfigModel(
     val uuid: String = "",
     val optionName: String = "",
-    val jsonPath: String,
+    val jsonPath: String = "",
     val simpleColor: String = Constants.DEFAULT_SIMPLE_COLOR,
     val instructionColor: String = Constants.DEFAULT_INSTRUCTION_COLOR,
     val variableColor: String = Constants.DEFAULT_VARIABLE_COLOR,

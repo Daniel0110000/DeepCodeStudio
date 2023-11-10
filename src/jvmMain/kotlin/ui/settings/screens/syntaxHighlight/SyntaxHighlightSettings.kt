@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
-import ui.editor.EditorVisualTransformationPreviewColors
+import ui.editor.EditorVisualTransformation
 import ui.settings.lazy.SyntaxKeywordHighlighterConfigItem
 
 @Composable
@@ -115,7 +115,7 @@ fun SyntaxHighlightSettings(modifier: Modifier) {
                         fontWeight = FontWeight.W500
                     ),
                     cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
-                    visualTransformation = EditorVisualTransformationPreviewColors(configs.value[selectedOptionIndex.value]),
+                    visualTransformation = EditorVisualTransformation(configs.value[selectedOptionIndex.value]),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 10.dp, horizontal = 20.dp)

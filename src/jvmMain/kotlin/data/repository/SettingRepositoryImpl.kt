@@ -154,6 +154,7 @@ class SettingRepositoryImpl: SettingRepository {
                 HistorySelectedAutocompleteOptionsTable.update({
                     HistorySelectedAutocompleteOptionsTable.asmFilePath eq model.asmFilePath
                 }){
+                    it[uuid] = model.uuid
                     it[optionName] = model.optionName
                     it[jsonPath] = model.jsonPath
                 }
@@ -261,6 +262,41 @@ class SettingRepositoryImpl: SettingRepository {
     }
 
     /**
+     * Retrieves a syntax highlight configuration from the database based on the specified UUID
+     *
+     * @param uuid The UUID of the syntax highlight configuration to retrieve
+     * @return The retrieved [SyntaxHighlightConfigModel] or an empty model if not found
+     */
+    override fun getSyntaxHighlightConfig(uuid: String): SyntaxHighlightConfigModel = transaction {
+        val result = SyntaxHighlightTable
+            .select { SyntaxHighlightTable.uuid eq uuid }
+            .map {
+                SyntaxHighlightConfigModel(
+                    it[SyntaxHighlightTable.uuid],
+                    it[SyntaxHighlightTable.optionName],
+                    it[SyntaxHighlightTable.jsonPath],
+                    it[SyntaxHighlightTable.simpleColor],
+                    it[SyntaxHighlightTable.instructionColor],
+                    it[SyntaxHighlightTable.variableColor],
+                    it[SyntaxHighlightTable.constantColor],
+                    it[SyntaxHighlightTable.numberColor],
+                    it[SyntaxHighlightTable.segmentColor],
+                    it[SyntaxHighlightTable.systemCallColor],
+                    it[SyntaxHighlightTable.registerColor],
+                    it[SyntaxHighlightTable.arithmeticInstructionColor],
+                    it[SyntaxHighlightTable.logicalInstructionColor],
+                    it[SyntaxHighlightTable.conditionColor],
+                    it[SyntaxHighlightTable.loopColor],
+                    it[SyntaxHighlightTable.memoryManagementColor],
+                    it[SyntaxHighlightTable.commentColor],
+                    it[SyntaxHighlightTable.stringColor],
+                    it[SyntaxHighlightTable.labelColor]
+                )
+            }
+        if(result.isNotEmpty()) result[0] else SyntaxHighlightConfigModel()
+    }
+
+    /**
      * Updates a syntax highlight configuration with the provided [model]
      *
      * @param model The [SyntaxHighlightConfigModel] containing the upload configuration
@@ -268,7 +304,7 @@ class SettingRepositoryImpl: SettingRepository {
     override suspend fun updateSyntaxHighlightConfig(model: SyntaxHighlightConfigModel) {
         CallHandler.callHandler {
             transaction {
-                SyntaxHighlightTable.update({ AutocompleteTable.uuid eq model.uuid }){
+                SyntaxHighlightTable.update({ SyntaxHighlightTable.uuid eq model.uuid }){
                     it[simpleColor] = model.simpleColor
                     it[instructionColor] = model.instructionColor
                     it[variableColor] = model.variableColor

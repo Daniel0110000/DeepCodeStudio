@@ -48,7 +48,9 @@ fun EditorView(tabsState: TabsState) {
                 onChangeSelectedTab = { index -> viewModel.setSelectedTabIndex(index) }
             )
 
-            if(editorComposables.isNotEmpty()) editorComposables[selectedTabIndex](editorStates[selectedTabIndex])
+            if(editorComposables.isNotEmpty() && editorStates[selectedTabIndex].syntaxHighlightConfig.value.jsonPath.isNotEmpty()) {
+                editorComposables[selectedTabIndex](editorStates[selectedTabIndex])
+            }
         }
     } else {
         Column(
