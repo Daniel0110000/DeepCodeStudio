@@ -6,6 +6,7 @@ import org.koin.dsl.module
 import ui.viewModels.editor.EditorViewModel
 import ui.viewModels.editor.TabsViewModel
 import ui.viewModels.settings.AutocompleteSettingsViewModel
+import ui.viewModels.settings.SettingsViewModel
 import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
 
 /**
@@ -18,4 +19,5 @@ val appModule = module {
     single { AutocompleteSettingsViewModel(get()) }
     single { TabsViewModel() }
     single { EditorViewModel(get()) }
+    single { SettingsViewModel() }
 }

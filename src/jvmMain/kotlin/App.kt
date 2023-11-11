@@ -4,6 +4,7 @@ import org.koin.core.component.inject
 import ui.viewModels.editor.EditorViewModel
 import ui.viewModels.editor.TabsViewModel
 import ui.viewModels.settings.AutocompleteSettingsViewModel
+import ui.viewModels.settings.SettingsViewModel
 import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
 
 /**
@@ -25,4 +26,7 @@ class App: KoinComponent {
 
     // Inject [EditorViewModel]
     val editorViewModel: EditorViewModel by inject()
+
+    // Inject [SettingsViewModel]
+    val settingsViewModel: SettingsViewModel by inject()
 }

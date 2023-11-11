@@ -1,5 +1,6 @@
 package ui.settings
 
+import App
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -29,16 +30,18 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.WindowPosition
+import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
 import ui.settings.screens.AutocompleteSettings
 import ui.settings.screens.syntaxHighlight.SyntaxHighlightSettings
+import ui.viewModels.settings.SettingsViewModel
 
 @Composable
-fun Settings(
-    onCloseRequest: () -> Unit
-) {
+fun Settings(onCloseRequest: () -> Unit) {
 
-    var screen by remember { mutableStateOf(Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS) }
+    val viewModel = App().settingsViewModel
+
+    val screen = viewModel.screen.observeAsState().value
 
     Dialog(
         visible = true,
@@ -51,7 +54,7 @@ fun Settings(
                 .fillMaxSize()
                 .background(ThemeApp.colors.background)
         ) {
-            SettingsOptions{ screen = it }
+            SettingsOptions(viewModel)
 
             val modifier = Modifier
                 .weight(1f)
@@ -69,12 +72,8 @@ fun Settings(
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun SettingsOptions(
-    selectedOption: (Screens) -> Unit
-) {
-    val options = arrayOf("Syntax Keyword Highlighter", "Autocomplete")
-    val screens = arrayOf(Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS, Screens.AUTOCOMPLETE_SETTINGS)
-    var selectedItem by remember { mutableStateOf(0) }
+fun SettingsOptions(viewModel: SettingsViewModel) {
+    val selectedItem = viewModel.selectedItem.observeAsState().value
 
     LazyColumn(
         modifier = Modifier
@@ -85,7 +84,7 @@ fun SettingsOptions(
 
         item { Spacer(modifier = Modifier.height(8.dp)) }
 
-        items(options.size) {
+        items(viewModel.options.value.size) {
             var hoverOption by remember { mutableStateOf(false) }
 
             Box(
@@ -96,13 +95,13 @@ fun SettingsOptions(
                     .onPointerEvent(PointerEventType.Enter){ hoverOption = true }
                     .onPointerEvent(PointerEventType.Exit){ hoverOption = false }
                     .onClick {
-                        selectedItem = it
-                        selectedOption(screens[it])
+                        viewModel.setSelectedItem(it)
+                        viewModel.setScreen(viewModel.screens.value[it])
                     },
                 contentAlignment = Alignment.Center
             ){
                 Text(
-                    options[it],
+                    viewModel.options.value[it],
                     color = ThemeApp.colors.textColor,
                     fontFamily = ThemeApp.text.fontFamily,
                     fontSize = 12.sp,
