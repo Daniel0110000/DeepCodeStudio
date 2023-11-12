@@ -38,11 +38,13 @@ import java.awt.Cursor
 fun verticalBarOptions(
     isCollapseFileTree: Boolean,
     newDirectoryPath: (String?) -> Unit,
-    collapseOrExtendSplitPane: () -> Unit
+    collapseOrExtendSplitPane: () -> Unit,
+    onOpenTerminal: () -> Unit
 ) {
     var hoverCollapseButton by remember { mutableStateOf(false) }
     var hoverSelectFolderButton by remember { mutableStateOf(false) }
     var hoverOpenSettings by remember { mutableStateOf(false) }
+    var hoverOpenTerminal by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -98,6 +100,27 @@ fun verticalBarOptions(
         }
 
         Spacer(modifier = Modifier.weight(1f))
+
+        Box(
+            modifier = Modifier
+                .height(30.dp)
+                .width(35.dp)
+                .background(if(hoverOpenTerminal) ThemeApp.colors.background else Color.Transparent, shape = RoundedCornerShape(8.dp))
+                .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)))
+                .onPointerEvent(PointerEventType.Enter){ hoverOpenTerminal = true }
+                .onPointerEvent(PointerEventType.Exit){ hoverOpenTerminal = false }
+                .clickable { onOpenTerminal() },
+            contentAlignment = Alignment.Center
+        ){
+            Icon(
+                painterResource("images/ic_terminal.svg"),
+                contentDescription = "Terminal icon",
+                tint = ThemeApp.colors.textColor,
+                modifier = Modifier.size(25.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
 
         Box(
             modifier = Modifier
