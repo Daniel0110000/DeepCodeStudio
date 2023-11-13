@@ -7,7 +7,7 @@ import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.model.AutocompleteOptionModel
 import domain.model.SelectedAutocompleteOptionModel
 import domain.repository.SettingRepository
-import domain.util.JsonUtils
+import domain.utilies.JsonUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

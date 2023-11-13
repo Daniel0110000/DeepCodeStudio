@@ -1,6 +1,6 @@
 package domain.model
 
-import domain.util.Constants
+import domain.utilies.Constants
 
 data class SyntaxHighlightConfigModel(
     val uuid: String = "",

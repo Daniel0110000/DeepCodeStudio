@@ -9,6 +9,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.*
@@ -18,22 +20,29 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import domain.util.DocumentsManager
+import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
+import ui.viewModels.terminal.TerminalViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun prompt(
-    onResult: (String) -> Unit,
-    onCommand: (String) -> Unit
-){
+fun prompt(viewModel: TerminalViewModel){
+    // State to hold the current command entered by the user
     var command by remember { mutableStateOf("") }
-    var isKeyBeingPressed = false
+
+    // [FocusRequester] to request focus for the text field
+    val focus = remember { FocusRequester() }
+
+    // Observe whether a key is currently being pressed
+    val isKeyBeingPressed = viewModel.isKeyBeingPressed.observeAsState().value
+
+    // Request focus when the component is first launched
+    LaunchedEffect(Unit){ focus.requestFocus() }
 
     Row(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = buildAnnotatedString {
-                append(AnnotatedString("[${DocumentsManager.getUserHome()}]", spanStyle = SpanStyle(color = Color(0xFF3BC368))))
+                append(AnnotatedString("[${viewModel.currentDirectory.value}]", spanStyle = SpanStyle(color = Color(0xFF3BC368))))
                 append("~$")
             },
             color = ThemeApp.colors.textColor,
@@ -55,13 +64,18 @@ fun prompt(
             cursorBrush = SolidColor(Color(0xFFABB2BF)),
             modifier = Modifier
                 .weight(1f)
+                .focusRequester(focus)
                 .onPreviewKeyEvent {
                     if(it.key == Key.Enter && !isKeyBeingPressed){
-                        onCommand(command)
-                        isKeyBeingPressed = true
+                        // Execute command and update view model states
+                        viewModel.setDirectory(viewModel.currentDirectory.value)
+                        viewModel.setCommandExecuted(command)
+                        viewModel.setResult(ExecuteCommands.executeCommand(command, viewModel))
+                        viewModel.setIsKeyBeingPressed(true)
                         true
                     } else if (it.type == KeyEventType.KeyUp){
-                        isKeyBeingPressed = false
+                        // Release key press flag when key is released
+                        viewModel.setIsKeyBeingPressed(false)
                         false
                     } else {
                         false
@@ -69,4 +83,5 @@ fun prompt(
                 }
         )
     }
+
 }

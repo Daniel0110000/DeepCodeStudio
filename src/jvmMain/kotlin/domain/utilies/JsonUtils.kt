@@ -1,4 +1,4 @@
-package domain.util
+package domain.utilies
 
 import domain.model.SyntaxHighlightRegexModel
 import org.json.JSONArray

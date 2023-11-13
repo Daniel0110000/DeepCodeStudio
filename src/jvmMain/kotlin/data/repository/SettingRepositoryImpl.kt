@@ -8,7 +8,7 @@ import domain.model.AutocompleteOptionModel
 import domain.model.SelectedAutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
 import domain.repository.SettingRepository
-import domain.util.CallHandler
+import domain.utilies.CallHandler
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction

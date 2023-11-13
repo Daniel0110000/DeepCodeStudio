@@ -26,7 +26,7 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import domain.util.ColorUtils
+import domain.utilies.ColorUtils
 import ui.ThemeApp
 
 @OptIn(ExperimentalComposeUiApi::class)

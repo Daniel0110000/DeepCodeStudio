@@ -1,4 +1,4 @@
-package domain.util
+package domain.utilies
 
 import androidx.compose.ui.graphics.Color
 

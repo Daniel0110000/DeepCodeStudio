@@ -8,7 +8,7 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import di.appModule
 import kotlinx.coroutines.launch
-import domain.util.DocumentsManager
+import domain.utilies.DocumentsManager
 import org.koin.core.context.startKoin
 import ui.CodeEditorScreen
 import java.awt.Toolkit

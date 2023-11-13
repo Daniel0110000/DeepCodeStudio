@@ -6,8 +6,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import domain.model.SyntaxHighlightConfigModel
 import domain.model.SyntaxHighlightRegexModel
-import domain.util.ColorUtils
-import domain.util.JsonUtils
+import domain.utilies.ColorUtils
+import domain.utilies.JsonUtils
 
 object SyntaxKeywordHighlighter {
 

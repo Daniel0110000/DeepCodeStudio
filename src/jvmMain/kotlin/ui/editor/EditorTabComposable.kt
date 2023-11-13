@@ -21,9 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import domain.util.DocumentsManager
-import domain.util.JsonUtils
-import domain.util.TextUtils
+import domain.utilies.DocumentsManager
+import domain.utilies.JsonUtils
+import domain.utilies.TextUtils
 import kotlinx.coroutines.launch
 import ui.ThemeApp
 import ui.components.bottomActionsRow

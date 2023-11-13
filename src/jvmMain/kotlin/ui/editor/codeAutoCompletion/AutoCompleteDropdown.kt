@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ui.ThemeApp
 import ui.editor.EditorState
-import domain.util.TextUtils
+import domain.utilies.TextUtils
 
 /**
  * Composable function to display an auto-complete dropdown

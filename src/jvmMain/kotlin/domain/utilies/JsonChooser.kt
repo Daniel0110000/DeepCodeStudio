@@ -1,4 +1,4 @@
-package domain.util
+package domain.utilies
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ui.ThemeApp
 import ui.settings.Settings
-import domain.util.DirectoryChooser
+import domain.utilies.DirectoryChooser
 import java.awt.Cursor
 
 @OptIn(ExperimentalComposeUiApi::class)

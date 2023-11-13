@@ -6,6 +6,7 @@ import ui.viewModels.editor.TabsViewModel
 import ui.viewModels.settings.AutocompleteSettingsViewModel
 import ui.viewModels.settings.SettingsViewModel
 import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
+import ui.viewModels.terminal.TerminalViewModel
 
 /**
  * A [KoinComponent] class for provided the dependency injection
@@ -29,4 +30,7 @@ class App: KoinComponent {
 
     // Inject [SettingsViewModel]
     val settingsViewModel: SettingsViewModel by inject()
+
+    // Inject [TerminalViewModel]
+    val terminalViewModel: TerminalViewModel by inject()
 }

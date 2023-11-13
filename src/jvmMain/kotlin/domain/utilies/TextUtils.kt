@@ -1,4 +1,4 @@
-package domain.util
+package domain.utilies
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue

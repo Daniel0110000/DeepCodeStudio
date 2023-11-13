@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import domain.util.Constants
-import domain.util.DocumentsManager
+import domain.utilies.Constants
+import domain.utilies.DocumentsManager
 import ui.components.verticalBarOptions
 import ui.editor.EditorView
 import ui.editor.tabs.TabsState

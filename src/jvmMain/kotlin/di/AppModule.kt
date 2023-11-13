@@ -8,6 +8,7 @@ import ui.viewModels.editor.TabsViewModel
 import ui.viewModels.settings.AutocompleteSettingsViewModel
 import ui.viewModels.settings.SettingsViewModel
 import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
+import ui.viewModels.terminal.TerminalViewModel
 
 /**
  * Define the app module for dependency injection
@@ -20,4 +21,5 @@ val appModule = module {
     single { TabsViewModel() }
     single { EditorViewModel(get()) }
     single { SettingsViewModel() }
+    single { TerminalViewModel() }
 }
