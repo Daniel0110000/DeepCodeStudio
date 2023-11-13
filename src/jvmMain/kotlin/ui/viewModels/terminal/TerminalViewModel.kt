@@ -23,6 +23,15 @@ class TerminalViewModel: ViewModel() {
     val isKeyBeingPressed: LiveData<Boolean> = _isKeyBeingPressed
 
     /**
+     * Clear the terminal by resetting the results, executed commands, and directories lists
+     */
+    fun clearTerminal(){
+        _results.value = emptyList()
+        _commandsExecuted.value = emptyList()
+        _directories.value = emptyList()
+    }
+
+    /**
      * Sets the result using the provided [value]
      *
      * @param value The value to assign

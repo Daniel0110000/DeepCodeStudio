@@ -67,10 +67,18 @@ fun prompt(viewModel: TerminalViewModel){
                 .focusRequester(focus)
                 .onPreviewKeyEvent {
                     if(it.key == Key.Enter && !isKeyBeingPressed){
-                        // Execute command and update view model states
-                        viewModel.setDirectory(viewModel.currentDirectory.value)
-                        viewModel.setCommandExecuted(command)
-                        viewModel.setResult(ExecuteCommands.executeCommand(command, viewModel))
+                        // Execute command when Enter is pressed, clear terminal if the command is "clear"
+                        if(command == "clear") viewModel.clearTerminal()
+                        else{
+                            viewModel.setDirectory(viewModel.currentDirectory.value)
+                            viewModel.setCommandExecuted(command)
+                            viewModel.setResult(ExecuteCommands.executeCommand(command, viewModel))
+                        }
+                        viewModel.setIsKeyBeingPressed(true)
+                        true
+                    } else if (it.isCtrlPressed && it.key == Key.L && !isKeyBeingPressed){
+                        // Handle Ctrl + L to clear the terminal
+                        viewModel.clearTerminal()
                         viewModel.setIsKeyBeingPressed(true)
                         true
                     } else if (it.type == KeyEventType.KeyUp){
