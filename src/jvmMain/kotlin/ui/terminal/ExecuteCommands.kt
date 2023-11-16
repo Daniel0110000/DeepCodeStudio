@@ -1,5 +1,6 @@
 package ui.terminal
 
+import domain.utilies.DocumentsManager
 import ui.viewModels.terminal.TerminalViewModel
 import java.io.BufferedReader
 import java.io.File
@@ -49,11 +50,10 @@ object ExecuteCommands {
         command: String,
         viewModel: TerminalViewModel
     ){
-        if(command.startsWith("cd ")){
-            val args = command.substring(3).trim()
-            if(args.isNotEmpty()){
-                viewModel.setCurrentDirectory(File(viewModel.currentDirectory.value, args).canonicalPath)
-            }
+        if(command.startsWith("cd")){
+            val args = command.substring(2).trim()
+            if(args.isNotEmpty()) viewModel.setCurrentDirectory(File(viewModel.currentDirectory.value, args).canonicalPath)
+            else viewModel.setCurrentDirectory(DocumentsManager.getUserHome())
         }
     }
 

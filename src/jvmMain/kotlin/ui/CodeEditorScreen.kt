@@ -50,7 +50,10 @@ fun CodeEditorScreen() {
             }
 
             if(isOpenTerminal){
-                TerminalView{ isOpenTerminal = false }
+                TerminalView(
+                    directoryPath = splitPaneState.currentPath,
+                    onCloseTerminal = { isOpenTerminal = false }
+                )
             }
         }
     }

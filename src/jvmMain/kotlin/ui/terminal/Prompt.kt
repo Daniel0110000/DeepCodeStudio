@@ -33,11 +33,10 @@ fun prompt(viewModel: TerminalViewModel){
     // [FocusRequester] to request focus for the text field
     val focus = remember { FocusRequester() }
 
-    // Observe whether a key is currently being pressed
+    // Value observers
     val isKeyBeingPressed = viewModel.isKeyBeingPressed.observeAsState().value
-
-    // Observe command
     val command = viewModel.command.observeAsState().value
+    val currentDirectory = viewModel.currentDirectory.observeAsState().value
 
     // State selected word in the text field
     val selectedWord = remember { mutableStateOf("") }
@@ -48,7 +47,7 @@ fun prompt(viewModel: TerminalViewModel){
     Row(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = buildAnnotatedString {
-                append(AnnotatedString("\uF314  [${viewModel.currentDirectory.value}]", spanStyle = SpanStyle(color = Color(0xFF3BC368))))
+                append(AnnotatedString("\uF314  [${currentDirectory}]", spanStyle = SpanStyle(color = Color(0xFF3BC368))))
                 append("~$")
             },
             color = ThemeApp.colors.textColor,

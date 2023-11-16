@@ -4,7 +4,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import domain.utilies.DocumentsManager
 import java.io.File
 
 class TerminalViewModel: ViewModel() {
@@ -18,7 +17,7 @@ class TerminalViewModel: ViewModel() {
     private val _directories: MutableLiveData<List<String>> = MutableLiveData(emptyList())
     val directories: LiveData<List<String>> = _directories
 
-    private val _currentDirectory: MutableLiveData<String> = MutableLiveData(DocumentsManager.getUserHome())
+    private val _currentDirectory: MutableLiveData<String> = MutableLiveData("")
     val currentDirectory: LiveData<String> = _currentDirectory
 
     private val _isKeyBeingPressed: MutableLiveData<Boolean> = MutableLiveData(false)

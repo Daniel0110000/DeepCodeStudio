@@ -30,15 +30,21 @@ import ui.ThemeApp
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TerminalView(
+    directoryPath: String,
     onCloseTerminal: () -> Unit
 ){
 
     // State to track hover effect on the close terminal button
-    var hoverCloseTerminal by remember { mutableStateOf(false) } //
+    var hoverCloseTerminal by remember { mutableStateOf(false) }
 
     val viewModel = App().terminalViewModel // Inject [TerminalViewModel]
 
     val scrollState = rememberLazyListState() // Scroll state for the lazy
+
+    /**
+     * [LaunchedEffect] to set the currently opened directory in the [ui.fileTree.FileTree] to the terminal
+     */
+    LaunchedEffect(Unit){ viewModel.setCurrentDirectory(directoryPath) }
 
     // Value observers
     val results = viewModel.results.observeAsState().value
