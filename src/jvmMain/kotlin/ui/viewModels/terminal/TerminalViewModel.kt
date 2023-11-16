@@ -1,9 +1,11 @@
 package ui.viewModels.terminal
 
+import androidx.compose.ui.text.input.TextFieldValue
 import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.utilies.DocumentsManager
+import java.io.File
 
 class TerminalViewModel: ViewModel() {
 
@@ -22,6 +24,18 @@ class TerminalViewModel: ViewModel() {
     private val _isKeyBeingPressed: MutableLiveData<Boolean> = MutableLiveData(false)
     val isKeyBeingPressed: LiveData<Boolean> = _isKeyBeingPressed
 
+    private val _suggestions: MutableLiveData<List<String>> = MutableLiveData(emptyList())
+    val suggestions: LiveData<List<String>> = _suggestions
+
+    private val _command: MutableLiveData<TextFieldValue> = MutableLiveData(TextFieldValue(""))
+    val command: LiveData<TextFieldValue> = _command
+
+    private val _cursorXCoordinates: MutableLiveData<Int> = MutableLiveData(0)
+    val cursorXCoordinates: LiveData<Int> = _cursorXCoordinates
+
+    private val _selectedItemIndex: MutableLiveData<Int> = MutableLiveData(0)
+    val selectedItemIndex: LiveData<Int> = _selectedItemIndex
+
     /**
      * Clear the terminal by resetting the results, executed commands, and directories lists
      */
@@ -29,6 +43,28 @@ class TerminalViewModel: ViewModel() {
         _results.value = emptyList()
         _commandsExecuted.value = emptyList()
         _directories.value = emptyList()
+        clearSuggestions()
+    }
+
+    /**
+     * Generates suggestions based on the input for commands containing "cd"
+     *
+     * @param input The user input for generating suggestions
+     */
+    fun getSuggestions(input: String){
+        if(_command.value.text.contains("cd")){
+            _suggestions.value = File(_currentDirectory.value).listFiles()
+                ?.filter { it.isDirectory }
+                ?.filter { input.isEmpty() || it.name.lowercase().contains(input.lowercase()) }
+                ?.map { it.name } ?: emptyList()
+        }
+    }
+
+    /**
+     * Clears the list of suggestions, removing any existing suggestions
+     */
+    fun clearSuggestions(){
+        _suggestions.value = emptyList()
     }
 
     /**
@@ -64,7 +100,7 @@ class TerminalViewModel: ViewModel() {
      * @param value The value to assign
      */
     fun setCurrentDirectory(value: String){
-        _currentDirectory.value = value
+        if(File(value).exists()) _currentDirectory.value = value
     }
 
     /**
@@ -76,4 +112,30 @@ class TerminalViewModel: ViewModel() {
         _isKeyBeingPressed.value = value
     }
 
+    /**
+     * Sets the command using the provided [value]
+     *
+     * @param value The value to assign
+     */
+    fun setCommand(value: TextFieldValue){
+        _command.value = value
+    }
+
+    /**
+     * Sets the cursor x coordinates using the provided [value]
+     *
+     * @param value The value to assign
+     */
+    fun setCursorXCoordinates(value: Int){
+        _cursorXCoordinates.value = value
+    }
+
+    /**
+     * Sets the selected item index using the provided [value]
+     *
+     * @param value The value to assign
+     */
+    fun setSelectedItemIndex(value: Int){
+        _selectedItemIndex.value = value
+    }
 }

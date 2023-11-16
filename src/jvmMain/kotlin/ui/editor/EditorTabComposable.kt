@@ -91,8 +91,7 @@ val EditorTabComposable: EditorComposable = { editorState ->
                                                 selectedWord
                                             )
 
-                                editorState.isAutoCompleteVisible.value =
-                                    editorState.autoCompleteSuggestions.value.isNotEmpty()
+                                editorState.isAutoCompleteVisible.value = editorState.autoCompleteSuggestions.value.isNotEmpty()
                             } else {
                                 editorState.autoCompleteSuggestions.value = emptyList()
                                 editorState.isAutoCompleteVisible.value = false
