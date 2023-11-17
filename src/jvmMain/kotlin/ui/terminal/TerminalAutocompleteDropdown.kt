@@ -26,7 +26,7 @@ fun TerminalAutocompleteDropdown(
     modifier = Modifier
         .absoluteOffset { IntOffset(cursorX, cursorY) }
         .background(ThemeApp.colors.secondColor)
-        .width(200.dp)
+        .widthIn(200.dp, 500.dp)
         .heightIn(0.dp, 150.dp)
         .shadow(1.dp)
 ){

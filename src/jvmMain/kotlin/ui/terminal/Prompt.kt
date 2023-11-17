@@ -17,7 +17,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.*
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -114,16 +117,8 @@ fun prompt(viewModel: TerminalViewModel){
                         viewModel.setSelectedItemIndex(0)
                         viewModel.getSuggestions(selectedWord.value)
                         if(viewModel.suggestions.value.size == 1){
-                            val newText = TextUtils.insertTextAtCursorPosition(
-                                command.selection.start,
-                                command.text,
-                                " ${viewModel.suggestions.value.last()}"
-                            )
-
-                            viewModel.setCommand(TextFieldValue(
-                                newText,
-                                TextRange(command.selection.start + viewModel.suggestions.value[viewModel.selectedItemIndex.value].length)
-                            ))
+                            // Assigns the selected command from suggestions to the input through the viewModel
+                            viewModel.setSuggestionToInput(viewModel.suggestions.value.last())
 
                             // Clear suggestions
                             viewModel.clearSuggestions()
@@ -141,17 +136,8 @@ fun prompt(viewModel: TerminalViewModel){
                         viewModel.setIsKeyBeingPressed(true)
                         true
                     } else if (it.key == Key.Enter && viewModel.suggestions.value.isNotEmpty() && !isKeyBeingPressed){
-                        // Handle Enter key for selecting suggestion
-                        val newText = TextUtils.insertTextAtCursorPosition(
-                            command.selection.start,
-                            command.text,
-                            " ${viewModel.suggestions.value[viewModel.selectedItemIndex.value]}"
-                        )
-
-                        viewModel.setCommand(TextFieldValue(
-                            newText,
-                            TextRange(command.selection.start + viewModel.suggestions.value[viewModel.selectedItemIndex.value].length)
-                        ))
+                        // Assigns the selected command from suggestions to the input through the viewModel
+                        viewModel.setSuggestionToInput(viewModel.suggestions.value[viewModel.selectedItemIndex.value])
 
                         // Reset selected item and clear suggestions
                         viewModel.setSelectedItemIndex(0)

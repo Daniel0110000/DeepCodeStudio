@@ -1,5 +1,6 @@
 package ui.viewModels.terminal
 
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
@@ -35,6 +36,17 @@ class TerminalViewModel: ViewModel() {
     private val _selectedItemIndex: MutableLiveData<Int> = MutableLiveData(0)
     val selectedItemIndex: LiveData<Int> = _selectedItemIndex
 
+    // All the formats supported by [NASM]
+    private val nasmFormats: List<String> = listOf(
+        "bin", "ith", "srec", "aout", "aoutb", "coff", "elf32", "elf64", "elfx32", "as86",
+        "obj", "win32", "win64", "ieee", "macho32", "macho64", "dbg", "elf", "macho", "win"
+    )
+
+    // All the emulators supported by [ld]
+    private val ldEmulators: List<String> = listOf(
+        "elf_x86_64", "elf32_x86_64", "elf_i386", "elf_iamcu", "i386pep", "i386pe", "elf64bpf"
+    )
+
     /**
      * Clear the terminal by resetting the results, executed commands, and directories lists
      */
@@ -46,16 +58,69 @@ class TerminalViewModel: ViewModel() {
     }
 
     /**
-     * Generates suggestions based on the input for commands containing "cd"
+     * Generates suggestions based on the current command of [_command]
      *
      * @param input The user input for generating suggestions
      */
     fun getSuggestions(input: String){
+        // Get all the files from the current path
+        val files = File(_currentDirectory.value).listFiles() ?: return
+        // Get the current command
+        val currentCommand = _command.value.text
+
+        _suggestions.value = when {
+            currentCommand.contains("cd") -> {
+                // If the current command contains [cd], we filter all the directories in the current path
+                // ... and the directory names that match the value of [input]
+                files.filter { it.isDirectory }
+                     .filter { input.isEmpty() || it.name.lowercase().contains(input.lowercase()) }
+                     .map { it.name }
+            }
+            currentCommand.contains("ld") -> {
+                // If the current command contains [ld], we filter all the .o files in the current path
+                // ... and create the ld command to display in suggestions. We also filter the names of the files that match the value of [input]
+                files.filter { it.isFile && it.extension == "o" }
+                     .flatMap { file ->
+                        ldEmulators.map { emulator ->
+                            "ld -m $emulator -o ${file.nameWithoutExtension} ${file.name}"
+                        }
+                     }
+                     .filter { it.contains(currentCommand) }
+            }
+            currentCommand.contains("./") -> {
+                // If the current command contains [./], we filter all the executables in the current path and
+                // ... also filter all executable names that match the value of [input]
+                files.filter { it.isFile && it.extension.isEmpty() }
+                     .map { file -> "./${file.name}" }
+                     .filter { it.contains(currentCommand) }
+            }
+            currentCommand.contains("nasm") -> {
+                // If the current command contains [nasm], we filter all the .asm or .s files in the current path and
+                // ... also filter the files that match the value of [input]. Then, we create the [nasm] command to display in suggestions
+                files.filter { it.isFile && (it.extension == "asm" || it.extension == "s") }
+                    .flatMap { file ->
+                        nasmFormats.map { format ->
+                            "nasm -f $format ${file.name} -o ${file.nameWithoutExtension}.o"
+                        }
+                    }
+                    .filter { it.contains(currentCommand) }
+            }
+            // Return empty list
+            else -> emptyList()
+        }
+    }
+
+    /**
+     * Adds the selected command from suggestions to [_command]
+     *
+     * @param commandSelected The selected command from the suggestions
+     */
+    fun setSuggestionToInput(commandSelected: String){
         if(_command.value.text.contains("cd")){
-            _suggestions.value = File(_currentDirectory.value).listFiles()
-                ?.filter { it.isDirectory }
-                ?.filter { input.isEmpty() || it.name.lowercase().contains(input.lowercase()) }
-                ?.map { it.name } ?: emptyList()
+            val commandToInsert = "cd $commandSelected"
+            _command.value = TextFieldValue(commandToInsert, TextRange(commandToInsert.length))
+        } else {
+            _command.value = TextFieldValue(commandSelected, TextRange(commandSelected.length))
         }
     }
 
