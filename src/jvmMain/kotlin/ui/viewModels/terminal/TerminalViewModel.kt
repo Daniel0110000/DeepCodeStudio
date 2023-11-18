@@ -36,6 +36,10 @@ class TerminalViewModel: ViewModel() {
     private val _selectedItemIndex: MutableLiveData<Int> = MutableLiveData(0)
     val selectedItemIndex: LiveData<Int> = _selectedItemIndex
 
+    private val _terminalHeight: MutableLiveData<Float> = MutableLiveData(250f)
+    val terminalHeight: LiveData<Float> = _terminalHeight
+
+
     // All the formats supported by [NASM]
     private val nasmFormats: List<String> = listOf(
         "bin", "ith", "srec", "aout", "aoutb", "coff", "elf32", "elf64", "elfx32", "as86",
@@ -202,4 +206,9 @@ class TerminalViewModel: ViewModel() {
     fun setSelectedItemIndex(value: Int){
         _selectedItemIndex.value = value
     }
+
+    fun setTerminalHeight(value: Float){
+        _terminalHeight.value += -value
+    }
+
 }

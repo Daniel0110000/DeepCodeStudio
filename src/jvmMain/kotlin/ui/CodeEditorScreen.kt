@@ -39,7 +39,7 @@ fun CodeEditorScreen() {
             isCollapseSplitPane,
             newDirectoryPath = { it?.let { splitPaneState = SplitPaneState(it, tabsState) } },
             collapseOrExtendSplitPane = { isCollapseSplitPane = !isCollapseSplitPane },
-            onOpenTerminal = { isOpenTerminal = true }
+            onOpenTerminal = { isOpenTerminal = !isOpenTerminal }
         )
 
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {

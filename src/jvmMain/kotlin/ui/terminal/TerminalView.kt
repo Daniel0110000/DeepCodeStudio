@@ -3,6 +3,9 @@ package ui.terminal
 import App
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -17,7 +20,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -26,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import kotlinx.coroutines.launch
 import ui.ThemeApp
+import java.awt.Cursor
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -53,6 +59,7 @@ fun TerminalView(
     val suggestions = viewModel.suggestions.observeAsState().value
     val cursorX = viewModel.cursorXCoordinates.observeAsState().value
     val selectedItemIndex = viewModel.selectedItemIndex.observeAsState().value
+    val terminalHeight = viewModel.terminalHeight.observeAsState().value
 
     /**
      * [LaunchedEffect] to scroll the scrollState to the last item when the size of results changes
@@ -64,7 +71,7 @@ fun TerminalView(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
+            .height(terminalHeight.dp)
             .background(ThemeApp.colors.secondColor)
     ) {
         Column{
@@ -149,6 +156,19 @@ fun TerminalView(
                 }
             }
         }
+
+        Box(
+            modifier = Modifier
+                .background(ThemeApp.colors.background)
+                .fillMaxWidth()
+                .height(2.dp)
+                .align(Alignment.TopCenter)
+                .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR)))
+                .draggable(
+                    orientation = Orientation.Vertical,
+                    state = rememberDraggableState { viewModel.setTerminalHeight(it) }
+                )
+        )
 
     }
 }
