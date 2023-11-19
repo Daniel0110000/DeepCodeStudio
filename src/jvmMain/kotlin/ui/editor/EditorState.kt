@@ -1,6 +1,7 @@
 package ui.editor
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.input.TextFieldValue
@@ -43,5 +44,7 @@ class EditorState {
 
     // Syntax Highlighting Configuration for the Editor
     var syntaxHighlightConfig = mutableStateOf(SyntaxHighlightConfigModel())
+    // Index of the currently selected line
+    var lineIndex = mutableStateOf(0)
 
 }
