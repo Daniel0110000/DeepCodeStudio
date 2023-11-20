@@ -8,6 +8,7 @@ import ui.viewModels.editor.TabsViewModel
 import ui.viewModels.settings.AutocompleteSettingsViewModel
 import ui.viewModels.settings.SettingsViewModel
 import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
+import ui.viewModels.splitPane.SplitPaneViewModel
 import ui.viewModels.terminal.TerminalViewModel
 
 /**
@@ -22,4 +23,5 @@ val appModule = module {
     single { EditorViewModel(get()) }
     single { SettingsViewModel() }
     single { TerminalViewModel() }
+    single { SplitPaneViewModel() }
 }

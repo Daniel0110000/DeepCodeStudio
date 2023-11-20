@@ -1,33 +1,32 @@
 package ui
 
+import App
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import domain.utilies.Constants
-import domain.utilies.DocumentsManager
+import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.components.verticalBarOptions
 import ui.editor.EditorView
-import ui.editor.tabs.TabsState
 import ui.splitPane.SplitPane
-import ui.splitPane.SplitPaneState
 import ui.terminal.TerminalView
+import ui.viewModels.splitPane.FileTreeViewModel
 
 @Composable
 fun CodeEditorScreen() {
-    // Create and remember the state for managing tabs in the editor
-    val tabsState = remember { TabsState() }
 
-    var isCollapseSplitPane by remember { mutableStateOf(false) }
-    var isOpenTerminal by remember { mutableStateOf(false) }
+    // Inject [SettingRepository] and [SplitPaneViewModel]
+    val repository = App().settingRepository
+    val splitPaneViewModel = App().splitPaneViewModel
 
-    // Create and remember the state for managing the split pane
-    var splitPaneState by remember {
-        mutableStateOf(SplitPaneState(
-            "${DocumentsManager.getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}",
-            tabsState
-        ))
-    }
+    // Value observer for [currentPath]
+    val currentPath = splitPaneViewModel.currentPath.observeAsState().value
+    // Create [FileTreeViewModel]
+    val fileTreeViewModel = FileTreeViewModel(repository, currentPath, splitPaneViewModel.tabState.value)
+
+    // Value observers for [isCollapseSplitPane] and [isOpenTerminal]
+    val isCollapseSplitPane = splitPaneViewModel.isCollapseSplitPane.observeAsState().value
+    val isOpenTerminal = splitPaneViewModel.isOpenTerminal.observeAsState().value
 
     Row(
         modifier = Modifier
@@ -37,22 +36,25 @@ fun CodeEditorScreen() {
 
         verticalBarOptions(
             isCollapseSplitPane,
-            newDirectoryPath = { it?.let { splitPaneState = SplitPaneState(it, tabsState) } },
-            collapseOrExtendSplitPane = { isCollapseSplitPane = !isCollapseSplitPane },
-            onOpenTerminal = { isOpenTerminal = !isOpenTerminal }
+            newDirectoryPath = { it?.let { splitPaneViewModel.setPath(it) } },
+            collapseOrExtendSplitPane = { splitPaneViewModel.setIsCollapseSplitPane(!isCollapseSplitPane) },
+            onOpenTerminal = { splitPaneViewModel.setIsOpenTerminal(!isOpenTerminal) }
         )
 
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                if(!isCollapseSplitPane) SplitPane(splitPaneState){ isCollapseSplitPane = true }
+                if(!isCollapseSplitPane) SplitPane(
+                    fileTreeViewModel,
+                    splitPaneViewModel
+                ){ splitPaneViewModel.setIsCollapseSplitPane(true) }
 
-                EditorView(tabsState)
+                EditorView(splitPaneViewModel.tabState.value)
             }
 
             if(isOpenTerminal){
                 TerminalView(
-                    directoryPath = splitPaneState.currentPath,
-                    onCloseTerminal = { isOpenTerminal = false }
+                    directoryPath = currentPath,
+                    onCloseTerminal = { splitPaneViewModel.setIsOpenTerminal(false) }
                 )
             }
         }

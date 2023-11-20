@@ -4,14 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,26 +15,32 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
 import ui.fileTree.FileTreeView
+import ui.viewModels.splitPane.FileTreeViewModel
+import ui.viewModels.splitPane.SplitPaneViewModel
 import java.awt.Cursor
 
 @Composable
 fun SplitPane(
-    splitState: SplitPaneState,
+    fileTreeViewModel: FileTreeViewModel,
+    splitPaneViewModel: SplitPaneViewModel,
     collapseSplitPane: () -> Unit
 ) {
 
-    LaunchedEffect(splitState.widthSplittable){
-        if(splitState.widthSplittable < 50){
+    val widthSplittable = splitPaneViewModel.widthSplittable.observeAsState().value
+
+    LaunchedEffect(widthSplittable){
+        if(widthSplittable < 50){
             collapseSplitPane()
-            splitState.widthSplittable = 80f
+            splitPaneViewModel.setWidthSplittable(80f)
         }
     }
 
     Box(
         modifier = Modifier
-            .width((splitState.widthSplittable).dp)
+            .width(widthSplittable.dp)
             .fillMaxHeight()
             .background(ThemeApp.colors.background)
     ) {
@@ -59,7 +58,7 @@ fun SplitPane(
                 )
             }
 
-            FileTreeView(splitState.fileTreeState)
+            FileTreeView(fileTreeViewModel)
         }
 
         Box(
@@ -71,7 +70,7 @@ fun SplitPane(
                 .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)))
                 .draggable(
                     orientation = Orientation.Horizontal,
-                    state = rememberDraggableState { splitState.widthSplittable += it }
+                    state = rememberDraggableState { splitPaneViewModel.setWidthSplittable(it) }
                 )
         )
     }

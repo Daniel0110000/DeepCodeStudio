@@ -1,24 +1,28 @@
-package ui.fileTree
+package ui.viewModels.splitPane
 
-import androidx.compose.runtime.mutableStateOf
+import dev.icerock.moko.mvvm.livedata.LiveData
+import dev.icerock.moko.mvvm.livedata.MutableLiveData
+import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.repository.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.java.KoinJavaComponent
 import ui.editor.tabs.EditorTabsModel
 import ui.editor.tabs.TabsState
+import ui.fileTree.FileInfo
+import ui.fileTree.FileObserver
 import java.io.File
 
-class FileTree(private val path: String, private val tabsState: TabsState) {
+class FileTreeViewModel(
+    private val repository: SettingRepository,
+    private val path: String,
+    private val tabsState: TabsState
+): ViewModel() {
 
-    // Represents the root directory FileInfo with depth 0 and as expanded
     private val rootFile = FileInfo(File(path), 0, true)
-    // Initializes the list of files starting with the root directory and its expanded subdirectories.
-    val listFiles = mutableStateOf(listOf(rootFile) + expandDirectory(rootFile))
 
-    // Inject the repository using Koin
-    private val repository: SettingRepository by KoinJavaComponent.inject(SettingRepository::class.java)
+    private val _listFiles: MutableLiveData<List<FileInfo>> = MutableLiveData(listOf(rootFile) + expandDirectory(rootFile))
+    val listFiles: LiveData<List<FileInfo>> = _listFiles
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -27,15 +31,15 @@ class FileTree(private val path: String, private val tabsState: TabsState) {
                 // Callback when a new file or directory is created
                 onCreate = {
                     // Check if the [FileInfo] list already contains a directory with the same parent
-                    if(listFiles.value.contains(FileInfo(File(it.parent), calculateRelativeDirectoryDepth(it.parent), true))){
+                    if(_listFiles.value.contains(FileInfo(File(it.parent), calculateRelativeDirectoryDepth(it.parent), true))){
                         // Add the created file to the list of FileInfo with appropriate depth
-                        listFiles.value = listFiles.value.plus(FileInfo(it, calculateRelativeDirectoryDepth(it.absolutePath), false))
+                        _listFiles.value = _listFiles.value.plus(FileInfo(it, calculateRelativeDirectoryDepth(it.absolutePath), false))
                     } },
                 // Callback when a file or directory is deleted
                 onDelete = { file ->
                     val filePath = file.absolutePath
                     // Remove the deleted file from the list of FileInfo and its subdirectories
-                    listFiles.value = listFiles.value.filter { it.file != file && !it.file.absolutePath.contains(filePath) }
+                    _listFiles.value = _listFiles.value.filter { it.file != file && !it.file.absolutePath.contains(filePath) }
 
                     // If the deleted file is open, its tab is closed
                     tabsState.closeTab(EditorTabsModel(file.name, filePath)){ _ -> }
@@ -61,15 +65,13 @@ class FileTree(private val path: String, private val tabsState: TabsState) {
                 // Close the directory by setting the [isExpanded] flag to false and removing its contents
                 item.isExpanded = false
                 val directoryPath = item.file.absolutePath
-                listFiles.value = listFiles.value.filterNot { fileInfo ->
+                _listFiles.value = _listFiles.value.filterNot { fileInfo ->
                     fileInfo.file != item.file && fileInfo.file.absolutePath.startsWith(directoryPath)
                 }
             } else {
                 // Open the directory if it has contents and update the list of displayed files
                 item.file.listFiles()?.let { if(it.isNotEmpty()) item.isExpanded = true }
-                if(!listFiles.value.containsAll(expandedFiles)){
-                    listFiles.value = listFiles.value + expandedFiles
-                }
+                if(!_listFiles.value.containsAll(expandedFiles)) _listFiles.value += expandedFiles
             }
         } else{
             // If it's an ASM file, open it in the editor tab using [tabsState.openTab]

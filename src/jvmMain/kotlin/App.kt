@@ -6,6 +6,7 @@ import ui.viewModels.editor.TabsViewModel
 import ui.viewModels.settings.AutocompleteSettingsViewModel
 import ui.viewModels.settings.SettingsViewModel
 import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
+import ui.viewModels.splitPane.SplitPaneViewModel
 import ui.viewModels.terminal.TerminalViewModel
 
 /**
@@ -33,4 +34,7 @@ class App: KoinComponent {
 
     // Inject [TerminalViewModel]
     val terminalViewModel: TerminalViewModel by inject()
+
+    // Inject [SplitPaneViewModel]
+    val splitPaneViewModel: SplitPaneViewModel by inject()
 }
