@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import ui.editor.EditorComposable
 import ui.editor.EditorState
 import ui.editor.EditorTabComposable
+import ui.editor.tabs.EditorTabsModel
 import java.io.File
 
 class EditorViewModel(
@@ -34,6 +35,8 @@ class EditorViewModel(
 
     private val _displayAllAutocompleteOptions: MutableLiveData<Boolean> = MutableLiveData(false)
     val displayAutocompleteOptions: LiveData<Boolean> = _displayAllAutocompleteOptions
+
+    private val _tabs: MutableLiveData<List<EditorTabsModel>> = MutableLiveData(emptyList())
 
     /**
      * Handles the creation fo a new tab with the specified [filePath]
@@ -94,6 +97,32 @@ class EditorViewModel(
     }
 
     /**
+     * Parses and displays an error line based on the result string
+     *
+     * @param result The result string containing error information
+     */
+    fun displayErrorLine(result: String){
+        val splitMessage = result.split("\n")
+        val regex = Regex("""^([^:]+):(\d+):""")
+
+        val matchResult = regex.find(splitMessage[0])
+
+        // If there is a match, extract the file name and line number
+        if(matchResult != null){
+            val (fileName, lineNumber) = matchResult.destructured
+
+            _tabs.value.forEachIndexed { index, editorTabsModel ->
+                if(editorTabsModel.fileName == fileName){
+                    _editorStates.value[index].errorLineIndex.value = lineNumber.toInt()
+                    _editorStates.value[index].displayErrorLine.value = true
+                    setSelectedTabIndex(index)
+                }
+            }
+        }
+
+    }
+
+    /**
      * Handles the deletion of a tab at the specified [index] and associated file [filePath]
      *
      * @param index The index of the tab to be selected
@@ -122,6 +151,11 @@ class EditorViewModel(
      */
     fun setSelectedTabIndex(value: Int){
         _selectedTabIndex.value = value
+    }
+
+
+    fun setTabs(value: List<EditorTabsModel>){
+        _tabs.value = value
     }
 
 }

@@ -44,6 +44,7 @@ fun TerminalView(
     var hoverCloseTerminal by remember { mutableStateOf(false) }
 
     val viewModel = App().terminalViewModel // Inject [TerminalViewModel]
+    val editorViewModel = App().editorViewModel // Inject [EditorViewModel]
 
     val scrollState = rememberLazyListState() // Scroll state for the lazy
 
@@ -142,7 +143,9 @@ fun TerminalView(
                 }
 
                 item {
-                    prompt(viewModel)
+                    prompt(viewModel){
+                        editorViewModel.displayErrorLine(it)
+                    }
 
                     if(suggestions.isNotEmpty()){
                         TerminalAutocompleteDropdown(

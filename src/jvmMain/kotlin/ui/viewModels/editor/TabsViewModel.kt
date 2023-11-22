@@ -24,7 +24,9 @@ class TabsViewModel: ViewModel() {
      * @param value The value to assign
      */
     fun setTabSelected(value: String){
-        _tabSelected.value = value
+        if(value != _tabSelected.value){
+            _tabSelected.value = value
+        }
     }
 
     /**

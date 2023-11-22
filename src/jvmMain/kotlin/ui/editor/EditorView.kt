@@ -20,12 +20,14 @@ import ui.ThemeApp
 import ui.editor.tabs.TabsState
 import ui.editor.tabs.TabsView
 import ui.viewModels.editor.EditorViewModel
+import ui.viewModels.editor.TabsViewModel
 
 @Composable
 fun EditorView(tabsState: TabsState) {
 
-    // Inject [EditorViewModel
+    // Inject [EditorViewModel and [tabsViewModel]
     val viewModel: EditorViewModel = App().editorViewModel
+    val tabsViewModel: TabsViewModel = App().tabsViewModel
 
     // Value observers
     val isDisplayEditor = viewModel.isDisplayEditor.observeAsState()
@@ -35,8 +37,18 @@ fun EditorView(tabsState: TabsState) {
     val displayAllAutocompleteOptions = viewModel.displayAutocompleteOptions.observeAsState().value
 
     LaunchedEffect(tabsState.tabs.size){
+        // Assigns all open tabs to the [EditorViewModel]
+        viewModel.setTabs(tabsState.tabs)
         // Check if there are tabs open. If there are, set the editor's visibility to true
         viewModel.setDisplayEditor(tabsState.tabs.size != 0)
+    }
+
+
+    // LaunchedEffect block that sets the currently selected tab in response to changes in the selectedTabIndex
+    LaunchedEffect(selectedTabIndex){
+        if(editorStates.isNotEmpty()) {
+            tabsViewModel.setTabSelected(editorStates[selectedTabIndex].filePath.value)
+        }
     }
 
     if(isDisplayEditor.value){

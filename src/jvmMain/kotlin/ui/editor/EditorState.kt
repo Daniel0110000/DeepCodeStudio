@@ -47,4 +47,9 @@ class EditorState {
     // Index of the currently selected line
     var lineIndex = mutableStateOf(0)
 
+    // Stores the visibility of the error line in the editor
+    var displayErrorLine = mutableStateOf(false)
+    // Stores the index of the error line in the editor.
+    var errorLineIndex = mutableStateOf(0)
+
 }

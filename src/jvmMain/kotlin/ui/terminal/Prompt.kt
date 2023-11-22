@@ -31,7 +31,10 @@ import ui.viewModels.terminal.TerminalViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun prompt(viewModel: TerminalViewModel){
+fun prompt(
+    viewModel: TerminalViewModel,
+    onErrorOccurred: (String) -> Unit
+){
 
     // [FocusRequester] to request focus for the text field
     val focus = remember { FocusRequester() }
@@ -98,9 +101,12 @@ fun prompt(viewModel: TerminalViewModel){
                         // Execute command when Enter is pressed, clear terminal if the command is "clear"
                         if(command.text == "clear") viewModel.clearTerminal()
                         else{
+                            val commandResult = ExecuteCommands.executeCommand(command.text, viewModel)
                             viewModel.setDirectory(viewModel.currentDirectory.value)
                             viewModel.setCommandExecuted(command.text)
-                            viewModel.setResult(ExecuteCommands.executeCommand(command.text, viewModel))
+                            viewModel.setResult(commandResult)
+                            // If [commandResult] contains 'error,' we call the callback [onErrorOccurred] passing the [commandResult]
+                            if(commandResult.contains("error")) onErrorOccurred(commandResult)
                         }
 
                         viewModel.setCommand(TextFieldValue(""))
