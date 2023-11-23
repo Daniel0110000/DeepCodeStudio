@@ -105,8 +105,8 @@ fun prompt(
                             viewModel.setDirectory(viewModel.currentDirectory.value)
                             viewModel.setCommandExecuted(command.text)
                             viewModel.setResult(commandResult)
-                            // If [commandResult] contains 'error,' we call the callback [onErrorOccurred] passing the [commandResult]
-                            if(commandResult.contains("error")) onErrorOccurred(commandResult)
+                            // If [commandResult] contains 'error' or 'warning', we call the callback [onErrorOccurred] passing the [commandResult]
+                            if(commandResult.contains("error") || commandResult.contains("warning")) onErrorOccurred(commandResult)
                         }
 
                         viewModel.setCommand(TextFieldValue(""))

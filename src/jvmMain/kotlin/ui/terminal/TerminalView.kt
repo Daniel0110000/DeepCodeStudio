@@ -49,7 +49,7 @@ fun TerminalView(
     val scrollState = rememberLazyListState() // Scroll state for the lazy
 
     /**
-     * [LaunchedEffect] to set the currently opened directory in the [ui.fileTree.FileTree] to the terminal
+     * [LaunchedEffect] to set the currently opened directory in the [ui.fileTree.FileTreeView] to the terminal
      */
     LaunchedEffect(Unit){ viewModel.setCurrentDirectory(directoryPath) }
 
@@ -144,7 +144,7 @@ fun TerminalView(
 
                 item {
                     prompt(viewModel){
-                        editorViewModel.displayErrorLine(it)
+                        editorViewModel.displayErrorOrWarningLine(it)
                     }
 
                     if(suggestions.isNotEmpty()){

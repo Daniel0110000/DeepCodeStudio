@@ -25,7 +25,8 @@ object ThemeApp {
         val asmIconColor: Color = Color(0xFFD35400),
         val hoverTab: Color = Color(0x10FFFFFF),
         val lineNumberTextColor: Color = Color(0xFF515A6C),
-        val error: Color = Color(0x50f20f0f)
+        val error: Color = Color(0x50f20f0f),
+        val warning: Color = Color(0x50ffc107)
     )
 
     class Text(

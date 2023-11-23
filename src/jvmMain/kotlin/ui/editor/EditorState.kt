@@ -49,6 +49,8 @@ class EditorState {
 
     // Stores the visibility of the error line in the editor
     var displayErrorLine = mutableStateOf(false)
+    // Stores the visibility of the warning line in the editor
+    var displayWarningLine = mutableStateOf(false)
     // Stores the index of the error line in the editor.
     var errorLineIndex = mutableStateOf(0)
 

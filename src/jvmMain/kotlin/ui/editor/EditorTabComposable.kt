@@ -80,6 +80,7 @@ val EditorTabComposable: EditorComposable = { editorState ->
 
                                 editorState.isAutoCompleteVisible.value = editorState.autoCompleteSuggestions.value.isNotEmpty()
                                 editorState.displayErrorLine.value = false
+                                editorState.displayWarningLine.value = false
                             } else {
                                 editorState.autoCompleteSuggestions.value = emptyList()
                                 editorState.isAutoCompleteVisible.value = false
@@ -123,11 +124,18 @@ val EditorTabComposable: EditorComposable = { editorState ->
                 17 * (if(editorState.lineIndex.value != 0) editorState.lineIndex.value - 1 else editorState.lineIndex.value) - scrollState.value,
             )
 
-            // If displayErrorLine is true, it displays the error line in the editor
+            // If [displayErrorLine] is true, it displays the error line in the editor
             if(editorState.displayErrorLine.value){
                 errorLine(
                     17 * (if(editorState.errorLineIndex.value != 0) editorState.errorLineIndex.value - 1 else editorState.errorLineIndex.value) - scrollState.value,
                 )
+            }
+
+            // If [displayWarningLine] is true, it displays the warning line in the editor
+            if(editorState.displayWarningLine.value){
+                warningLine(
+                    17 * (if(editorState.errorLineIndex.value != 0) editorState.errorLineIndex.value - 1 else editorState.errorLineIndex.value) - scrollState.value,
+                    )
             }
 
             // Display teh auto-complete dropdown if suggestions are available
