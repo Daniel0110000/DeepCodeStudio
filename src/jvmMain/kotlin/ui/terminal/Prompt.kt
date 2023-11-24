@@ -10,18 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
@@ -29,7 +27,6 @@ import domain.utilies.TextUtils
 import ui.ThemeApp
 import ui.viewModels.terminal.TerminalViewModel
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun prompt(
     viewModel: TerminalViewModel,
@@ -40,9 +37,9 @@ fun prompt(
     val focus = remember { FocusRequester() }
 
     // Value observers
-    val isKeyBeingPressed = viewModel.isKeyBeingPressed.observeAsState().value
     val command = viewModel.command.observeAsState().value
     val currentDirectory = viewModel.currentDirectory.observeAsState().value
+    val allCommandHistory = viewModel.allCommandHistory.observeAsState().value
 
     // State selected word in the text field
     val selectedWord = remember { mutableStateOf("") }
@@ -96,68 +93,7 @@ fun prompt(
             modifier = Modifier
                 .weight(1f)
                 .focusRequester(focus)
-                .onPreviewKeyEvent {
-                    if(it.key == Key.Enter && !isKeyBeingPressed && viewModel.suggestions.value.isEmpty()){
-                        // Execute command when Enter is pressed, clear terminal if the command is "clear"
-                        if(command.text == "clear") viewModel.clearTerminal()
-                        else{
-                            val commandResult = ExecuteCommands.executeCommand(command.text, viewModel)
-                            viewModel.setDirectory(viewModel.currentDirectory.value)
-                            viewModel.setCommandExecuted(command.text)
-                            viewModel.setResult(commandResult)
-                            // If [commandResult] contains 'error' or 'warning', we call the callback [onErrorOccurred] passing the [commandResult]
-                            if(commandResult.contains("error") || commandResult.contains("warning")) onErrorOccurred(commandResult)
-                        }
-
-                        viewModel.setCommand(TextFieldValue(""))
-
-                        viewModel.setIsKeyBeingPressed(true)
-                        true
-                    } else if (it.isCtrlPressed && it.key == Key.L && !isKeyBeingPressed){
-                        // Handle Ctrl + L to clear the terminal
-                        viewModel.clearTerminal()
-                        viewModel.setIsKeyBeingPressed(true)
-                        true
-                    } else if (it.key == Key.Tab && !isKeyBeingPressed){
-                        // Handle Tab key for autocomplete suggestions
-                        viewModel.setSelectedItemIndex(0)
-                        viewModel.getSuggestions(selectedWord.value)
-                        if(viewModel.suggestions.value.size == 1){
-                            // Assigns the selected command from suggestions to the input through the viewModel
-                            viewModel.setSuggestionToInput(viewModel.suggestions.value.last())
-
-                            // Clear suggestions
-                            viewModel.clearSuggestions()
-                        }
-                        viewModel.setIsKeyBeingPressed(true)
-                        true
-                    } else if(it.key == Key.DirectionDown && !isKeyBeingPressed && viewModel.suggestions.value.isNotEmpty()){
-                        // Handle Down arrow key for navigating suggestions
-                        if(viewModel.selectedItemIndex.value < viewModel.suggestions.value.size - 1) viewModel.setSelectedItemIndex(viewModel.selectedItemIndex.value + 1)
-                        viewModel.setIsKeyBeingPressed(true)
-                        true
-                    } else if(it.key == Key.DirectionUp && !isKeyBeingPressed && viewModel.suggestions.value.isNotEmpty()){
-                        // Handle Up arrow key for navigating suggestions
-                        if(viewModel.selectedItemIndex.value > 0) viewModel.setSelectedItemIndex(viewModel.selectedItemIndex.value - 1)
-                        viewModel.setIsKeyBeingPressed(true)
-                        true
-                    } else if (it.key == Key.Enter && viewModel.suggestions.value.isNotEmpty() && !isKeyBeingPressed){
-                        // Assigns the selected command from suggestions to the input through the viewModel
-                        viewModel.setSuggestionToInput(viewModel.suggestions.value[viewModel.selectedItemIndex.value])
-
-                        // Reset selected item and clear suggestions
-                        viewModel.setSelectedItemIndex(0)
-                        viewModel.clearSuggestions()
-                        viewModel.setIsKeyBeingPressed(true)
-                        true
-                    } else if (it.type == KeyEventType.KeyUp){
-                        // Release key press flag when key is released
-                        viewModel.setIsKeyBeingPressed(false)
-                        false
-                    } else {
-                        false
-                    }
-                }
+                .onPreviewKeyEvent { terminalKeyEvents(it, viewModel, selectedWord.value, allCommandHistory){ r -> onErrorOccurred(r) } }
         )
     }
 

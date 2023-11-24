@@ -1,7 +1,9 @@
 package di
 
 import data.repository.SettingRepositoryImpl
+import data.repository.TerminalRepositoryImpl
 import domain.repository.SettingRepository
+import domain.repository.TerminalRepository
 import org.koin.dsl.module
 import ui.viewModels.editor.EditorViewModel
 import ui.viewModels.editor.TabsViewModel
@@ -16,12 +18,13 @@ import ui.viewModels.terminal.TerminalViewModel
  */
 val appModule = module {
     single<SettingRepository> { SettingRepositoryImpl() }
+    single<TerminalRepository> { TerminalRepositoryImpl() }
 
     single { SyntaxHighlightSettingsViewModel(get()) }
     single { AutocompleteSettingsViewModel(get()) }
     single { TabsViewModel() }
     single { EditorViewModel(get()) }
     single { SettingsViewModel() }
-    single { TerminalViewModel() }
+    single { TerminalViewModel(get()) }
     single { SplitPaneViewModel() }
 }

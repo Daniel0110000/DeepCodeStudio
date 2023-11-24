@@ -5,9 +5,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import domain.repository.TerminalRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
-class TerminalViewModel: ViewModel() {
+class TerminalViewModel(
+    private val repository: TerminalRepository
+): ViewModel() {
 
     private val _results: MutableLiveData<List<String>> = MutableLiveData(emptyList())
     val results: LiveData<List<String>> = _results
@@ -39,6 +45,11 @@ class TerminalViewModel: ViewModel() {
     private val _terminalHeight: MutableLiveData<Float> = MutableLiveData(250f)
     val terminalHeight: LiveData<Float> = _terminalHeight
 
+    private val _allCommandHistory: MutableLiveData<List<String>> = MutableLiveData(emptyList())
+    val allCommandHistory: LiveData<List<String>> = _allCommandHistory
+
+    private val _commandIndex: MutableLiveData<Int> = MutableLiveData(-1)
+    val commandIndex: LiveData<Int> = _commandIndex
 
     // All the formats supported by [NASM]
     private val nasmFormats: List<String> = listOf(
@@ -50,6 +61,11 @@ class TerminalViewModel: ViewModel() {
     private val ldEmulators: List<String> = listOf(
         "elf_x86_64", "elf32_x86_64", "elf_i386", "elf_iamcu", "i386pep", "i386pe", "elf64bpf"
     )
+
+    init {
+        // Fetches the entire command history and assigns it to the variable [_allCommandHistory]
+        _allCommandHistory.value = repository.getAllCommandHistory()
+    }
 
     /**
      * Clear the terminal by resetting the results, executed commands, and directories lists
@@ -129,10 +145,31 @@ class TerminalViewModel: ViewModel() {
     }
 
     /**
+     * Inserts the command into the command history and updates the variable [_allCommandHistory]
+     *
+     * @param command Command to insert
+     */
+    fun addCommand(command: String){
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.addCommand(command)
+            _allCommandHistory.value = repository.getAllCommandHistory()
+        }
+    }
+
+    /**
      * Clears the list of suggestions, removing any existing suggestions
      */
     fun clearSuggestions(){
         _suggestions.value = emptyList()
+    }
+
+    /**
+     * Sets the command index using the provided [value]
+     *
+     * @param value The value to assign
+     */
+    fun setCommandIndex(value: Int){
+        _commandIndex.value = value
     }
 
     /**
