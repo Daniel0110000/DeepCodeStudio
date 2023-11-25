@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domain.utilies.DocumentsManager
-import domain.utilies.JsonUtils
 import domain.utilies.TextUtils
 import kotlinx.coroutines.launch
 import ui.ThemeApp
@@ -90,6 +89,7 @@ val EditorTabComposable: EditorComposable = { editorState ->
                             editorState.codeText.value = it
 
                         },
+                        readOnly = editorState.readOnly.value,
                         onTextLayout = {
                             val lineCount = it.lineCount
                             if (lineCount != editorState.linesCount.value) editorState.linesCount.value = lineCount
@@ -163,16 +163,9 @@ val EditorTabComposable: EditorComposable = { editorState ->
         // Create the bottom actions row
         bottomActionsRow(
             repository,
-            editorState.filePath.value
-        ){
-            // Retrieve the selected autocomplete option for the current file
-            val option = repository.getSelectedAutocompleteOption(editorState.filePath.value)
-
-            // Set the autocomplete keywords, syntax highlight configuration and variable directives from the selected option
-            editorState.syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(option.uuid)
-            editorState.keywords.value = JsonUtils.jsonToListString(option.jsonPath)
-            editorState.variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath)
-        }
+            editorState.filePath.value,
+            editorState
+        )
 
     }
 }

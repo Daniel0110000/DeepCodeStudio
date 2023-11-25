@@ -54,4 +54,7 @@ class EditorState {
     // Stores the index of the error line in the editor.
     var errorLineIndex = mutableStateOf(0)
 
+    // Indicates whether the editor is read-only or not
+    var readOnly = mutableStateOf(false)
+
 }
