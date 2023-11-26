@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import ui.ThemeApp
 import ui.settings.lazy.AutocompleteOptionItem
 import ui.settings.lazy.NewAutocompleteOptionInput
+import java.io.File
 
 /**
  * Composable function for displaying and managing autocomplete settings
@@ -27,7 +28,10 @@ import ui.settings.lazy.NewAutocompleteOptionInput
  * @param modifier The modifier for layout customization
  */
 @Composable
-fun AutocompleteSettings(modifier: Modifier) {
+fun AutocompleteSettings(
+    modifier: Modifier,
+    onErrorOccurred: (String) -> Unit
+) {
 
     // Scroll state for the LazyColumn
     val scrollState = rememberLazyListState()
@@ -53,37 +57,48 @@ fun AutocompleteSettings(modifier: Modifier) {
             state = scrollState
         ) {
             items(allOptions.value){
-                AutocompleteOptionItem(
-                    it.optionName,
-                    it.jsonPath,
-                    onDeleteOptionClick = {
-                        scope.launch {
-                            autocompleteSettingsViewModel.deleteConfig(it)
 
-                            // Update the Syntax Highlight configurations
-                            syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
-                            // Update the autocomplete options
-                            autocompleteSettingsViewModel.updateAutocompleteOptions()
-                        }
-                    },
-                    onUpdateJsonPathClick = { newJsonPath ->
-                        scope.launch {
-                            if(newJsonPath.isNotBlank()){
-                                // When the callback is executed, and [newJsonPath] is not black, update the autocomplete JSON path,
-                                // ... the syntax highlight JSON path and the selected autocompleted option json path
-                                autocompleteSettingsViewModel.updateJsonPath(
-                                    newJsonPath,
-                                    it
-                                )
+                // If the JSON file does not exist in the specified path, the [onErrorOccurred] callback is called,
+                // ... and the option is removed from the database
+                if(!File(it.jsonPath).exists()){
+                    CoroutineScope(Dispatchers.IO).launch {
+                        onErrorOccurred("JSON file not found at the specified path '${it.jsonPath}'")
+                        autocompleteSettingsViewModel.deleteConfig(it)
+                    }
+                } else {
+                    AutocompleteOptionItem(
+                        it.optionName,
+                        it.jsonPath,
+                        onDeleteOptionClick = {
+                            scope.launch {
+                                autocompleteSettingsViewModel.deleteConfig(it)
 
                                 // Update the Syntax Highlight configurations
                                 syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
                                 // Update the autocomplete options
                                 autocompleteSettingsViewModel.updateAutocompleteOptions()
                             }
+                        },
+                        onUpdateJsonPathClick = { newJsonPath ->
+                            scope.launch {
+                                if(newJsonPath.isNotBlank()){
+                                    // When the callback is executed, and [newJsonPath] is not black, update the autocomplete JSON path,
+                                    // ... the syntax highlight JSON path and the selected autocompleted option json path
+                                    autocompleteSettingsViewModel.updateJsonPath(
+                                        newJsonPath,
+                                        it
+                                    )
+
+                                    // Update the Syntax Highlight configurations
+                                    syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
+                                    // Update the autocomplete options
+                                    autocompleteSettingsViewModel.updateAutocompleteOptions()
+                                }
+                            }
                         }
-                    }
-                )
+                    )
+                }
+
             }
 
             item {

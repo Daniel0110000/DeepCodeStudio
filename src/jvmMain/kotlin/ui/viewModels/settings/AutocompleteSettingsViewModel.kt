@@ -6,7 +6,7 @@ import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.model.AutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
 import domain.repository.SettingRepository
-import java.util.UUID
+import java.util.*
 
 class AutocompleteSettingsViewModel(
     private val repository: SettingRepository
@@ -46,6 +46,7 @@ class AutocompleteSettingsViewModel(
         val uuid = UUID.randomUUID().toString()
         repository.addAutocompleteOption(autocompleteModel.copy(uuid = uuid))
         repository.createSyntaxHighlightConfig(syntaxHighlightModel.copy(uuid = uuid))
+        setOptionName("")
     }
 
     /**
