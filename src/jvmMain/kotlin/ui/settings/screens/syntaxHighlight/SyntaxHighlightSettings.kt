@@ -1,22 +1,10 @@
 package ui.settings.screens.syntaxHighlight
 
 import App
-import androidx.compose.foundation.ScrollbarAdapter
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,12 +15,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ui.ThemeApp
 import ui.editor.EditorVisualTransformation
 import ui.settings.lazy.SyntaxKeywordHighlighterConfigItem
+import ui.viewModels.settings.SettingsViewModel
+import java.io.File
 
 @Composable
-fun SyntaxHighlightSettings(modifier: Modifier) {
+fun SyntaxHighlightSettings(
+    modifier: Modifier,
+    settingsViewModel: SettingsViewModel,
+    onErrorOccurred: (String) -> Unit
+) {
 
     // Inject [SyntaxHighlightViewModel]
     val viewModel = App().syntaxHighlightSettingsViewModel
@@ -63,16 +60,25 @@ fun SyntaxHighlightSettings(modifier: Modifier) {
                     .padding(8.dp)
             ) {
                 configs.value.forEachIndexed { index, config ->
-
-                    SyntaxKeywordHighlighterConfigItem(
-                        config,
-                        viewModel,
-                        onUpdateConfigs = { viewModel.updateSyntaxHighlightConfigs() },
-                        index,
-                        isExpandColorOptionsList.value[index],
-                        selectedOptionIndex.value,
-                        onSelectedOptionIndexChanged = { viewModel.updateSelectedIndex(it) }
-                    )
+                    // If the JSON file does not exist in the specified path, the [onErrorOccurred] callback is called,
+                    // ... and the option is removed from the database
+                    if(!File(config.jsonPath).exists()){
+                        CoroutineScope(Dispatchers.IO).launch {
+                            onErrorOccurred("JSON file not found at the specified path '${config.jsonPath}'")
+                            viewModel.deleteConfig(config.uuid)
+                            viewModel.updateSyntaxHighlightConfigs()
+                        }
+                    } else {
+                        SyntaxKeywordHighlighterConfigItem(
+                            config,
+                            viewModel,
+                            onUpdateConfigs = { viewModel.updateSyntaxHighlightConfigs() },
+                            index,
+                            isExpandColorOptionsList.value[index],
+                            selectedOptionIndex.value,
+                            onSelectedOptionIndexChanged = { viewModel.updateSelectedIndex(it) }
+                        )
+                    }
                 }
             }
 
@@ -115,7 +121,11 @@ fun SyntaxHighlightSettings(modifier: Modifier) {
                         fontWeight = FontWeight.W500
                     ),
                     cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
-                    visualTransformation = EditorVisualTransformation(configs.value[selectedOptionIndex.value]),
+                    visualTransformation = EditorVisualTransformation(
+                        configs.value[selectedOptionIndex.value],
+                        viewModel,
+                        settingsViewModel
+                    ),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 10.dp, horizontal = 20.dp)

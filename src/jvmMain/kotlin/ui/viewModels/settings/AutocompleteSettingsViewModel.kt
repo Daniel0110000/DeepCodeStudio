@@ -67,14 +67,12 @@ class AutocompleteSettingsViewModel(
     /**
      * Deletes an autocomplete option and its related entities
      *
-     * @param model The [AutocompleteOptionModel] to be deleted
+     * @param uuid Identifier associated with the configuration to be deleted
      */
-    suspend fun deleteConfig(
-        model: AutocompleteOptionModel
-    ){
-        repository.deleteAutocompleteOption(model.uuid)
-        repository.deleteSyntaxHighlightConfig(model.uuid)
-        repository.deleteSelectedAutocompleteOption(uuid = model.uuid)
+    suspend fun deleteConfig(uuid: String){
+        repository.deleteAutocompleteOption(uuid)
+        repository.deleteSyntaxHighlightConfig(uuid)
+        repository.deleteSelectedAutocompleteOption(uuid)
     }
 
     /**

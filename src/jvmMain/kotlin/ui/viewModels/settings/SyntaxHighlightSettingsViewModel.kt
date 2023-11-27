@@ -45,7 +45,7 @@ class SyntaxHighlightSettingsViewModel(
 
         // Ensure the color options expansion list matches the size of the configurations
         if(_isExpandColorOptionsList.value.size < _allSyntaxHighlightConfigs.value.size){
-            _isExpandColorOptionsList.value = _isExpandColorOptionsList.value + false
+            _isExpandColorOptionsList.value += false
         }
 
         if(_isExpandColorOptionsList.value.size > _allSyntaxHighlightConfigs.value.size){
@@ -89,6 +89,17 @@ class SyntaxHighlightSettingsViewModel(
             currentList[index] = value
             _isExpandColorOptionsList.value = currentList
         }
+    }
+
+    /**
+     * Deletes an autocomplete option and its related entities
+     *
+     * @param uuid Identifier associated with the configuration to be deleted
+     */
+    suspend fun deleteConfig(uuid: String){
+        settingsRepository.deleteAutocompleteOption(uuid)
+        settingsRepository.deleteSyntaxHighlightConfig(uuid)
+        settingsRepository.deleteSelectedAutocompleteOption(uuid)
     }
 
     /**

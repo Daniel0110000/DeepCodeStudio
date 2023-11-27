@@ -57,13 +57,13 @@ fun AutocompleteSettings(
             state = scrollState
         ) {
             items(allOptions.value){
-
                 // If the JSON file does not exist in the specified path, the [onErrorOccurred] callback is called,
                 // ... and the option is removed from the database
                 if(!File(it.jsonPath).exists()){
                     CoroutineScope(Dispatchers.IO).launch {
                         onErrorOccurred("JSON file not found at the specified path '${it.jsonPath}'")
-                        autocompleteSettingsViewModel.deleteConfig(it)
+                        autocompleteSettingsViewModel.deleteConfig(it.uuid)
+                        autocompleteSettingsViewModel.updateAutocompleteOptions()
                     }
                 } else {
                     AutocompleteOptionItem(
@@ -71,7 +71,7 @@ fun AutocompleteSettings(
                         it.jsonPath,
                         onDeleteOptionClick = {
                             scope.launch {
-                                autocompleteSettingsViewModel.deleteConfig(it)
+                                autocompleteSettingsViewModel.deleteConfig(it.uuid)
 
                                 // Update the Syntax Highlight configurations
                                 syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
