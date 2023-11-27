@@ -39,7 +39,7 @@ class FileTreeViewModel(
                 onDelete = { file ->
                     val filePath = file.absolutePath
                     // Remove the deleted file from the list of FileInfo and its subdirectories
-                    _listFiles.value = _listFiles.value.filter { it.file != file && !it.file.absolutePath.contains(filePath) }
+                    _listFiles.value = _listFiles.value.filter { it.file != file && it.file.absolutePath != filePath }
 
                     // If the deleted file is open, its tab is closed
                     tabsState.closeTab(EditorTabsModel(file.name, filePath)){ _ -> }
