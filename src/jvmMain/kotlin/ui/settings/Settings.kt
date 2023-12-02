@@ -6,12 +6,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogState
-import androidx.compose.ui.window.WindowPosition
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
 import ui.components.ErrorMessage
@@ -29,7 +27,7 @@ fun Settings(onCloseRequest: () -> Unit) {
 
     Dialog(
         visible = true,
-        state = DialogState(position = WindowPosition(Alignment.Center), width = 900.dp, height = 500.dp),
+        state = DialogState(width = 1200.dp, height = 700.dp),
         onCloseRequest = { onCloseRequest() },
         title = "Settings"
     ){

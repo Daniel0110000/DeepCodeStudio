@@ -116,8 +116,8 @@ class AutocompleteSettingsViewModel(
      * @param value The value to assign
      */
     fun setJsonAutocompleteOptionContainerWidth(value: Float){
-        // If [_jsonAutocompleteOptionContainerWidth] is greater than [220], it allows further changes to the width
-        if(_jsonAutocompleteOptionContainerWidth.value > 220) _jsonAutocompleteOptionContainerWidth.value += -value
+        // If [(_jsonAutocompleteOptionContainerWidth + -value)] is greater than [220], it allows further changes to the width
+        if((_jsonAutocompleteOptionContainerWidth.value + -value) > 220) _jsonAutocompleteOptionContainerWidth.value += -value
     }
 
 }

@@ -22,6 +22,9 @@ class SettingsViewModel: ViewModel() {
     private val _errorDescription: MutableLiveData<String> = MutableLiveData("")
     val errorDescription: LiveData<String> = _errorDescription
 
+    private val _settingsOptionsWidth: MutableLiveData<Float> = MutableLiveData(220f)
+    val settingsOptionsWidth: LiveData<Float> = _settingsOptionsWidth
+
     /**
      * Sets the screen using the provided [value]
      *
@@ -56,6 +59,16 @@ class SettingsViewModel: ViewModel() {
      */
     fun setErrorDescription(value: String){
         _errorDescription.value = value
+    }
+
+    /**
+     * Sets the settings options width using the provided [value]
+     *
+     * @param value The value to assign
+     */
+    fun setSettingsOptionsWidth(value: Float){
+        // If [(_settingsOptionsWidth + value)] is greater than [200], it allows further changes to the width
+        if((_settingsOptionsWidth.value + value) > 200) _settingsOptionsWidth.value += value
     }
 
 }
