@@ -15,7 +15,7 @@ import androidx.compose.ui.window.WindowPosition
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
 import ui.components.ErrorMessage
-import ui.settings.screens.AutocompleteSettings
+import ui.settings.screens.autocomplete.AutocompleteSettings
 import ui.settings.screens.syntaxHighlight.SyntaxHighlightSettings
 
 @Composable

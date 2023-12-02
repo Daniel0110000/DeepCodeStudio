@@ -21,9 +21,17 @@ class AutocompleteSettingsViewModel(
     private val _jsonPath: MutableLiveData<String> = MutableLiveData("")
     val jsonPath: LiveData<String> = _jsonPath
 
+    private val _selectedOption: MutableLiveData<AutocompleteOptionModel> = MutableLiveData(AutocompleteOptionModel())
+    val selectedOption: LiveData<AutocompleteOptionModel> = _selectedOption
+
+    private val _jsonAutocompleteOptionContainerWidth: MutableLiveData<Float> = MutableLiveData(300f)
+    val jsonAutocompleteOptionContainerWidth: LiveData<Float> = _jsonAutocompleteOptionContainerWidth
+
     init {
         // Load all autocomplete options from the repository
         _allAutocompleteOptions.value = repository.getAllAutocompleteOptions()
+        // Assigns the first value from [_allAutocompleteOptions] as the initially selected option
+        setSelectedOption(_allAutocompleteOptions.value.first())
     }
 
     /**
@@ -91,6 +99,25 @@ class AutocompleteSettingsViewModel(
      */
     fun setJsonPath(value: String){
         _jsonPath.value = value
+    }
+
+    /**
+     * Sets the selected option using the provided [value]
+     *
+     * @param value The value to assign
+     */
+    fun setSelectedOption(value: AutocompleteOptionModel){
+        _selectedOption.value = value
+    }
+
+    /**
+     * Sets the JSON autocomplete option container width using the provided [value]
+     *
+     * @param value The value to assign
+     */
+    fun setJsonAutocompleteOptionContainerWidth(value: Float){
+        // If [_jsonAutocompleteOptionContainerWidth] is greater than [220], it allows further changes to the width
+        if(_jsonAutocompleteOptionContainerWidth.value > 220) _jsonAutocompleteOptionContainerWidth.value += -value
     }
 
 }

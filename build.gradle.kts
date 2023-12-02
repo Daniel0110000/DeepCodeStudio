@@ -12,6 +12,8 @@ repositories {
     google()
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")
+
 }
 
 kotlin {
@@ -58,6 +60,21 @@ kotlin {
 
                 // Coroutines
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+
+                // Jediterm
+                implementation("org.jetbrains.jediterm:jediterm-pty:2.42")
+
+                // Pty4j
+                implementation("org.jetbrains.pty4j:pty4j:0.12.13")
+
+                // Log4j
+                implementation("log4j:log4j:1.2.17")
+
+                // Guava
+                implementation("com.google.guava:guava:32.1.3-jre")
+
+                implementation("com.formdev:flatlaf:3.2.5")
+
 
             }
         }
