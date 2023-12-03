@@ -33,10 +33,18 @@ class EditorViewModel(
     private val _editorStates: MutableLiveData<List<EditorState>> = MutableLiveData(emptyList())
     val editorStates: LiveData<List<EditorState>> = _editorStates
 
-    private val _displayAllAutocompleteOptions: MutableLiveData<Boolean> = MutableLiveData(false)
-    val displayAutocompleteOptions: LiveData<Boolean> = _displayAllAutocompleteOptions
+    private val _allAutocompleteOptions: MutableLiveData<List<AutocompleteOptionModel>> = MutableLiveData(emptyList())
+    val allAutocompleteOptions: LiveData<List<AutocompleteOptionModel>> = _allAutocompleteOptions
+
+    private val _autocompleteOptionsViewWidth: MutableLiveData<Float> = MutableLiveData(300f)
+    val autocompleteOptionsViewWidth: LiveData<Float> = _autocompleteOptionsViewWidth
+
+    private val _selectedOption: MutableLiveData<AutocompleteOptionModel> = MutableLiveData(AutocompleteOptionModel())
+    val selectedOption: LiveData<AutocompleteOptionModel> = _selectedOption
 
     private val _tabs: MutableLiveData<List<EditorTabsModel>> = MutableLiveData(emptyList())
+    private val scope = CoroutineScope(Dispatchers.IO)
+
 
     /**
      * Handles the creation fo a new tab with the specified [filePath]
@@ -52,20 +60,24 @@ class EditorViewModel(
         _selectedTabIndex.value = editorComposables.value.lastIndex
 
         // Set file path and initial code text for the tab
-        _editorStates.value[_selectedTabIndex.value].filePath.value = filePath
-        _editorStates.value[_selectedTabIndex.value].codeText.value = TextFieldValue(File(filePath).readText())
+        _editorStates.value[_selectedTabIndex.value].apply {
+            this.filePath.value = filePath
+            this.codeText.value = TextFieldValue(File(filePath).readText())
+        }
 
         //  Check if there is a selected autocomplete option for the file
         if(!repository.existsSelectedAutocompleteOption(filePath)){
-            _displayAllAutocompleteOptions.value = true
+            _editorStates.value[_selectedTabIndex.value].displayAutocompleteOptions.value = true
         } else {
             // If a selected autocomplete option exists, load its associated syntax highlight configuration
             val option = repository.getSelectedAutocompleteOption(filePath)
-            _editorStates.value[_selectedTabIndex.value].syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(option.uuid)
 
             // Load keywords and variable directives from the JSON path specified in the selected autocomplete option
-            _editorStates.value[_selectedTabIndex.value].keywords.value = JsonUtils.jsonToListString(option.jsonPath)
-            _editorStates.value[_selectedTabIndex.value].variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath)
+            _editorStates.value[_selectedTabIndex.value].apply {
+                syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(option.uuid)
+                keywords.value = JsonUtils.jsonToListString(option.jsonPath)
+                variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath)
+            }
         }
 
     }
@@ -77,15 +89,18 @@ class EditorViewModel(
      */
     fun selectedOption(model: AutocompleteOptionModel){
         // Sets syntax highlight configuration, keywords and variable directives based on the selected autocomplete option
-        _editorStates.value[_selectedTabIndex.value].syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(model.uuid)
-        _editorStates.value[_selectedTabIndex.value].keywords.value = JsonUtils.jsonToListString(model.jsonPath)
-        _editorStates.value[_selectedTabIndex.value].variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath)
 
-        // Hide the autocomplete options display
-        _displayAllAutocompleteOptions.value = false
+        _editorStates.value[_selectedTabIndex.value].apply {
+            syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(model.uuid)
+            keywords.value = JsonUtils.jsonToListString(model.jsonPath)
+            variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath)
+
+            // Hide the autocomplete options display
+            displayAutocompleteOptions.value = false
+        }
 
         // Asynchronously add the selected autocomplete option to the database
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             repository.addSelectedAutocompleteOption(
                 SelectedAutocompleteOptionModel(
                     uuid = model.uuid,
@@ -94,6 +109,41 @@ class EditorViewModel(
                     jsonPath = model.jsonPath)
             )
         }
+    }
+
+    /**
+     * Updates the selected autocomplete option in the database and refreshes the editor state
+     *
+     * @param model The [AutocompleteOptionModel] representing the autocomplete option to be updated
+     * @param editorState The current state of the editor
+     */
+    fun updateSelectedOption(model: AutocompleteOptionModel, editorState: EditorState){
+        scope.launch {
+            // Updates the selected autocomplete option in the repository
+            repository.updateSelectedAutocompleteOption(
+                SelectedAutocompleteOptionModel(
+                    uuid = model.uuid,
+                    asmFilePath = editorState.filePath.value,
+                    optionName = model.optionName,
+                    jsonPath = model.jsonPath
+                )
+            )
+
+            // Updates the editor state
+            editorState.apply {
+                syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(model.uuid)
+                keywords.value = JsonUtils.jsonToListString(model.jsonPath)
+                variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath)
+                displayUpdateAutocompleteOption.value = false
+            }
+        }
+    }
+
+    /**
+     * Gets all autocomplete options from the repository and assigns them to [_allAutocompleteOptions]
+     */
+    fun getAllAutocompleteOptions(){
+        _allAutocompleteOptions.value = repository.getAllAutocompleteOptions()
     }
 
     /**
@@ -155,8 +205,31 @@ class EditorViewModel(
     }
 
 
+    /**
+     * Sets the tabs using the provided [value]
+     *
+     * @param value The valor to assign
+     */
     fun setTabs(value: List<EditorTabsModel>){
         _tabs.value = value
+    }
+
+    /**
+     * Sets the autocomplete options view width using the provided [value]
+     *
+     * @param value The valor to assign
+     */
+    fun setAutocompleteOptionsViewWidth(value: Float){
+        _autocompleteOptionsViewWidth.value = value
+    }
+
+    /**
+     * Sets the selected option using the provided [value]
+     *
+     * @param value The valor to assign
+     */
+    fun setSelectedOption(value: AutocompleteOptionModel){
+        _selectedOption.value = value
     }
 
 }

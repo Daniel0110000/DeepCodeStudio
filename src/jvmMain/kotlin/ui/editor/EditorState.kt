@@ -57,4 +57,9 @@ class EditorState {
     // Indicates whether the editor is read-only or not
     var readOnly = mutableStateOf(false)
 
+    // Visibility state of the view for selecting an autocomplete option
+    var displayAutocompleteOptions = mutableStateOf(false)
+    // Visibility state of the view for updating the selected autocomplete option
+    var displayUpdateAutocompleteOption = mutableStateOf(false)
+
 }

@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
@@ -18,11 +17,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import domain.repository.SettingRepository
 import domain.utilies.DocumentsManager
 import domain.utilies.TextUtils
 import kotlinx.coroutines.launch
 import ui.ThemeApp
-import ui.components.bottomActionsRow
+import ui.components.BottomActionsRow
 import ui.editor.codeAutoCompletion.AutoCompleteDropdown
 import ui.editor.codeAutoCompletion.KeywordAutoCompleteUtil
 import java.io.File
@@ -33,11 +33,11 @@ import java.io.File
  */
 typealias EditorComposable = @Composable (EditorState) -> Unit
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 val EditorTabComposable: EditorComposable = { editorState ->
 
     // Inject [SettingRepository]
-    val repository = App().settingRepository
+    val repository: SettingRepository = App().settingRepository
 
     // Scroll state for the text editor
     val scrollState = rememberScrollState()
@@ -166,11 +166,6 @@ val EditorTabComposable: EditorComposable = { editorState ->
         }
 
         // Create the bottom actions row
-        bottomActionsRow(
-            repository,
-            editorState.filePath.value,
-            editorState
-        )
-
+        BottomActionsRow(repository, editorState)
     }
 }

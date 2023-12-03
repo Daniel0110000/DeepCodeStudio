@@ -2,10 +2,7 @@ package ui.editor
 
 import App
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,7 +31,6 @@ fun EditorView(tabsState: TabsState) {
     val selectedTabIndex = viewModel.selectedTabIndex.observeAsState().value
     val editorComposables = viewModel.editorComposables.observeAsState().value
     val editorStates = viewModel.editorStates.observeAsState().value
-    val displayAllAutocompleteOptions = viewModel.displayAutocompleteOptions.observeAsState().value
 
     LaunchedEffect(tabsState.tabs.size){
         // Assigns all open tabs to the [EditorViewModel]
@@ -52,17 +48,24 @@ fun EditorView(tabsState: TabsState) {
     }
 
     if(isDisplayEditor.value){
-        Column(modifier = Modifier.fillMaxSize()) {
-            TabsView(
-                tabsState,
-                onNewTab = { viewModel.onNewTab(it) },
-                onDeleteTab = { i, path -> viewModel.onDeleteTab(i, path) },
-                onChangeSelectedTab = { index -> viewModel.setSelectedTabIndex(index) }
-            )
+        Row(modifier = Modifier.fillMaxSize()) {
 
-            if(editorComposables.isNotEmpty() && editorStates[selectedTabIndex].syntaxHighlightConfig.value.jsonPath.isNotEmpty()) {
-                editorComposables[selectedTabIndex](editorStates[selectedTabIndex])
+            Column(modifier = Modifier.weight(1f)) {
+                TabsView(
+                    tabsState,
+                    onNewTab = { viewModel.onNewTab(it) },
+                    onDeleteTab = { i, path -> viewModel.onDeleteTab(i, path) },
+                    onChangeSelectedTab = { index -> viewModel.setSelectedTabIndex(index) }
+                )
+
+                if(editorComposables.isNotEmpty() && editorStates[selectedTabIndex].syntaxHighlightConfig.value.jsonPath.isNotEmpty()) {
+                    editorComposables[selectedTabIndex](editorStates[selectedTabIndex])
+                }
+
             }
+
+            if(editorStates.isNotEmpty()) AllAutocompleteOptionView(editorStates[selectedTabIndex], viewModel)
+
         }
     } else {
         Column(
@@ -85,12 +88,6 @@ fun EditorView(tabsState: TabsState) {
             )
 
         }
-    }
-
-    if(displayAllAutocompleteOptions){
-        AllAutocompleteOptions(
-            selectedOption = { viewModel.selectedOption(it) }
-        )
     }
 
 }
