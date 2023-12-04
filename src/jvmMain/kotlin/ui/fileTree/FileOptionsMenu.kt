@@ -1,22 +1,17 @@
 package ui.fileTree
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import ui.ThemeApp
 import domain.utilies.DocumentsManager
+import ui.ThemeApp
 
 @Composable
 fun FileOptionsMenu(
@@ -25,134 +20,68 @@ fun FileOptionsMenu(
     dismissDropDown: () -> Unit
 ) {
 
-    val showDialog = remember { mutableStateOf(false) }
-    var dialogTitle by remember { mutableStateOf("") }
     var typeAction by remember { mutableStateOf(Actions.NONE) }
+    val displayInputDropdownMenuItem = remember { mutableStateOf(false) }
 
-    DropdownMenu(
-        expanded = dropDownExpanded,
-        onDismissRequest = { dismissDropDown() },
-        offset = DpOffset(70.dp, 0.dp),
-        modifier = Modifier.background(ThemeApp.colors.secondColor).width(150.dp)
+    MaterialTheme(
+        colors = MaterialTheme.colors.copy(surface = ThemeApp.colors.secondColor, primary = ThemeApp.colors.buttonColor),
+        shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(2.dp))
     ){
+        DropdownMenu(
+            expanded = dropDownExpanded,
+            onDismissRequest = { dismissDropDown() },
+            offset = DpOffset(70.dp, 0.dp),
+            modifier = Modifier.background(ThemeApp.colors.secondColor).width(200.dp)
+        ){
+            if(displayInputDropdownMenuItem.value){
+                InputDropdownMenuItem(
+                    typeAction = typeAction,
+                    model = model,
+                    dismissDropDown = {
+                        dismissDropDown()
+                        displayInputDropdownMenuItem.value = false
+                    }
+                )
+            }
 
-        if(model.file.isDirectory){
-            DropdownMenuItem(
-                onClick = {
-                    dismissDropDown()
-                    showDialog.value = true
-                    dialogTitle = "New File"
-                    typeAction = Actions.NEW_FILE
-                },
-                modifier = Modifier.height(30.dp)
-            ){
-                Icon(
-                    painterResource("images/ic_new_file.svg"),
-                    contentDescription = "New folder icon",
-                    tint = ThemeApp.colors.textColor,
-                    modifier = Modifier.size(17.dp)
+            if(model.file.isDirectory){
+                DropdownMenuItem(
+                    label = "New File",
+                    icon = painterResource("images/ic_new_file.svg"),
+                    onClick = {
+                        displayInputDropdownMenuItem.value = !displayInputDropdownMenuItem.value
+                        typeAction = Actions.NEW_FILE
+                    }
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    "New File",
-                    color = ThemeApp.colors.textColor,
-                    fontFamily = ThemeApp.text.fontFamily,
-                    fontSize = 12.sp
+                DropdownMenuItem(
+                    label = "New Folder",
+                    icon = painterResource("images/ic_new_folder.svg"),
+                    onClick = {
+                        displayInputDropdownMenuItem.value = !displayInputDropdownMenuItem.value
+                        typeAction = Actions.NEW_FOLDER
+                    }
                 )
-
             }
 
             DropdownMenuItem(
+                label = "Rename",
+                icon = painterResource("images/ic_rename.svg"),
                 onClick = {
+                    displayInputDropdownMenuItem.value = !displayInputDropdownMenuItem.value
+                    typeAction = Actions.RENAME
+                }
+            )
+
+            DropdownMenuItem(
+                label = "Delete",
+                icon = painterResource("images/ic_delete.svg"),
+                onClick = {
+                    DocumentsManager.deleteFileOrDirectory(model.file)
                     dismissDropDown()
-                    showDialog.value = true
-                    dialogTitle = "New Folder"
-                    typeAction = Actions.NEW_FOLDER
-                },
-                modifier = Modifier.height(30.dp)
-            ){
-                Icon(
-                    painterResource("images/ic_new_folder.svg"),
-                    contentDescription = "New folder icon",
-                    tint = ThemeApp.colors.textColor,
-                    modifier = Modifier.size(17.dp)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    "New Folder",
-                    color = ThemeApp.colors.textColor,
-                    fontFamily = ThemeApp.text.fontFamily,
-                    fontSize = 12.sp
-                )
-
-            }
-        }
-
-        DropdownMenuItem(
-            onClick = {
-                dismissDropDown()
-                showDialog.value = true
-                dialogTitle = "Rename"
-                typeAction = Actions.RENAME
-            },
-            modifier = Modifier.height(30.dp)
-        ){
-            Icon(
-                painterResource("images/ic_rename.svg"),
-                contentDescription = "Rename icon",
-                tint = ThemeApp.colors.textColor,
-                modifier = Modifier.size(17.dp)
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                "Rename",
-                color = ThemeApp.colors.textColor,
-                fontFamily = ThemeApp.text.fontFamily,
-                fontSize = 12.sp
-            )
-
-        }
-
-        DropdownMenuItem(
-            onClick = {
-                DocumentsManager.deleteFileOrDirectory(model.file)
-                dismissDropDown()
-            },
-            modifier = Modifier.height(30.dp)
-        ){
-            Icon(
-                painterResource("images/ic_delete.svg"),
-                contentDescription = "",
-                tint = ThemeApp.colors.textColor,
-                modifier = Modifier.size(17.dp)
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                "Delete",
-                color = ThemeApp.colors.textColor,
-                fontFamily = ThemeApp.text.fontFamily,
-                fontSize = 12.sp
+                }
             )
 
         }
     }
-
-    if(showDialog.value){
-        RenameOrCreateFileOrDirectoryDialog(
-            onCloseRequest = { showDialog.value = false },
-            dismissDialog = { showDialog.value = false },
-            dialogTitle = dialogTitle,
-            file = model.file,
-            type = typeAction
-        )
-    }
-
 }
