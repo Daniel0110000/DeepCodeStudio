@@ -1,78 +1,48 @@
 package ui.terminal
 
-import App
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import dev.icerock.moko.mvvm.livedata.compose.observeAsState
-import kotlinx.coroutines.launch
+import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme
+import com.jediterm.terminal.ui.JediTermWidget
 import ui.ThemeApp
 import java.awt.Cursor
+import javax.swing.UIManager
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun TerminalView(
-    directoryPath: String,
-    onCloseTerminal: () -> Unit
-){
+fun TerminalView(onCloseTerminal: () -> Unit){
 
     // State to track hover effect on the close terminal button
-    var hoverCloseTerminal by remember { mutableStateOf(false) }
+    val hoverCloseTerminal = remember { mutableStateOf(false) }
 
-    val viewModel = App().terminalViewModel // Inject [TerminalViewModel]
-    val editorViewModel = App().editorViewModel // Inject [EditorViewModel]
-
-    val scrollState = rememberLazyListState() // Scroll state for the lazy
-
-    /**
-     * [LaunchedEffect] to set the currently opened directory in the [ui.fileTree.FileTreeView] to the terminal
-     */
-    LaunchedEffect(Unit){ viewModel.setCurrentDirectory(directoryPath) }
-
-    // Value observers
-    val results = viewModel.results.observeAsState().value
-    val directories = viewModel.directories.observeAsState().value
-    val commandsExecuted = viewModel.commandsExecuted.observeAsState().value
-    val suggestions = viewModel.suggestions.observeAsState().value
-    val cursorX = viewModel.cursorXCoordinates.observeAsState().value
-    val selectedItemIndex = viewModel.selectedItemIndex.observeAsState().value
-    val terminalHeight = viewModel.terminalHeight.observeAsState().value
-
-    /**
-     * [LaunchedEffect] to scroll the scrollState to the last item when the size of results changes
-     */
-    LaunchedEffect(results.size){
-         scrollState.scrollToItem(results.size)
-    }
+    // State that stores the height of the terminal
+    val terminalHeight = remember { mutableStateOf(300f) }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(terminalHeight.dp)
+            .height(terminalHeight.value.dp)
             .background(ThemeApp.colors.secondColor)
     ) {
         Column{
@@ -89,11 +59,11 @@ fun TerminalView(
                         .height(25.dp)
                         .width(30.dp)
                         .background(
-                            if (hoverCloseTerminal) ThemeApp.colors.background else Color.Transparent,
+                            if (hoverCloseTerminal.value) ThemeApp.colors.background else Color.Transparent,
                             shape = RoundedCornerShape(5.dp)
                         )
-                        .onPointerEvent(PointerEventType.Enter) { hoverCloseTerminal = true }
-                        .onPointerEvent(PointerEventType.Exit) { hoverCloseTerminal = false }
+                        .onPointerEvent(PointerEventType.Enter) { hoverCloseTerminal.value = true }
+                        .onPointerEvent(PointerEventType.Exit) { hoverCloseTerminal.value = false }
                         .clickable { onCloseTerminal() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -109,55 +79,30 @@ fun TerminalView(
 
             }
 
-            LazyColumn(
-                state = scrollState,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(10.dp)
-            ) {
-
-                items(results.size) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append(
-                                AnnotatedString(
-                                    "\uF314  [${directories[it]}]",
-                                    spanStyle = SpanStyle(color = Color(0xFF3BC368))
-                                )
-                            )
-                            append("~$ ")
-                            append(commandsExecuted[it])
-                        },
-                        color = ThemeApp.colors.textColor,
-                        fontFamily = ThemeApp.text.fontFamily,
-                        fontSize = 14.sp
-                    )
-
-                    Text(
-                        results[it],
-                        color = ThemeApp.colors.textColor,
-                        fontFamily = ThemeApp.text.fontFamily,
-                        fontSize = 14.sp
-                    )
-                }
-
-                item {
-                    prompt(viewModel){
-                        editorViewModel.displayErrorOrWarningLine(it)
+            SwingPanel(
+                background = ThemeApp.colors.secondColor,
+                modifier = Modifier.fillMaxSize(),
+                factory = {
+                    try {
+                        UIManager.setLookAndFeel(FlatOneDarkIJTheme())
+                        UIManager.put("ScrollBar.width", 1)
+                        UIManager.put("ScrollBar.track", java.awt.Color(0x1E2229))
+                        UIManager.put("ScrollBar.thumb", java.awt.Color(0x1E2229))
+                    } catch (e: Exception){
+                        println(e.message)
                     }
 
-                    if(suggestions.isNotEmpty()){
-                        TerminalAutocompleteDropdown(
-                            suggestions,
-                            cursorX + 120,
-                            0,
-                            selectedItemIndex
-                        )
-                        rememberCoroutineScope().launch { scrollState.scrollToItem(results.size) }
+                    JediTermWidget(
+                        80,
+                        24,
+                        TerminalSettingsProvider()
+                    ).apply {
+                        ttyConnector = createTtyConnector()
+                        start()
                     }
                 }
-            }
+            )
+
         }
 
         Box(
@@ -169,7 +114,7 @@ fun TerminalView(
                 .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR)))
                 .draggable(
                     orientation = Orientation.Vertical,
-                    state = rememberDraggableState { viewModel.setTerminalHeight(it) }
+                    state = rememberDraggableState { terminalHeight.value += -it }
                 )
         )
 

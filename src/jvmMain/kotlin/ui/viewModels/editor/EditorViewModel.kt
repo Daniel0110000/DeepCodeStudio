@@ -147,33 +147,6 @@ class EditorViewModel(
     }
 
     /**
-     * Parses and displays an error line or warning line based on the result string
-     *
-     * @param result The result string containing error information
-     */
-    fun displayErrorOrWarningLine(result: String){
-        val splitMessage = result.split("\n")
-        val regex = Regex("""^([^:]+):(\d+): (error|warning):""")
-
-        val matchResult = regex.find(splitMessage[0])
-
-        // If there is a match, extract the file name and line number
-        if(matchResult != null){
-            val (fileName, lineNumber, type) = matchResult.destructured
-
-            _tabs.value.forEachIndexed { index, editorTabsModel ->
-                if(editorTabsModel.fileName == fileName){
-                    _editorStates.value[index].errorLineIndex.value = lineNumber.toInt()
-                    if(type == "error") _editorStates.value[index].displayErrorLine.value = true
-                    else _editorStates.value[index].displayWarningLine.value = true
-                    setSelectedTabIndex(index)
-                }
-            }
-        }
-
-    }
-
-    /**
      * Handles the deletion of a tab at the specified [index] and associated file [filePath]
      *
      * @param index The index of the tab to be selected

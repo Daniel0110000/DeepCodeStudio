@@ -73,7 +73,9 @@ kotlin {
                 // Guava
                 implementation("com.google.guava:guava:32.1.3-jre")
 
+                // Flatlaf
                 implementation("com.formdev:flatlaf:3.2.5")
+                implementation("com.formdev:flatlaf-intellij-themes:3.2.5")
 
 
             }

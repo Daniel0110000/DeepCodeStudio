@@ -51,12 +51,7 @@ fun CodeEditorScreen() {
                 EditorView(splitPaneViewModel.tabState.value)
             }
 
-            if(isOpenTerminal){
-                TerminalView(
-                    directoryPath = currentPath,
-                    onCloseTerminal = { splitPaneViewModel.setIsOpenTerminal(false) }
-                )
-            }
+            if(isOpenTerminal) TerminalView{ splitPaneViewModel.setIsOpenTerminal(false) }
         }
     }
 }
