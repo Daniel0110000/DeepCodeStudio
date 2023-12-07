@@ -6,18 +6,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
+import ui.viewModels.editor.TabsViewModel
 
 @Composable
 fun TabsView(
     tabsState: TabsState,
     onNewTab: (String) -> Unit,
-    onDeleteTab: (Int, String) -> Unit,
+    onDeleteTab: (String) -> Unit,
     onChangeSelectedTab: (Int) -> Unit
 ) {
 
@@ -25,12 +27,11 @@ fun TabsView(
     val scrollState = rememberScrollState()
 
     // Inject [TabsViewModel]
-    val viewModel = App().tabsViewModel
+    val viewModel: TabsViewModel = App().tabsViewModel
 
     // Value observers
     val tabSelected = viewModel.tabSelected.observeAsState()
     val previousTabCount = viewModel.previousTabCount.observeAsState()
-    val closedTabIndex = viewModel.closedTabIndex.observeAsState()
     val closedTabFilePath = viewModel.closedTabFilePath.observeAsState()
 
     // Use LaunchedEffect to perform actions when the number of tabs changes
@@ -45,7 +46,7 @@ fun TabsView(
         if(tabsState.tabs.size < previousTabCount.value){
             // A tab was closed. Update the necessary states and trigger the "onDeleteTab" callback
             viewModel.setClosedTabFilePath(tabsState.closedTabFilePath.value)
-            onDeleteTab(closedTabIndex.value, closedTabFilePath.value)
+            onDeleteTab(closedTabFilePath.value)
 
             if(tabsState.tabs.isNotEmpty()){
                 // If there are remaining tabs, set the selected tab to the last one
@@ -59,7 +60,6 @@ fun TabsView(
     }
 
     Box {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,10 +72,7 @@ fun TabsView(
                     tabsModel,
                     tabSelected.value,
                     onClickListenerTabClose = {
-                        tabsState.closeTab(tabsModel) { index ->
-                            viewModel.setClosedTabIndex(index)
-                            viewModel.setClosedTabFilePath(tabsState.closedTabFilePath.value)
-                        }
+                        tabsState.closeTab(tabsModel) { viewModel.setClosedTabFilePath(tabsState.closedTabFilePath.value) }
                     },
                     onClickListenerTabSelected = {
                         viewModel.setTabSelected(it)

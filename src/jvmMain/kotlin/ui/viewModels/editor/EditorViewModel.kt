@@ -11,10 +11,8 @@ import domain.utilies.JsonUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ui.editor.EditorComposable
 import ui.editor.EditorState
-import ui.editor.EditorTabComposable
-import ui.editor.tabs.EditorTabsModel
+import ui.editor.tabs.TabModel
 import java.io.File
 
 class EditorViewModel(
@@ -24,11 +22,8 @@ class EditorViewModel(
     private val _isDisplayEditor: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDisplayEditor: LiveData<Boolean> = _isDisplayEditor
 
-    private val _selectedTabIndex: MutableLiveData<Int> = MutableLiveData(0)
+    private val _selectedTabIndex: MutableLiveData<Int> = MutableLiveData(-1)
     val selectedTabIndex: LiveData<Int> = _selectedTabIndex
-
-    private val _editorComposables: MutableLiveData<List<EditorComposable>> = MutableLiveData(emptyList())
-    val editorComposables: LiveData<List<EditorComposable>> = _editorComposables
 
     private val _editorStates: MutableLiveData<List<EditorState>> = MutableLiveData(emptyList())
     val editorStates: LiveData<List<EditorState>> = _editorStates
@@ -42,7 +37,7 @@ class EditorViewModel(
     private val _selectedOption: MutableLiveData<AutocompleteOptionModel> = MutableLiveData(AutocompleteOptionModel())
     val selectedOption: LiveData<AutocompleteOptionModel> = _selectedOption
 
-    private val _tabs: MutableLiveData<List<EditorTabsModel>> = MutableLiveData(emptyList())
+    private val _tabs: MutableLiveData<List<TabModel>> = MutableLiveData(emptyList())
     private val scope = CoroutineScope(Dispatchers.IO)
 
 
@@ -52,12 +47,11 @@ class EditorViewModel(
      * @param filePath The file path associated with the new tab
      */
     fun onNewTab(filePath: String){
-        // Add a new composable and state for the new tab
-        _editorComposables.value = _editorComposables.value.plus(EditorTabComposable)
+        // Add a new state for the new tab
         _editorStates.value = _editorStates.value.plus(EditorState())
 
         // Set the selected tab index to the last added tab
-        _selectedTabIndex.value = editorComposables.value.lastIndex
+        _selectedTabIndex.value = _editorStates.value.lastIndex
 
         // Set file path and initial code text for the tab
         _editorStates.value[_selectedTabIndex.value].apply {
@@ -89,7 +83,6 @@ class EditorViewModel(
      */
     fun selectedOption(model: AutocompleteOptionModel){
         // Sets syntax highlight configuration, keywords and variable directives based on the selected autocomplete option
-
         _editorStates.value[_selectedTabIndex.value].apply {
             syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(model.uuid)
             keywords.value = JsonUtils.jsonToListString(model.jsonPath)
@@ -147,16 +140,13 @@ class EditorViewModel(
     }
 
     /**
-     * Handles the deletion of a tab at the specified [index] and associated file [filePath]
+     * Handles the deletion of a tab at the specified [filePath]
      *
-     * @param index The index of the tab to be selected
      * @param filePath The file path associated with the tab deleted
      */
-    fun onDeleteTab(index: Int, filePath: String){
-        _editorComposables.value = _editorComposables.value.filterIndexed { i, _ -> i != index  }
+    fun onDeleteTab(filePath: String){
         _editorStates.value = _editorStates.value.filterIndexed { _, value -> value.filePath.value != filePath }
-
-        _selectedTabIndex.value = _editorComposables.value.lastIndex
+        _selectedTabIndex.value = _editorStates.value.lastIndex
     }
 
     /**
@@ -183,7 +173,7 @@ class EditorViewModel(
      *
      * @param value The valor to assign
      */
-    fun setTabs(value: List<EditorTabsModel>){
+    fun setTabs(value: List<TabModel>){
         _tabs.value = value
     }
 
@@ -193,7 +183,9 @@ class EditorViewModel(
      * @param value The valor to assign
      */
     fun setAutocompleteOptionsViewWidth(value: Float){
-        _autocompleteOptionsViewWidth.value = value
+        if(_autocompleteOptionsViewWidth.value + value > 250){
+            _autocompleteOptionsViewWidth.value += value
+        }
     }
 
     /**

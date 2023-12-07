@@ -12,9 +12,6 @@ class TabsViewModel: ViewModel() {
     private val _previousTabCount: MutableLiveData<Int> = MutableLiveData(0)
     val previousTabCount: LiveData<Int> = _previousTabCount
 
-    private val _closedTabIndex: MutableLiveData<Int> = MutableLiveData(0)
-    val closedTabIndex: LiveData<Int> = _closedTabIndex
-
     private val _closedTabFilePath: MutableLiveData<String> = MutableLiveData("")
     val closedTabFilePath: LiveData<String> = _closedTabFilePath
 
@@ -36,15 +33,6 @@ class TabsViewModel: ViewModel() {
      */
     fun setPreviousTabCount(value: Int){
         _previousTabCount.value = value
-    }
-
-    /**
-     * Sets the close tab index using the provided [value]
-     *
-     * @param value The value to assign
-     */
-    fun setClosedTabIndex(value: Int){
-        _closedTabIndex.value = value
     }
 
     /**

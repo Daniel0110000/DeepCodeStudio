@@ -3,9 +3,12 @@ package ui.editor
 import App
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -14,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
+import ui.editor.navigation.CustomNavigationHost
+import ui.editor.navigation.rememberNavController
 import ui.editor.tabs.TabsState
 import ui.editor.tabs.TabsView
 import ui.viewModels.editor.EditorViewModel
@@ -29,8 +34,10 @@ fun EditorView(tabsState: TabsState) {
     // Value observers
     val isDisplayEditor = viewModel.isDisplayEditor.observeAsState()
     val selectedTabIndex = viewModel.selectedTabIndex.observeAsState().value
-    val editorComposables = viewModel.editorComposables.observeAsState().value
     val editorStates = viewModel.editorStates.observeAsState().value
+
+    // Creates and remembers a [NavController] instance
+    val navController by rememberNavController("")
 
     LaunchedEffect(tabsState.tabs.size){
         // Assigns all open tabs to the [EditorViewModel]
@@ -42,25 +49,36 @@ fun EditorView(tabsState: TabsState) {
 
     // LaunchedEffect block that sets the currently selected tab in response to changes in the selectedTabIndex
     LaunchedEffect(selectedTabIndex){
-        if(editorStates.isNotEmpty()) {
-            tabsViewModel.setTabSelected(editorStates[selectedTabIndex].filePath.value)
+        // If editorStates is not empty and the [selectedTabIndex] is within bounds
+        if(editorStates.isNotEmpty() && selectedTabIndex < editorStates.size) {
+            val filePath = editorStates[selectedTabIndex].filePath.value
+            tabsViewModel.setTabSelected(filePath)
+            navController.navigate(filePath)
         }
     }
 
     if(isDisplayEditor.value){
         Row(modifier = Modifier.fillMaxSize()) {
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState())) {
                 TabsView(
                     tabsState,
                     onNewTab = { viewModel.onNewTab(it) },
-                    onDeleteTab = { i, path -> viewModel.onDeleteTab(i, path) },
-                    onChangeSelectedTab = { index -> viewModel.setSelectedTabIndex(index) }
+                    onDeleteTab = { path ->
+                        viewModel.onDeleteTab(path)
+                        navController.navigate(editorStates[editorStates.lastIndex].filePath.value)
+                        },
+                    onChangeSelectedTab = {
+                        index -> viewModel.setSelectedTabIndex(index)
+                        navController.navigate(editorStates[index].filePath.value)
+                    }
                 )
 
-                if(editorComposables.isNotEmpty() && editorStates[selectedTabIndex].syntaxHighlightConfig.value.jsonPath.isNotEmpty()) {
-                    editorComposables[selectedTabIndex](editorStates[selectedTabIndex])
-                }
+                CustomNavigationHost(
+                    navController = navController,
+                    states = editorStates,
+                    modifier = Modifier.weight(1f).fillMaxWidth()
+                )
 
             }
 

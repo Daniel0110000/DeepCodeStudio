@@ -7,7 +7,7 @@ import domain.repository.SettingRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ui.editor.tabs.EditorTabsModel
+import ui.editor.tabs.TabModel
 import ui.editor.tabs.TabsState
 import ui.fileTree.FileInfo
 import ui.fileTree.FileObserver
@@ -42,7 +42,7 @@ class FileTreeViewModel(
                     _listFiles.value = _listFiles.value.filter { it.file != file && it.file.absolutePath != filePath }
 
                     // If the deleted file is open, its tab is closed
-                    tabsState.closeTab(EditorTabsModel(file.name, filePath)){ _ -> }
+                    tabsState.closeTab(TabModel(file.name, filePath)){ }
 
                     if(file.extension == "asm" || file.extension == "s"){
                         // If the extension of the deleted file is 'asm' or 's', delete the selected autocomplete option from the database

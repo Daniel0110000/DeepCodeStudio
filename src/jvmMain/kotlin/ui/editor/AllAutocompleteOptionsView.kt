@@ -43,7 +43,6 @@ fun AllAutocompleteOptionView(
     viewModel: EditorViewModel
 ){
 
-
     // Value observers
     val width = viewModel.autocompleteOptionsViewWidth.observeAsState().value
     val selectedOption = viewModel.selectedOption.observeAsState().value

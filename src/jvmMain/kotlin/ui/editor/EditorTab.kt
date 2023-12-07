@@ -27,14 +27,12 @@ import ui.editor.codeAutoCompletion.AutoCompleteDropdown
 import ui.editor.codeAutoCompletion.KeywordAutoCompleteUtil
 import java.io.File
 
-/**
- * A type alias for an Editor Composable function
- * It takes a [EditorState] and composes the editor UI
- */
-typealias EditorComposable = @Composable (EditorState) -> Unit
-
 @OptIn(ExperimentalFoundationApi::class)
-val EditorTabComposable: EditorComposable = { editorState ->
+@Composable
+fun EditorTab(
+    modifier: Modifier,
+    state: EditorState
+){
 
     // Inject [SettingRepository]
     val repository: SettingRepository = App().settingRepository
@@ -45,9 +43,9 @@ val EditorTabComposable: EditorComposable = { editorState ->
     val coroutineScope = rememberCoroutineScope()
 
     // If the current file exists, write the editor content to the associated file
-    if (File(editorState.filePath.value).exists()) DocumentsManager.writeFile(File(editorState.filePath.value), editorState.codeText.value.text)
+    if (File(state.filePath.value).exists()) DocumentsManager.writeFile(File(state.filePath.value), state.codeText.value.text)
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier) {
         Box(modifier = Modifier.weight(1f)) {
             Column(
                 modifier = Modifier
@@ -56,7 +54,7 @@ val EditorTabComposable: EditorComposable = { editorState ->
             ) {
                 Row {
 
-                    LinesNumberView(editorState.linesCount.value)
+                    LinesNumberView(state.linesCount.value)
 
                     Spacer(modifier = Modifier.width(10.dp))
 
@@ -64,40 +62,39 @@ val EditorTabComposable: EditorComposable = { editorState ->
                         LocalTextContextMenu provides EmptyContextMenu
                     ){
                         BasicTextField(
-                            value = editorState.codeText.value,
+                            value = state.codeText.value,
                             onValueChange = {
-                                if (it.text != editorState.codeText.value.text) {
+                                if (it.text != state.codeText.value.text) {
                                     val selectedWord = TextUtils.extractSurroundingWord(it.selection.start, it.text)
-                                    editorState.wordToSearch.value = selectedWord
+                                    state.wordToSearch.value = selectedWord
 
-                                    editorState.autoCompleteSuggestions.value =
-                                        KeywordAutoCompleteUtil.autocompleteKeywords(selectedWord, editorState.keywords.value) +
+                                    state.autoCompleteSuggestions.value =
+                                        KeywordAutoCompleteUtil.autocompleteKeywords(selectedWord, state.keywords.value) +
                                                 KeywordAutoCompleteUtil.filterVariableNamesForAutocomplete(
-                                                    TextUtils.extractVariableNames(editorState.codeText.value.text, editorState.variableDirectives.value),
+                                                    TextUtils.extractVariableNames(state.codeText.value.text, state.variableDirectives.value),
                                                     selectedWord
                                                 ) +
                                                 KeywordAutoCompleteUtil.filterFunctionNamesForAutocomplete(
-                                                    TextUtils.extractFunctionNames(editorState.codeText.value.text),
+                                                    TextUtils.extractFunctionNames(state.codeText.value.text),
                                                     selectedWord
                                                 )
 
-                                    editorState.isAutoCompleteVisible.value = editorState.autoCompleteSuggestions.value.isNotEmpty()
+                                    state.isAutoCompleteVisible.value = state.autoCompleteSuggestions.value.isNotEmpty()
                                 } else {
-                                    editorState.autoCompleteSuggestions.value = emptyList()
-                                    editorState.isAutoCompleteVisible.value = false
+                                    state.autoCompleteSuggestions.value = emptyList()
+                                    state.isAutoCompleteVisible.value = false
                                 }
 
-                                editorState.lineIndex.value = getCursorLine(it)
-                                editorState.codeText.value = it
-
+                                state.lineIndex.value = getCursorLine(it)
+                                state.codeText.value = it
                             },
-                            readOnly = editorState.readOnly.value,
+                            readOnly = state.readOnly.value,
                             onTextLayout = {
                                 val lineCount = it.lineCount
-                                if (lineCount != editorState.linesCount.value) editorState.linesCount.value = lineCount
-                                editorState.textLayoutResult.value = it
-                                editorState.cursorXCoordinate.value = it.getHorizontalPosition(
-                                    editorState.codeText.value.selection.start,
+                                if (lineCount != state.linesCount.value) state.linesCount.value = lineCount
+                                state.textLayoutResult.value = it
+                                state.cursorXCoordinate.value = it.getHorizontalPosition(
+                                    state.codeText.value.selection.start,
                                     true
                                 ).toInt()
                             },
@@ -108,12 +105,12 @@ val EditorTabComposable: EditorComposable = { editorState ->
                                 fontWeight = FontWeight.W500
                             ),
                             cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
-                            visualTransformation = EditorVisualTransformation(editorState.syntaxHighlightConfig.value),
+                            visualTransformation = EditorVisualTransformation(state.syntaxHighlightConfig.value),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .focusRequester(editorState.textFieldFocusRequester.value)
+                                .focusRequester(state.textFieldFocusRequester.value)
                                 .onPreviewKeyEvent{
-                                    editorKeyEvents(it, editorState){ coroutineScope.launch { scrollState.scrollTo(scrollState.value  * 10) } }
+                                    editorKeyEvents(it, state){ coroutineScope.launch { scrollState.scrollTo(scrollState.value  * 10) } }
                                 }
                         )
                     }
@@ -124,20 +121,20 @@ val EditorTabComposable: EditorComposable = { editorState ->
 
             // Displays the visual indicator of the selected line
             selectedLine(
-                17 * (if(editorState.lineIndex.value != 0) editorState.lineIndex.value - 1 else editorState.lineIndex.value) - scrollState.value,
+                17 * (if(state.lineIndex.value != 0) state.lineIndex.value - 1 else state.lineIndex.value) - scrollState.value,
             )
 
             // Display teh auto-complete dropdown if suggestions are available
-            if (editorState.isAutoCompleteVisible.value) {
+            if (state.isAutoCompleteVisible.value) {
                 AutoCompleteDropdown(
-                    items = editorState.autoCompleteSuggestions.value,
-                    editorState = editorState,
-                    cursorX = editorState.cursorXCoordinate.value,
-                    cursorY = editorState.cursorYCoordinate.value - scrollState.value,
-                    selectedItemIndex = editorState.selectedItemIndex.value,
-                    editorState.variableDirectives.value
+                    items = state.autoCompleteSuggestions.value,
+                    editorState = state,
+                    cursorX = state.cursorXCoordinate.value,
+                    cursorY = state.cursorYCoordinate.value - scrollState.value,
+                    selectedItemIndex = state.selectedItemIndex.value,
+                    state.variableDirectives.value
                 )
-            } else editorState.selectedItemIndex.value = 0
+            } else state.selectedItemIndex.value = 0
 
             // Vertical scroll for the code editor
             VerticalScrollbar(
@@ -150,6 +147,6 @@ val EditorTabComposable: EditorComposable = { editorState ->
         }
 
         // Create the bottom actions row
-        BottomActionsRow(repository, editorState)
+        BottomActionsRow(repository, state)
     }
 }

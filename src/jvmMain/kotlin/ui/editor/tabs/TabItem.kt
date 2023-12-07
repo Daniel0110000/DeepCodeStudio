@@ -28,7 +28,7 @@ import ui.ThemeApp
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TabItem(
-    model: EditorTabsModel,
+    model: TabModel,
     tabSelected: String,
     onClickListenerTabClose: () -> Unit,
     onClickListenerTabSelected: (String) -> Unit

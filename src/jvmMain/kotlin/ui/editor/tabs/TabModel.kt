@@ -1,6 +1,6 @@
 package ui.editor.tabs
 
-data class EditorTabsModel(
+data class TabModel(
     val fileName: String,
     val filePath: String
 )

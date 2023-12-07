@@ -7,7 +7,7 @@ import java.io.File
 class TabsState {
 
     // A mutable list to hold the open editor tabs
-    var tabs = mutableStateListOf<EditorTabsModel>()
+    var tabs = mutableStateListOf<TabModel>()
         private set
 
     // Mutable state that holds the file path of a recently closed tab
@@ -19,21 +19,21 @@ class TabsState {
      * @param file The file to be opened in a new tab
      */
     fun openTab(file: File){
-        val newTab = EditorTabsModel(file.name, file.absolutePath)
+        val newTab = TabModel(file.name, file.absolutePath)
         if(!tabs.contains(newTab)) tabs.add(newTab)
     }
 
     /**
      * Close the specified tab
      *
-     * @param editorTabsModel The EditorTabsModel representing the tab to be closed
-     * @param index A function to handle the index of the close tab
+     * @param tabModel The EditorTabsModel representing the tab to be closed
+     * @param close Callback to notify when a tab has been closed
      */
-    fun closeTab(editorTabsModel: EditorTabsModel, index: (Int) -> Unit){
-        if(tabs.contains(editorTabsModel)){
-            closedTabFilePath.value = editorTabsModel.filePath
-            index(tabs.indexOf(editorTabsModel))
-            tabs.remove(editorTabsModel)
+    fun closeTab(tabModel: TabModel, close: () -> Unit){
+        if(tabs.contains(tabModel)){
+            closedTabFilePath.value = tabModel.filePath
+            close()
+            tabs.remove(tabModel)
         }
     }
 
