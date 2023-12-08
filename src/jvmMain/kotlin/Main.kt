@@ -1,5 +1,6 @@
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -24,6 +25,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "DeepCode Studio",
+        icon = painterResource("images/ic_app.svg"),
         state = WindowState(
             position = WindowPosition(Alignment.Center),
             size = DpSize((toolkit.width - 100).dp, (toolkit.height - 100).dp)
