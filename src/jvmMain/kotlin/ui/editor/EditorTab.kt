@@ -37,8 +37,10 @@ fun EditorTab(
     // Inject [SettingRepository]
     val repository: SettingRepository = App().settingRepository
 
-    // Scroll state for the text editor
-    val scrollState = rememberScrollState()
+    // Vertical scroll state for the editor
+    val verticalScrollState = rememberScrollState()
+    // Horizontal scroll state for the editor
+    val horizontalScrollState = rememberScrollState()
     // Coroutine scope for handling coroutines within the Composable
     val coroutineScope = rememberCoroutineScope()
 
@@ -50,7 +52,7 @@ fun EditorTab(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
+                    .verticalScroll(verticalScrollState)
             ) {
                 Row {
 
@@ -58,62 +60,71 @@ fun EditorTab(
 
                     Spacer(modifier = Modifier.width(10.dp))
 
-                    CompositionLocalProvider(
-                        LocalTextContextMenu provides EmptyContextMenu
-                    ){
-                        BasicTextField(
-                            value = state.codeText.value,
-                            onValueChange = {
-                                if (it.text != state.codeText.value.text) {
-                                    val selectedWord = TextUtils.extractSurroundingWord(it.selection.start, it.text)
-                                    state.wordToSearch.value = selectedWord
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .horizontalScroll(horizontalScrollState)
+                    ) {
+                        CompositionLocalProvider(LocalTextContextMenu provides EmptyContextMenu){
+                            BasicTextField(
+                                value = state.codeText.value,
+                                onValueChange = {
+                                    if (it.text != state.codeText.value.text) {
+                                        val selectedWord = TextUtils.extractSurroundingWord(it.selection.start, it.text)
+                                        state.wordToSearch.value = selectedWord
 
-                                    state.autoCompleteSuggestions.value =
-                                        KeywordAutoCompleteUtil.autocompleteKeywords(selectedWord, state.keywords.value) +
-                                                KeywordAutoCompleteUtil.filterVariableNamesForAutocomplete(
-                                                    TextUtils.extractVariableNames(state.codeText.value.text, state.variableDirectives.value),
-                                                    selectedWord
-                                                ) +
-                                                KeywordAutoCompleteUtil.filterFunctionNamesForAutocomplete(
-                                                    TextUtils.extractFunctionNames(state.codeText.value.text),
-                                                    selectedWord
-                                                )
+                                        state.autoCompleteSuggestions.value =
+                                            KeywordAutoCompleteUtil.autocompleteKeywords(selectedWord, state.keywords.value) +
+                                                    KeywordAutoCompleteUtil.filterVariableNamesForAutocomplete(
+                                                        TextUtils.extractVariableNames(state.codeText.value.text, state.variableDirectives.value),
+                                                        selectedWord
+                                                    ) +
+                                                    KeywordAutoCompleteUtil.filterFunctionNamesForAutocomplete(
+                                                        TextUtils.extractFunctionNames(state.codeText.value.text),
+                                                        selectedWord
+                                                    )
 
-                                    state.isAutoCompleteVisible.value = state.autoCompleteSuggestions.value.isNotEmpty()
-                                } else {
-                                    state.autoCompleteSuggestions.value = emptyList()
-                                    state.isAutoCompleteVisible.value = false
-                                }
+                                        state.isAutoCompleteVisible.value = state.autoCompleteSuggestions.value.isNotEmpty()
+                                    } else {
+                                        state.autoCompleteSuggestions.value = emptyList()
+                                        state.isAutoCompleteVisible.value = false
+                                    }
 
-                                state.lineIndex.value = getCursorLine(it)
-                                state.codeText.value = it
-                            },
-                            readOnly = state.readOnly.value,
-                            onTextLayout = {
-                                val lineCount = it.lineCount
-                                if (lineCount != state.linesCount.value) state.linesCount.value = lineCount
-                                state.textLayoutResult.value = it
-                                state.cursorXCoordinate.value = it.getHorizontalPosition(
-                                    state.codeText.value.selection.start,
-                                    true
-                                ).toInt()
-                            },
-                            textStyle = TextStyle(
-                                fontSize = 13.sp,
-                                color = ThemeApp.colors.textColor,
-                                fontFamily = ThemeApp.text.codeTextFontFamily,
-                                fontWeight = FontWeight.W500
-                            ),
-                            cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
-                            visualTransformation = EditorVisualTransformation(state.syntaxHighlightConfig.value),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(state.textFieldFocusRequester.value)
-                                .onPreviewKeyEvent{
-                                    editorKeyEvents(it, state){ coroutineScope.launch { scrollState.scrollTo(scrollState.value  * 10) } }
-                                }
-                        )
+                                    state.lineIndex.value = getCursorLine(it)
+                                    state.codeText.value = it
+                                },
+                                readOnly = state.readOnly.value,
+                                onTextLayout = {
+                                    val lineCount = it.lineCount
+                                    if (lineCount != state.linesCount.value) state.linesCount.value = lineCount
+                                    state.textLayoutResult.value = it
+                                    state.cursorXCoordinate.value = it.getHorizontalPosition(
+                                        state.codeText.value.selection.start,
+                                        true
+                                    ).toInt()
+                                },
+                                textStyle = TextStyle(
+                                    fontSize = 13.sp,
+                                    color = ThemeApp.colors.textColor,
+                                    fontFamily = ThemeApp.text.codeTextFontFamily,
+                                    fontWeight = FontWeight.W500
+                                ),
+                                cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
+                                visualTransformation = EditorVisualTransformation(state.syntaxHighlightConfig.value),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .focusRequester(state.textFieldFocusRequester.value)
+                                    .onPreviewKeyEvent{
+                                        editorKeyEvents(it, state){ coroutineScope.launch { verticalScrollState.scrollTo(verticalScrollState.value  * 10) } }
+                                    }
+                            )
+                        }
+
+                        Box(modifier = Modifier.fillMaxHeight().width(200.dp))
+
                     }
+
                 }
 
                 Box(modifier = Modifier.fillMaxWidth().height(200.dp))
@@ -121,7 +132,7 @@ fun EditorTab(
 
             // Displays the visual indicator of the selected line
             selectedLine(
-                17 * (if(state.lineIndex.value != 0) state.lineIndex.value - 1 else state.lineIndex.value) - scrollState.value,
+                17 * (if(state.lineIndex.value != 0) state.lineIndex.value - 1 else state.lineIndex.value) - verticalScrollState.value,
             )
 
             // Display teh auto-complete dropdown if suggestions are available
@@ -129,8 +140,8 @@ fun EditorTab(
                 AutoCompleteDropdown(
                     items = state.autoCompleteSuggestions.value,
                     editorState = state,
-                    cursorX = state.cursorXCoordinate.value,
-                    cursorY = state.cursorYCoordinate.value - scrollState.value,
+                    cursorX = state.cursorXCoordinate.value - horizontalScrollState.value,
+                    cursorY = state.cursorYCoordinate.value - verticalScrollState.value,
                     selectedItemIndex = state.selectedItemIndex.value,
                     state.variableDirectives.value
                 )
@@ -138,12 +149,22 @@ fun EditorTab(
 
             // Vertical scroll for the code editor
             VerticalScrollbar(
-                ScrollbarAdapter(scrollState),
+                ScrollbarAdapter(verticalScrollState),
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .fillMaxHeight(),
                 style = ThemeApp.scrollbar.scrollbarStyle
             )
+
+            // Horizontal scroll for the code editor
+            HorizontalScrollbar(
+                ScrollbarAdapter(horizontalScrollState),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                style = ThemeApp.scrollbar.scrollbarStyle
+            )
+
         }
 
         // Create the bottom actions row
