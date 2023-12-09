@@ -3,21 +3,27 @@ package ui.settings.screens.autocomplete
 import App
 import androidx.compose.foundation.ScrollbarAdapter
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import domain.model.AutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ui.ThemeApp
+import ui.components.EmptyMessage
 import ui.settings.lazy.AutocompleteOptionItem
 import ui.settings.lazy.NewAutocompleteOptionInput
 import java.io.File
@@ -32,18 +38,18 @@ fun AutocompleteSettings(
     val scrollState = rememberLazyListState()
 
     // Coroutine scope for asynchronous operations
-    val scope = CoroutineScope(Dispatchers.IO)
+    val scope = rememberCoroutineScope()
 
     // Inject [AutocompleteSettingsViewModel] and [AutocompleteSettingsViewModel]
     val autocompleteSettingsViewModel = App().autocompleteSettingsViewModel
     val syntaxHighlightViewModel = App().syntaxHighlightSettingsViewModel
 
     // Observe the list of all autocomplete options through the ViewModel
-    val allOptions = autocompleteSettingsViewModel.allAutocompleteOptions.observeAsState()
+    val allOptions = autocompleteSettingsViewModel.allAutocompleteOptions.observeAsState().value
     // Observe the option name through the viewModel
-    val optionName = autocompleteSettingsViewModel.optionName.observeAsState()
+    val optionName = autocompleteSettingsViewModel.optionName.observeAsState().value
     // Observe the JSON path through viewModel
-    val jsonPath = autocompleteSettingsViewModel.jsonPath.observeAsState()
+    val jsonPath = autocompleteSettingsViewModel.jsonPath.observeAsState().value
     // Observe the selected option through viewModel
     val selectedOption = autocompleteSettingsViewModel.selectedOption.observeAsState().value
 
@@ -59,27 +65,30 @@ fun AutocompleteSettings(
                     .weight(1f)
                     .fillMaxWidth()
             ){
-                LazyColumn(
-                    state = scrollState,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(allOptions.value){
-                        // If the JSON file does not exist in the specified path, the [onErrorOccurred] callback is called,
-                        // ... and the option is removed from the database
-                        if(!File(it.jsonPath).exists()){
-                            scope.launch {
-                                onErrorOccurred("JSON file not found at the specified path '${it.jsonPath}'")
-                                autocompleteSettingsViewModel.deleteConfig(it.uuid)
-                                autocompleteSettingsViewModel.updateAutocompleteOptions()
-                                autocompleteSettingsViewModel.setSelectedOption(allOptions.value.first())
-                            }
-                        } else {
-                            AutocompleteOptionItem(it, selectedOption.uuid){
-                                autocompleteSettingsViewModel.setSelectedOption(it)
+                // If [allOptions] is not empty, the options are displayed
+                if(allOptions.isNotEmpty()){
+                    LazyColumn(
+                        state = scrollState,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(allOptions){
+                            // If the JSON file does not exist in the specified path, the [onErrorOccurred] callback is called,
+                            // ... and the option is removed from the database
+                            if(!File(it.jsonPath).exists()){
+                                scope.launch {
+                                    onErrorOccurred("JSON file not found at the specified path '${it.jsonPath}'")
+                                    autocompleteSettingsViewModel.deleteConfig(it.uuid)
+                                    autocompleteSettingsViewModel.updateAutocompleteOptions()
+                                    autocompleteSettingsViewModel.setSelectedOption(allOptions.first())
+                                }
+                            } else {
+                                AutocompleteOptionItem(it, selectedOption.uuid){
+                                    autocompleteSettingsViewModel.setSelectedOption(it)
+                                }
                             }
                         }
                     }
-                }
+                } else EmptyMessage() // If [allOptions] is empty, [EmptyMessage] is displayed
 
                 VerticalScrollbar(
                     ScrollbarAdapter(scrollState),
@@ -94,10 +103,10 @@ fun AutocompleteSettings(
             NewAutocompleteOptionInput(
                 onAddOptionClick = {
                     scope.launch {
-                        if(optionName.value.isNotBlank() && jsonPath.value.isNotBlank()){
+                        if(optionName.isNotBlank() && jsonPath.isNotBlank()){
                             autocompleteSettingsViewModel.addConfig(
-                                AutocompleteOptionModel(optionName = optionName.value, jsonPath = jsonPath.value),
-                                SyntaxHighlightConfigModel(optionName = optionName.value, jsonPath = jsonPath.value)
+                                AutocompleteOptionModel(optionName = optionName, jsonPath = jsonPath),
+                                SyntaxHighlightConfigModel(optionName = optionName, jsonPath = jsonPath)
                             )
 
                             // Update the Syntax Highlight configurations
@@ -113,44 +122,46 @@ fun AutocompleteSettings(
                 },
                 onOptionNameChange = { autocompleteSettingsViewModel.setOptionName(it) },
                 onJsonPathSelection = { autocompleteSettingsViewModel.setJsonPath(it) },
-                optionName = optionName.value,
-                jsonPath = jsonPath.value
+                optionName = optionName,
+                jsonPath = jsonPath
             )
         }
 
-        JsonAutocompleteOptionContainer(
-            selectedOption,
-            autocompleteSettingsViewModel,
-            onDeleteOptionClick = {
-                 scope.launch {
-                     autocompleteSettingsViewModel.deleteConfig(selectedOption.uuid)
-                     // Update the Syntax Highlight configurations
-                     syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
-                     // Update the autocomplete options
-                     autocompleteSettingsViewModel.updateAutocompleteOptions()
-
-                     autocompleteSettingsViewModel.setSelectedOption(allOptions.value.first())
-                 }
-            },
-            onUpdateJsonPathClick = { newJsonPath ->
-                scope.launch {
-                    if(newJsonPath.isNotBlank()){
-                        // When the callback is executed, and [newJsonPath] is not black, update the autocomplete JSON path,
-                        // ... the syntax highlight JSON path and the selected autocompleted option json path
-                        autocompleteSettingsViewModel.updateJsonPath(
-                            newJsonPath,
-                            selectedOption
-                        )
-
+        if(allOptions.isNotEmpty()){
+            JsonAutocompleteOptionContainer(
+                selectedOption,
+                autocompleteSettingsViewModel,
+                onDeleteOptionClick = {
+                    scope.launch {
+                        autocompleteSettingsViewModel.deleteConfig(selectedOption.uuid)
                         // Update the Syntax Highlight configurations
                         syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
                         // Update the autocomplete options
                         autocompleteSettingsViewModel.updateAutocompleteOptions()
 
-                        autocompleteSettingsViewModel.setSelectedOption(selectedOption.copy(jsonPath = newJsonPath))
+                        autocompleteSettingsViewModel.setSelectedOption(allOptions.first())
+                    }
+                },
+                onUpdateJsonPathClick = { newJsonPath ->
+                    scope.launch {
+                        if(newJsonPath.isNotBlank()){
+                            // When the callback is executed, and [newJsonPath] is not black, update the autocomplete JSON path,
+                            // ... the syntax highlight JSON path and the selected autocompleted option json path
+                            autocompleteSettingsViewModel.updateJsonPath(
+                                newJsonPath,
+                                selectedOption
+                            )
+
+                            // Update the Syntax Highlight configurations
+                            syntaxHighlightViewModel.updateSyntaxHighlightConfigs()
+                            // Update the autocomplete options
+                            autocompleteSettingsViewModel.updateAutocompleteOptions()
+
+                            autocompleteSettingsViewModel.setSelectedOption(selectedOption.copy(jsonPath = newJsonPath))
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 }

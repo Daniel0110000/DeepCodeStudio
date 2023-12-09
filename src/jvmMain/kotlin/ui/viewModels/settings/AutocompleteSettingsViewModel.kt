@@ -6,7 +6,7 @@ import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.model.AutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
 import domain.repository.SettingRepository
-import java.util.*
+import java.util.UUID
 
 class AutocompleteSettingsViewModel(
     private val repository: SettingRepository
@@ -30,8 +30,8 @@ class AutocompleteSettingsViewModel(
     init {
         // Load all autocomplete options from the repository
         _allAutocompleteOptions.value = repository.getAllAutocompleteOptions()
-        // Assigns the first value from [_allAutocompleteOptions] as the initially selected option
-        setSelectedOption(_allAutocompleteOptions.value.first())
+        // If [_allAutocompleteOptions] is not empty, it assigns the first value from [_allAutocompleteOptions] as the initially selected option
+        if(_allAutocompleteOptions.value.isNotEmpty()) setSelectedOption(_allAutocompleteOptions.value.first())
     }
 
     /**
@@ -39,6 +39,8 @@ class AutocompleteSettingsViewModel(
      */
     fun updateAutocompleteOptions(){
         _allAutocompleteOptions.value = repository.getAllAutocompleteOptions()
+        val allOptions = _allAutocompleteOptions.value
+        if(allOptions.isNotEmpty()) setSelectedOption(allOptions.first())
     }
 
     /**
@@ -80,7 +82,7 @@ class AutocompleteSettingsViewModel(
     suspend fun deleteConfig(uuid: String){
         repository.deleteAutocompleteOption(uuid)
         repository.deleteSyntaxHighlightConfig(uuid)
-        repository.deleteSelectedAutocompleteOption(uuid)
+        repository.deleteSelectedAutocompleteOption(uuid = uuid)
     }
 
     /**

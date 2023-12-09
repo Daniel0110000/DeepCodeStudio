@@ -6,7 +6,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -32,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
+import ui.components.EmptyMessage
 import ui.viewModels.editor.EditorViewModel
 import java.awt.Cursor
 import java.awt.event.MouseEvent
@@ -71,61 +82,63 @@ fun AllAutocompleteOptionView(
                         .padding(vertical = 10.dp)
                 )
 
-                LazyColumn(
-                    state = scrollState,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    items(viewModel.allAutocompleteOptions.value){ model ->
+                // If [viewModel.allAutocompleteOptions] is not empty, all autocomplete options are displayed
+                if(viewModel.allAutocompleteOptions.value.isNotEmpty()){
+                    LazyColumn(
+                        state = scrollState,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) {
+                        items(viewModel.allAutocompleteOptions.value){ model ->
 
-                        val isHoverOption = remember { mutableStateOf(false) }
+                            val isHoverOption = remember { mutableStateOf(false) }
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(35.dp)
-                                .padding(horizontal = 5.dp)
-                                .onPointerEvent(PointerEventType.Enter){ isHoverOption.value = true }
-                                .onPointerEvent(PointerEventType.Exit){ isHoverOption.value = false }
-                                .background(if(model == selectedOption) ThemeApp.colors.buttonColor else if(isHoverOption.value) ThemeApp.colors.hoverTab else Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                .onPointerEvent(PointerEventType.Press){
-                                    when(it.awtEventOrNull?.button){
-                                        MouseEvent.BUTTON1 -> when(it.awtEventOrNull?.clickCount){
-                                            1 -> { viewModel.setSelectedOption(model) }
-                                            2 -> {
-                                                // If [editorState.displayAutocompleteOptions] is true, the selectedOption function of the viewModel is executed
-                                                if(editorState.displayAutocompleteOptions.value) viewModel.selectedOption(model)
-                                                // If [editor.displayAutocompleteOptions] is true, the updateSelectedOption function of the viewModel is executed
-                                                if(editorState.displayUpdateAutocompleteOption.value) viewModel.updateSelectedOption(model, editorState)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(35.dp)
+                                    .padding(horizontal = 5.dp)
+                                    .onPointerEvent(PointerEventType.Enter){ isHoverOption.value = true }
+                                    .onPointerEvent(PointerEventType.Exit){ isHoverOption.value = false }
+                                    .background(if(model == selectedOption) ThemeApp.colors.buttonColor else if(isHoverOption.value) ThemeApp.colors.hoverTab else Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .onPointerEvent(PointerEventType.Press){
+                                        when(it.awtEventOrNull?.button){
+                                            MouseEvent.BUTTON1 -> when(it.awtEventOrNull?.clickCount){
+                                                1 -> { viewModel.setSelectedOption(model) }
+                                                2 -> {
+                                                    // If [editorState.displayAutocompleteOptions] is true, the selectedOption function of the viewModel is executed
+                                                    if(editorState.displayAutocompleteOptions.value) viewModel.selectedOption(model)
+                                                    // If [editor.displayAutocompleteOptions] is true, the updateSelectedOption function of the viewModel is executed
+                                                    if(editorState.displayUpdateAutocompleteOption.value) viewModel.updateSelectedOption(model, editorState)
+                                                }
                                             }
                                         }
-                                    }
-                                },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                                    },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
 
-                            Spacer(modifier = Modifier.width(5.dp))
+                                Spacer(modifier = Modifier.width(5.dp))
 
-                            Icon(
-                                painterResource("images/ic_asm.svg"),
-                                contentDescription = "Asm icon",
-                                tint = ThemeApp.colors.asmIconColor,
-                                modifier = Modifier.size(18.dp)
-                            )
+                                Icon(
+                                    painterResource("images/ic_asm.svg"),
+                                    contentDescription = "Asm icon",
+                                    tint = ThemeApp.colors.asmIconColor,
+                                    modifier = Modifier.size(18.dp)
+                                )
 
-                            Spacer(modifier = Modifier.width(5.dp))
+                                Spacer(modifier = Modifier.width(5.dp))
 
-                            Text(
-                                model.optionName,
-                                color = ThemeApp.colors.textColor,
-                                fontFamily = ThemeApp.text.fontFamily,
-                                fontSize = 13.sp,
-                            )
+                                Text(
+                                    model.optionName,
+                                    color = ThemeApp.colors.textColor,
+                                    fontFamily = ThemeApp.text.fontFamily,
+                                    fontSize = 13.sp,
+                                )
+                            }
                         }
                     }
-                }
-
+                } else EmptyMessage() // If [viewModel.allAutocompleteOptions] is empty, [EmptyMessage] is displayed
             }
 
             Box(

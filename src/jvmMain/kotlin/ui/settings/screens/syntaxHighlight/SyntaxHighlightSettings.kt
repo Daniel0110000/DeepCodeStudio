@@ -1,10 +1,22 @@
 package ui.settings.screens.syntaxHighlight
 
 import App
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ScrollbarAdapter
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ui.ThemeApp
+import ui.components.EmptyMessage
 import ui.editor.EditorVisualTransformation
 import ui.settings.lazy.SyntaxKeywordHighlighterConfigItem
 import ui.viewModels.settings.SettingsViewModel
@@ -35,11 +48,11 @@ fun SyntaxHighlightSettings(
     val viewModel = App().syntaxHighlightSettingsViewModel
 
     // Observe the list of all syntax highlight configurations
-    val configs = viewModel.allSyntaxHighlightConfigs.observeAsState()
+    val configs = viewModel.allSyntaxHighlightConfigs.observeAsState().value
     // Observe the selected option index
-    val selectedOptionIndex = viewModel.selectedOptionIndex.observeAsState()
+    val selectedOptionIndex = viewModel.selectedOptionIndex.observeAsState().value
     //Observe the state of the color options list expansion
-    val isExpandColorOptionsList = viewModel.isExpandColorOptionsList.observeAsState()
+    val isExpandColorOptionsList = viewModel.isExpandColorOptionsList.observeAsState().value
     // Observe the code text form the view model
     val codeText = viewModel.codeText.observeAsState()
 
@@ -53,34 +66,37 @@ fun SyntaxHighlightSettings(
 
             val scrollState = rememberScrollState()
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(8.dp)
-            ) {
-                configs.value.forEachIndexed { index, config ->
-                    // If the JSON file does not exist in the specified path, the [onErrorOccurred] callback is called,
-                    // ... and the option is removed from the database
-                    if(!File(config.jsonPath).exists()){
-                        CoroutineScope(Dispatchers.IO).launch {
-                            onErrorOccurred("JSON file not found at the specified path '${config.jsonPath}'")
-                            viewModel.deleteConfig(config.uuid)
-                            viewModel.updateSyntaxHighlightConfigs()
+            // If [configs] is not empty, the configurations are displayed
+            if(configs.isNotEmpty()){
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .padding(8.dp)
+                ) {
+                    configs.forEachIndexed { index, config ->
+                        // If the JSON file does not exist in the specified path, the [onErrorOccurred] callback is called,
+                        // ... and the option is removed from the database
+                        if(!File(config.jsonPath).exists()){
+                            CoroutineScope(Dispatchers.IO).launch {
+                                onErrorOccurred("JSON file not found at the specified path '${config.jsonPath}'")
+                                viewModel.deleteConfig(config.uuid)
+                                viewModel.updateSyntaxHighlightConfigs()
+                            }
+                        } else {
+                            SyntaxKeywordHighlighterConfigItem(
+                                config,
+                                viewModel,
+                                onUpdateConfigs = { viewModel.updateSyntaxHighlightConfigs() },
+                                index,
+                                isExpandColorOptionsList[index],
+                                selectedOptionIndex,
+                                onSelectedOptionIndexChanged = { viewModel.updateSelectedIndex(it) }
+                            )
                         }
-                    } else {
-                        SyntaxKeywordHighlighterConfigItem(
-                            config,
-                            viewModel,
-                            onUpdateConfigs = { viewModel.updateSyntaxHighlightConfigs() },
-                            index,
-                            isExpandColorOptionsList.value[index],
-                            selectedOptionIndex.value,
-                            onSelectedOptionIndexChanged = { viewModel.updateSelectedIndex(it) }
-                        )
                     }
                 }
-            }
+            } else EmptyMessage() // If [configs] is empty, [EmptyMessage] is displayed
 
             VerticalScrollbar(
                 ScrollbarAdapter(scrollState),
@@ -94,9 +110,9 @@ fun SyntaxHighlightSettings(
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        if(configs.value.isNotEmpty()){
+        if(configs.isNotEmpty()){
             Text(
-                configs.value[selectedOptionIndex.value].optionName,
+                configs[selectedOptionIndex].optionName,
                 color = ThemeApp.colors.textColor,
                 fontFamily = ThemeApp.text.fontFamily,
                 fontSize = 13.sp
@@ -122,7 +138,7 @@ fun SyntaxHighlightSettings(
                     ),
                     cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
                     visualTransformation = EditorVisualTransformation(
-                        configs.value[selectedOptionIndex.value],
+                        configs[selectedOptionIndex],
                         viewModel,
                         settingsViewModel
                     ),
