@@ -2,8 +2,15 @@ package ui
 
 import App
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.components.verticalBarOptions
@@ -22,11 +29,16 @@ fun CodeEditorScreen() {
     // Value observer for [currentPath]
     val currentPath = splitPaneViewModel.currentPath.observeAsState().value
     // Create [FileTreeViewModel]
-    val fileTreeViewModel = FileTreeViewModel(repository, currentPath, splitPaneViewModel.tabState.value)
+    val fileTreeViewModel = remember { mutableStateOf(FileTreeViewModel(repository, currentPath, splitPaneViewModel.tabState.value)) }
 
     // Value observers for [isCollapseSplitPane] and [isOpenTerminal]
     val isCollapseSplitPane = splitPaneViewModel.isCollapseSplitPane.observeAsState().value
     val isOpenTerminal = splitPaneViewModel.isOpenTerminal.observeAsState().value
+
+    // Creates and assign a new instance of FileTreeViewModel when the currentPath changes
+    LaunchedEffect(currentPath){
+        fileTreeViewModel.value = FileTreeViewModel(repository, currentPath, splitPaneViewModel.tabState.value)
+    }
 
     Row(
         modifier = Modifier
@@ -44,7 +56,7 @@ fun CodeEditorScreen() {
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 if(!isCollapseSplitPane) SplitPane(
-                    fileTreeViewModel,
+                    fileTreeViewModel.value,
                     splitPaneViewModel
                 ){ splitPaneViewModel.setIsCollapseSplitPane(true) }
 

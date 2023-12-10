@@ -1,10 +1,19 @@
 package ui.editor
 
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import domain.utilies.TextUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun editorKeyEvents(
@@ -87,6 +96,24 @@ fun editorKeyEvents(
                 )
             editorState.isKeyBeingPressed.value = true
             true
+        }
+        (keyEvent.isShiftPressed && keyEvent.key == Key(java.awt.event.KeyEvent.VK_QUOTE) && !editorState.isKeyBeingPressed.value) -> {
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(15) // Delay for 15 milliseconds
+                // Check of the [editorState.wordToSearch] is not empty and is equal to a double quote character
+                if(editorState.wordToSearch.value.isNotEmpty() && editorState.wordToSearch.value == '"'.toString()){
+                    // Insert double quotes at the cursor position in the [editorState.codeText]
+                    val newText = TextUtils.insertTextAtCursorPosition(
+                        editorState.codeText.value.selection.start,
+                        editorState.codeText.value.text,
+                        "\"\""
+                    )
+                    editorState.codeText.value = TextFieldValue(newText, TextRange(editorState.codeText.value.selection.start))
+                }
+            }
+
+            editorState.isKeyBeingPressed.value = true
+            false
         }
         (keyEvent.type == KeyEventType.KeyUp) -> {
             editorState.isKeyBeingPressed.value = false

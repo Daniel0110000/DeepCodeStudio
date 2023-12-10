@@ -10,7 +10,7 @@ object KeywordAutoCompleteUtil {
      * @return A list of autocomplete suggestions matching the input
      */
     fun autocompleteKeywords(input: String, keywords: List<String>): List<String> =
-        if(input.isBlank()) emptyList() else keywords.filter { it.contains(input) }
+        if(input.isNotBlank() && input.length > 1) keywords.filter { it.contains(input) } else emptyList()
 
     /**
      * Filters a list of variable names to provide autocomplete suggestions based on user input.
@@ -20,7 +20,7 @@ object KeywordAutoCompleteUtil {
      * @return A list of variable names that match the user's input
      */
     fun filterVariableNamesForAutocomplete(variableNames: List<String>, input: String): List<String> =
-        if(input.isBlank()) emptyList() else variableNames.filter { it.contains(input) }
+        if(input.isNotBlank() && input.length > 1) variableNames.filter { it.contains(input) } else emptyList()
 
     /**
      * Filters a list of a function names to provide autocomplete suggestions based on user input
@@ -30,5 +30,5 @@ object KeywordAutoCompleteUtil {
      * @return A list of function names that match the user's input
      */
     fun filterFunctionNamesForAutocomplete(functionNames: List<String>, input: String): List<String> =
-        if(input.isBlank()) emptyList() else functionNames.filter { it.contains(input) }
+        if(input.isNotBlank() && input.length > 1) functionNames.filter { it.contains(input) } else emptyList()
 }

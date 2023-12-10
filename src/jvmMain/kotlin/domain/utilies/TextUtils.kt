@@ -77,7 +77,7 @@ object TextUtils {
         val strWithoutColon = str.replace(":", "")
         val pattern = Regex("""\s+(\w+)\s+($regexValue)\s+""".trimMargin())
         val con = pattern.findAll(strWithoutColon)
-        return con.map { it.groupValues[1] }.toList()
+        return (con.map { it.groupValues[1] } + con.map { "[${it.groupValues[1]}]" }).toList()
     }
 
     /**
@@ -98,7 +98,7 @@ object TextUtils {
             }
         }
 
-        return functionNames
+        return functionNames + functionNames.map { "[$it]" }
     }
 
 }
