@@ -1,11 +1,26 @@
 package ui.settings.screens.autocomplete
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.onClick
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -28,6 +43,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ui.ThemeApp
+import ui.components.TooltipArea
 import ui.viewModels.settings.AutocompleteSettingsViewModel
 import java.awt.Cursor
 import java.io.File
@@ -73,32 +89,36 @@ fun JsonAutocompleteOptionContainer(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Button(
-                    onClick = {
-                        CoroutineScope(Dispatchers.IO).launch { onUpdateJsonPathClick(JsonChooser.chooseJson() ?: "") }
-                    },
-                    modifier = Modifier.height(28.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = ThemeApp.colors.secondColor)
-                ){
-                    Text(
-                        "Browse",
-                        color = ThemeApp.colors.textColor,
-                        fontSize = 10.sp,
-                        fontFamily = ThemeApp.text.fontFamily
-                    )
+                TooltipArea("Choose Json"){
+                    Button(
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch { onUpdateJsonPathClick(JsonChooser.chooseJson() ?: "") }
+                        },
+                        modifier = Modifier.height(28.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = ThemeApp.colors.secondColor)
+                    ){
+                        Text(
+                            "Browse",
+                            color = ThemeApp.colors.textColor,
+                            fontSize = 10.sp,
+                            fontFamily = ThemeApp.text.fontFamily
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.width(10.dp))
 
-                Icon(
-                    Icons.Rounded.Close,
-                    contentDescription = "Icon close",
-                    tint = ThemeApp.colors.textColor,
-                    modifier = Modifier
-                        .size(18.dp)
-                        .onClick { onDeleteOptionClick() }
-                        .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)))
-                )
+                TooltipArea("Delete Option"){
+                    Icon(
+                        Icons.Rounded.Close,
+                        contentDescription = "Icon close",
+                        tint = ThemeApp.colors.textColor,
+                        modifier = Modifier
+                            .size(18.dp)
+                            .onClick { onDeleteOptionClick() }
+                            .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)))
+                    )
+                }
 
             }
 
