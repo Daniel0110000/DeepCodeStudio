@@ -1,4 +1,5 @@
-import domain.repository.SettingRepository
+import domain.repositories.AutocompleteSettingsRepository
+import domain.repositories.SyntaxHighlightSettingsRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ui.viewModels.CodeEditorViewModel
@@ -14,8 +15,11 @@ import ui.viewModels.splitPane.SplitPaneViewModel
  */
 class App: KoinComponent {
 
-    // Inject [SettingRepository]
-    val settingRepository: SettingRepository by inject()
+    // Inject [AutocompleteSettingsRepository]
+    val autocompleteSettingsRepository: AutocompleteSettingsRepository by inject()
+
+    // Inject [SyntaxHighlightSettingsRepository]
+    val syntaxHighlightSettingsRepository: SyntaxHighlightSettingsRepository by inject()
 
     // Inject [SyntaxHighlightViewModel]
     val syntaxHighlightSettingsViewModel: SyntaxHighlightSettingsViewModel by inject()

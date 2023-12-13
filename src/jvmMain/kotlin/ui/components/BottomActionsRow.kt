@@ -1,5 +1,6 @@
 package ui.components
 
+import App
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -28,16 +29,16 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import domain.repository.SettingRepository
+import domain.repositories.AutocompleteSettingsRepository
 import ui.ThemeApp
 import ui.editor.EditorState
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun BottomActionsRow(
-    repository: SettingRepository,
-    editorState: EditorState
-) {
+fun BottomActionsRow(editorState: EditorState) {
+
+    val repository: AutocompleteSettingsRepository = App().autocompleteSettingsRepository
+
     var isHoveringAutocompleteOption by remember { mutableStateOf(false) }
     var isHoverReadOnlyButton by remember { mutableStateOf(false) }
 

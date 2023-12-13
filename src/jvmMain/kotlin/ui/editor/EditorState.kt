@@ -6,6 +6,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.input.TextFieldValue
 import domain.model.SyntaxHighlightConfigModel
+import domain.utilies.TextUtils
+import ui.editor.autocompleteCode.KeywordAutoCompleteUtil
 
 class EditorState {
     // The content of the code editor
@@ -18,7 +20,7 @@ class EditorState {
     // Suggestions for auto-complete
     var autoCompleteSuggestions = mutableStateOf<List<String>>(emptyList())
     // Result of text layout calculations
-    var textLayoutResult = mutableStateOf<TextLayoutResult?>(null)
+    private var textLayoutResult = mutableStateOf<TextLayoutResult?>(null)
     // Index of the current line where the cursor is located
     private val cursorLineIndex = derivedStateOf { textLayoutResult.value?.getLineForOffset(codeText.value.selection.start) ?: 0 }
     // Y-coordinate of the cursor
@@ -54,5 +56,41 @@ class EditorState {
     var displayAutocompleteOptions = mutableStateOf(false)
     // Visibility state of the view for updating the selected autocomplete option
     var displayUpdateAutocompleteOption = mutableStateOf(false)
+
+    fun onValueChange(value: TextFieldValue){
+        if (value.text != codeText.value.text) {
+            val selectedWord = TextUtils.extractSurroundingWord(value.selection.start, value.text)
+            wordToSearch.value = selectedWord
+
+            autoCompleteSuggestions.value =
+                KeywordAutoCompleteUtil.autocompleteKeywords(selectedWord, keywords.value) +
+                        KeywordAutoCompleteUtil.filterVariableNamesForAutocomplete(
+                            TextUtils.extractVariableNames(codeText.value.text, variableDirectives.value),
+                            selectedWord
+                        ) +
+                        KeywordAutoCompleteUtil.filterFunctionNamesForAutocomplete(
+                            TextUtils.extractFunctionNames(codeText.value.text),
+                            selectedWord
+                        )
+
+            isAutoCompleteVisible.value = autoCompleteSuggestions.value.isNotEmpty()
+        } else {
+            autoCompleteSuggestions.value = emptyList()
+            isAutoCompleteVisible.value = false
+        }
+
+        lineIndex.value = getCursorLine(value)
+        codeText.value = value
+    }
+
+    fun onTextLayout(layout: TextLayoutResult){
+        val lineCount = layout.lineCount
+        if (lineCount != linesCount.value) linesCount.value = lineCount
+        textLayoutResult.value = layout
+        cursorXCoordinate.value = layout.getHorizontalPosition(
+            codeText.value.selection.start,
+            true
+        ).toInt()
+    }
 
 }

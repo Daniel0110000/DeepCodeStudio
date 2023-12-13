@@ -6,7 +6,8 @@ import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.model.AutocompleteOptionModel
 import domain.model.SelectedAutocompleteOptionModel
-import domain.repository.SettingRepository
+import domain.repositories.AutocompleteSettingsRepository
+import domain.repositories.SyntaxHighlightSettingsRepository
 import domain.utilies.JsonUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,8 @@ import ui.editor.tabs.TabModel
 import java.io.File
 
 class EditorViewModel(
-    private val repository: SettingRepository
+    private val autocompleteRepository: AutocompleteSettingsRepository,
+    private val syntaxHighlightRepository: SyntaxHighlightSettingsRepository
 ): ViewModel() {
 
     private val _isDisplayEditor: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -60,15 +62,15 @@ class EditorViewModel(
         }
 
         //  Check if there is a selected autocomplete option for the file
-        if(!repository.existsSelectedAutocompleteOption(filePath)){
+        if(!autocompleteRepository.existsSelectedAutocompleteOption(filePath)){
             _editorStates.value[_selectedTabIndex.value].displayAutocompleteOptions.value = true
         } else {
             // If a selected autocomplete option exists, load its associated syntax highlight configuration
-            val option = repository.getSelectedAutocompleteOption(filePath)
+            val option = autocompleteRepository.getSelectedAutocompleteOption(filePath)
 
             // Load keywords and variable directives from the JSON path specified in the selected autocomplete option
             _editorStates.value[_selectedTabIndex.value].apply {
-                syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(option.uuid)
+                syntaxHighlightConfig.value = syntaxHighlightRepository.getSyntaxHighlightConfig(option.uuid)
                 keywords.value = JsonUtils.jsonToListString(option.jsonPath)
                 variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath)
             }
@@ -84,7 +86,7 @@ class EditorViewModel(
     fun selectedOption(model: AutocompleteOptionModel){
         // Sets syntax highlight configuration, keywords and variable directives based on the selected autocomplete option
         _editorStates.value[_selectedTabIndex.value].apply {
-            syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(model.uuid)
+            syntaxHighlightConfig.value = syntaxHighlightRepository.getSyntaxHighlightConfig(model.uuid)
             keywords.value = JsonUtils.jsonToListString(model.jsonPath)
             variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath)
 
@@ -94,7 +96,7 @@ class EditorViewModel(
 
         // Asynchronously add the selected autocomplete option to the database
         scope.launch {
-            repository.addSelectedAutocompleteOption(
+            autocompleteRepository.addSelectedAutocompleteOption(
                 SelectedAutocompleteOptionModel(
                     uuid = model.uuid,
                     asmFilePath = editorStates.value[_selectedTabIndex.value].filePath.value,
@@ -113,7 +115,7 @@ class EditorViewModel(
     fun updateSelectedOption(model: AutocompleteOptionModel, editorState: EditorState){
         scope.launch {
             // Updates the selected autocomplete option in the repository
-            repository.updateSelectedAutocompleteOption(
+            autocompleteRepository.updateSelectedAutocompleteOption(
                 SelectedAutocompleteOptionModel(
                     uuid = model.uuid,
                     asmFilePath = editorState.filePath.value,
@@ -124,7 +126,7 @@ class EditorViewModel(
 
             // Updates the editor state
             editorState.apply {
-                syntaxHighlightConfig.value = repository.getSyntaxHighlightConfig(model.uuid)
+                syntaxHighlightConfig.value = syntaxHighlightRepository.getSyntaxHighlightConfig(model.uuid)
                 keywords.value = JsonUtils.jsonToListString(model.jsonPath)
                 variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath)
                 displayUpdateAutocompleteOption.value = false
@@ -136,7 +138,7 @@ class EditorViewModel(
      * Gets all autocomplete options from the repository and assigns them to [_allAutocompleteOptions]
      */
     fun getAllAutocompleteOptions(){
-        _allAutocompleteOptions.value = repository.getAllAutocompleteOptions()
+        _allAutocompleteOptions.value = autocompleteRepository.getAllAutocompleteOptions()
     }
 
     /**

@@ -13,13 +13,14 @@ import androidx.compose.ui.window.DialogState
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import ui.ThemeApp
 import ui.components.ErrorMessage
-import ui.settings.screens.autocomplete.AutocompleteSettings
-import ui.settings.screens.syntaxHighlight.SyntaxHighlightSettings
+import ui.settings.screens.autocomplete.AutocompleteSettingsScreen
+import ui.settings.screens.syntaxHighlight.SyntaxHighlightSettingsScreen
+import ui.viewModels.settings.SettingsViewModel
 
 @Composable
 fun Settings(onCloseRequest: () -> Unit) {
 
-    val viewModel = App().settingsViewModel
+    val viewModel: SettingsViewModel = App().settingsViewModel
 
     // Value observers
     val screen = viewModel.screen.observeAsState().value
@@ -36,18 +37,18 @@ fun Settings(onCloseRequest: () -> Unit) {
                 .fillMaxSize()
                 .background(ThemeApp.colors.background)
         ) {
-            SettingsOptions(viewModel)
+            SettingOptions(viewModel)
 
             val modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
 
             when(screen){
-                Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS -> SyntaxHighlightSettings(modifier, viewModel){
+                Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS -> SyntaxHighlightSettingsScreen(modifier, viewModel){
                     viewModel.setErrorDescription(it)
                     viewModel.setDisplayErrorMessage(true)
                 }
-                Screens.AUTOCOMPLETE_SETTINGS -> AutocompleteSettings(modifier){
+                Screens.AUTOCOMPLETE_SETTINGS -> AutocompleteSettingsScreen(modifier){
                     viewModel.setErrorDescription(it)
                     viewModel.setDisplayErrorMessage(true)
                 }

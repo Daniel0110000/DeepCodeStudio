@@ -1,23 +1,19 @@
 package ui.editor
 
 import App
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
-import ui.ThemeApp
-import ui.editor.navigation.CustomNavigationHost
+import ui.editor.navigation.SetupNavHost
 import ui.editor.navigation.rememberNavController
 import ui.editor.tabs.TabsState
 import ui.editor.tabs.TabsView
@@ -74,7 +70,7 @@ fun EditorView(tabsState: TabsState) {
                     }
                 )
 
-                CustomNavigationHost(
+                SetupNavHost(
                     navController = navController,
                     states = editorStates,
                     modifier = Modifier.weight(1f).fillMaxWidth()
@@ -85,27 +81,6 @@ fun EditorView(tabsState: TabsState) {
             if(editorStates.isNotEmpty()) AllAutocompleteOptionView(editorStates[selectedTabIndex], viewModel)
 
         }
-    } else {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Image(
-                painterResource("images/ic_app.svg"),
-                contentDescription = "App icon",
-                modifier = Modifier.size(300.dp)
-            )
-
-            Text(
-                "DeepCode Studio",
-                color = ThemeApp.colors.secondColor,
-                fontFamily = ThemeApp.text.fontFamily,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-
-        }
-    }
+    } else EmptyEditorView()
 
 }

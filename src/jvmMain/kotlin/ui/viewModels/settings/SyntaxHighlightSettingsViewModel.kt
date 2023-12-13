@@ -4,10 +4,12 @@ import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.model.SyntaxHighlightConfigModel
-import domain.repository.SettingRepository
+import domain.repositories.AutocompleteSettingsRepository
+import domain.repositories.SyntaxHighlightSettingsRepository
 
 class SyntaxHighlightSettingsViewModel(
-    private val settingsRepository: SettingRepository
+    private val syntaxHighlightRepository: SyntaxHighlightSettingsRepository,
+    private val autocompleteRepository: AutocompleteSettingsRepository
 ): ViewModel() {
 
     private val _allSyntaxHighlightConfigs: MutableLiveData<List<SyntaxHighlightConfigModel>> = MutableLiveData(emptyList())
@@ -24,7 +26,7 @@ class SyntaxHighlightSettingsViewModel(
 
     init {
         // Load all syntax highlight configurations from the repository
-        _allSyntaxHighlightConfigs.value = settingsRepository.getAllSyntaxHighlightConfigs()
+        _allSyntaxHighlightConfigs.value = syntaxHighlightRepository.getAllSyntaxHighlightConfigs()
 
         // Initialize the color options expansion list with 'false' for each configuration
         _isExpandColorOptionsList.value = List(_allSyntaxHighlightConfigs.value.size){ false }
@@ -36,7 +38,7 @@ class SyntaxHighlightSettingsViewModel(
      */
     fun updateSyntaxHighlightConfigs(){
         // Load all syntax highlight configurations from the repository
-        _allSyntaxHighlightConfigs.value = settingsRepository.getAllSyntaxHighlightConfigs()
+        _allSyntaxHighlightConfigs.value = syntaxHighlightRepository.getAllSyntaxHighlightConfigs()
 
         // Ensure the selected option index remains valid
         if(_selectedOptionIndex.value > _allSyntaxHighlightConfigs.value.size - 1){
@@ -63,7 +65,7 @@ class SyntaxHighlightSettingsViewModel(
      * @param model The [SyntaxHighlightConfigModel] containing the updated configuration
      */
     suspend fun updateSyntaxHighlightConfig(model: SyntaxHighlightConfigModel) =
-        settingsRepository.updateSyntaxHighlightConfig(model)
+        syntaxHighlightRepository.updateSyntaxHighlightConfig(model)
 
     /**
      * Update the selected option index with the specified [index]
@@ -97,9 +99,9 @@ class SyntaxHighlightSettingsViewModel(
      * @param uuid Identifier associated with the configuration to be deleted
      */
     suspend fun deleteConfig(uuid: String){
-        settingsRepository.deleteAutocompleteOption(uuid)
-        settingsRepository.deleteSyntaxHighlightConfig(uuid)
-        settingsRepository.deleteSelectedAutocompleteOption(uuid)
+        autocompleteRepository.deleteAutocompleteOption(uuid)
+        syntaxHighlightRepository.deleteSyntaxHighlightConfig(uuid)
+        autocompleteRepository.deleteSelectedAutocompleteOption(uuid)
     }
 
     /**

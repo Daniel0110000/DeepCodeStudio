@@ -3,18 +3,18 @@ package ui.viewModels.splitPane
 import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import domain.repository.SettingRepository
+import domain.repositories.AutocompleteSettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ui.editor.tabs.TabModel
 import ui.editor.tabs.TabsState
-import ui.fileTree.FileInfo
-import ui.fileTree.FileObserver
+import ui.splitPane.fileTree.FileInfo
+import ui.splitPane.fileTree.FileObserver
 import java.io.File
 
 class FileTreeViewModel(
-    private val repository: SettingRepository,
+    private val repository: AutocompleteSettingsRepository,
     private val path: String,
     private val tabsState: TabsState
 ): ViewModel() {

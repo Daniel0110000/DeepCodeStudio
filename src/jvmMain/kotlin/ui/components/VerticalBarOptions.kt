@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import ui.ThemeApp
 
 @Composable
-fun verticalBarOptions(
+fun VerticalBarOptions(
     isCollapseFileTree: Boolean,
     isOpenTerminal: Boolean,
     isOpenSettings: Boolean,

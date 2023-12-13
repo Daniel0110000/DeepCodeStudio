@@ -1,7 +1,9 @@
 package di
 
-import data.repository.SettingRepositoryImpl
-import domain.repository.SettingRepository
+import data.repositories.AutocompleteSettingsRepositoryImpl
+import data.repositories.SyntaxHighlightSettingsRepositoryImpl
+import domain.repositories.AutocompleteSettingsRepository
+import domain.repositories.SyntaxHighlightSettingsRepository
 import org.koin.dsl.module
 import ui.viewModels.CodeEditorViewModel
 import ui.viewModels.editor.EditorViewModel
@@ -15,13 +17,14 @@ import ui.viewModels.splitPane.SplitPaneViewModel
  * Define the app module for dependency injection
  */
 val appModule = module {
-    single<SettingRepository> { SettingRepositoryImpl() }
+    single<AutocompleteSettingsRepository> { AutocompleteSettingsRepositoryImpl() }
+    single<SyntaxHighlightSettingsRepository> { SyntaxHighlightSettingsRepositoryImpl() }
 
-    single { SyntaxHighlightSettingsViewModel(get()) }
-    single { AutocompleteSettingsViewModel(get()) }
+    single { SyntaxHighlightSettingsViewModel(get(), get()) }
+    single { AutocompleteSettingsViewModel(get(), get()) }
     single { CodeEditorViewModel() }
     single { TabsViewModel() }
-    single { EditorViewModel(get()) }
+    single { EditorViewModel(get(), get()) }
     single { SettingsViewModel() }
     single { SplitPaneViewModel() }
 }

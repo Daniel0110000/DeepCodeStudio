@@ -28,6 +28,7 @@ class EditorVisualTransformation(
             offsetMapping = OffsetMapping.Identity
         )
     } catch (e: Exception){
+        println(e.message)
         CoroutineScope(Dispatchers.IO).launch {
             settingsViewModel?.setErrorDescription(e.message.toString())
             settingsViewModel?.setDisplayErrorMessage(true)

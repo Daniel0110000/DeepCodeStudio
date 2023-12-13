@@ -29,7 +29,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import domain.utilies.JsonChooser
+import domain.utilies.ChooseJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,7 +87,7 @@ fun NewAutocompleteOptionInput(
             TooltipArea("Choose Json"){
                 Button(
                     onClick = {
-                        CoroutineScope(Dispatchers.IO).launch { onJsonPathSelection(JsonChooser.chooseJson() ?: "") }
+                        CoroutineScope(Dispatchers.IO).launch { onJsonPathSelection(ChooseJson.chooseJson() ?: "") }
                     },
                     modifier = Modifier.height(28.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = ThemeApp.colors.secondColor)

@@ -5,11 +5,13 @@ import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.model.AutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
-import domain.repository.SettingRepository
+import domain.repositories.AutocompleteSettingsRepository
+import domain.repositories.SyntaxHighlightSettingsRepository
 import java.util.UUID
 
 class AutocompleteSettingsViewModel(
-    private val repository: SettingRepository
+    private val autocompleteRepository: AutocompleteSettingsRepository,
+    private val syntaxHighlightRepository: SyntaxHighlightSettingsRepository
 ): ViewModel() {
 
     private val _allAutocompleteOptions: MutableLiveData<List<AutocompleteOptionModel>> = MutableLiveData(emptyList())
@@ -29,7 +31,7 @@ class AutocompleteSettingsViewModel(
 
     init {
         // Load all autocomplete options from the repository
-        _allAutocompleteOptions.value = repository.getAllAutocompleteOptions()
+        _allAutocompleteOptions.value = autocompleteRepository.getAllAutocompleteOptions()
         // If [_allAutocompleteOptions] is not empty, it assigns the first value from [_allAutocompleteOptions] as the initially selected option
         if(_allAutocompleteOptions.value.isNotEmpty()) setSelectedOption(_allAutocompleteOptions.value.first())
     }
@@ -38,7 +40,7 @@ class AutocompleteSettingsViewModel(
      * Update the list of autocomplete options with the options retrieved from the repository
      */
     fun updateAutocompleteOptions(){
-        _allAutocompleteOptions.value = repository.getAllAutocompleteOptions()
+        _allAutocompleteOptions.value = autocompleteRepository.getAllAutocompleteOptions()
         val allOptions = _allAutocompleteOptions.value
         if(allOptions.isNotEmpty()) setSelectedOption(allOptions.first())
     }
@@ -54,8 +56,8 @@ class AutocompleteSettingsViewModel(
         syntaxHighlightModel: SyntaxHighlightConfigModel
     ){
         val uuid = UUID.randomUUID().toString()
-        repository.addAutocompleteOption(autocompleteModel.copy(uuid = uuid))
-        repository.createSyntaxHighlightConfig(syntaxHighlightModel.copy(uuid = uuid))
+        autocompleteRepository.addAutocompleteOption(autocompleteModel.copy(uuid = uuid))
+        syntaxHighlightRepository.createSyntaxHighlightConfig(syntaxHighlightModel.copy(uuid = uuid))
         setOptionName("")
     }
 
@@ -69,9 +71,9 @@ class AutocompleteSettingsViewModel(
         newJsonPath: String,
         model: AutocompleteOptionModel
     ){
-        repository.updateAutocompleteOptionJsonPath(newJsonPath, model.uuid)
-        repository.updateSyntaxHighlightConfigJsonPath(newJsonPath, model.uuid)
-        repository.updateSelectedAutocompleteOptionJsonPath(newJsonPath, model.uuid)
+        autocompleteRepository.updateAutocompleteOptionJsonPath(newJsonPath, model.uuid)
+        syntaxHighlightRepository.updateSyntaxHighlightConfigJsonPath(newJsonPath, model.uuid)
+        autocompleteRepository.updateSelectedAutocompleteOptionJsonPath(newJsonPath, model.uuid)
     }
 
     /**
@@ -80,9 +82,9 @@ class AutocompleteSettingsViewModel(
      * @param uuid Identifier associated with the configuration to be deleted
      */
     suspend fun deleteConfig(uuid: String){
-        repository.deleteAutocompleteOption(uuid)
-        repository.deleteSyntaxHighlightConfig(uuid)
-        repository.deleteSelectedAutocompleteOption(uuid = uuid)
+        autocompleteRepository.deleteAutocompleteOption(uuid)
+        syntaxHighlightRepository.deleteSyntaxHighlightConfig(uuid)
+        autocompleteRepository.deleteSelectedAutocompleteOption(uuid = uuid)
     }
 
     /**
