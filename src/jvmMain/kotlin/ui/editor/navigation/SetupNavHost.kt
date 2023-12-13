@@ -6,11 +6,11 @@ import ui.editor.EditorState
 import ui.editor.EditorViewTab
 
 /**
- * [Composable] function representing a navigation host for multiple [EditorTab]
+ * [Composable] function representing a navigation host for multiple [EditorViewTab]
  *
  * @param navController The [NavController] responsible for handling navigation withing the host
  * @param states A list of [EditorState] instances representing individual editor states
- * @param modifier [Modifier] for each [EditorTab]
+ * @param modifier [Modifier] for each [EditorViewTab]
  */
 @Composable
 fun SetupNavHost(

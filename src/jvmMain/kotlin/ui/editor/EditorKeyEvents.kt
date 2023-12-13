@@ -32,7 +32,7 @@ fun editorKeyEvents(
             editorState.isKeyBeingPressed.value = true
             true
         }
-        (keyEvent.key == Key.Enter && editorState.isAutoCompleteVisible.value && !editorState.isKeyBeingPressed.value) -> {
+        ((keyEvent.key == Key.Enter || keyEvent.key == Key.Tab) && editorState.isAutoCompleteVisible.value && !editorState.isKeyBeingPressed.value) -> {
             val newText = TextUtils.insertTextAtCursorPosition(
                 editorState.codeText.value.selection.start,
                 editorState.codeText.value.text,
