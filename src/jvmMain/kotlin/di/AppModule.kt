@@ -20,7 +20,7 @@ val appModule = module {
     single<AutocompleteSettingsRepository> { AutocompleteSettingsRepositoryImpl() }
     single<SyntaxHighlightSettingsRepository> { SyntaxHighlightSettingsRepositoryImpl() }
 
-    single { SyntaxHighlightSettingsViewModel(get(), get()) }
+    single { SyntaxHighlightSettingsViewModel(get()) }
     single { AutocompleteSettingsViewModel(get(), get()) }
     single { CodeEditorViewModel() }
     single { TabsViewModel() }
