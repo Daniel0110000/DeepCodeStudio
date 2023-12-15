@@ -27,22 +27,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import domain.utilies.DocumentsManager
+import domain.utilies.JsonUtils
 import ui.ThemeApp
 import ui.components.EmptyMessage
 import ui.editor.EditorVisualTransformation
+import ui.settings.SettingsErrorState
 import ui.settings.lazy.SyntaxKeywordHighlighterConfigItem
-import ui.viewModels.settings.SettingsViewModel
 import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
-import java.io.File
 
 @Composable
 fun SyntaxHighlightSettingsScreen(
     modifier: Modifier,
-    settingsViewModel: SettingsViewModel,
-    onErrorOccurred: (String) -> Unit
+    settingsErrorState: SettingsErrorState
 ) {
 
     // Inject [SyntaxHighlightViewModel]
@@ -76,15 +73,8 @@ fun SyntaxHighlightSettingsScreen(
                         .padding(8.dp)
                 ) {
                     configs.forEachIndexed { index, config ->
-                        // If the JSON file does not exist in the specified path, the [onErrorOccurred] callback is called,
-                        // ... and the option is removed from the database
-                        if(!File(config.jsonPath).exists()){
-                            CoroutineScope(Dispatchers.IO).launch {
-                                onErrorOccurred("JSON file not found at the specified path '${config.jsonPath}'")
-                                viewModel.deleteConfig(config.uuid)
-                                viewModel.updateSyntaxHighlightConfigs()
-                            }
-                        } else {
+                        // If the JSON file exists, [SyntaxKeywordHighlighterConfigItem] is displayed
+                        if(DocumentsManager.existsFile(config.jsonPath)){
                             SyntaxKeywordHighlighterConfigItem(
                                 config,
                                 viewModel,
@@ -94,6 +84,11 @@ fun SyntaxHighlightSettingsScreen(
                                 selectedOptionIndex,
                                 onSelectedOptionIndexChanged = { viewModel.updateSelectedIndex(it) }
                             )
+                        } else {
+                            // If the JSON file does not exist, update the data in [EditorErrorState] to handle this erro
+                            settingsErrorState.uuid.value = config.uuid
+                            settingsErrorState.displayErrorMessage.value = true
+                            settingsErrorState.errorDescription.value = "JSON file not found at the specified path '${config.jsonPath}'"
                         }
                     }
                 }
@@ -112,6 +107,7 @@ fun SyntaxHighlightSettingsScreen(
         Spacer(modifier = Modifier.height(15.dp))
 
         if(configs.isNotEmpty()){
+            settingsErrorState.uuid.value = configs[selectedOptionIndex].uuid
             Text(
                 configs[selectedOptionIndex].optionName,
                 color = ThemeApp.colors.textColor,
@@ -140,8 +136,7 @@ fun SyntaxHighlightSettingsScreen(
                     cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
                     visualTransformation = EditorVisualTransformation(
                         configs[selectedOptionIndex],
-                        viewModel,
-                        settingsViewModel
+                        JsonUtils.jsonToSyntaxHighlightRegexModel(configs[selectedOptionIndex].jsonPath, settingsErrorState = settingsErrorState)
                     ),
                     modifier = Modifier
                         .fillMaxSize()

@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
+import domain.utilies.DocumentsManager
 import ui.ThemeApp
 import ui.components.EmptyMessage
 import ui.viewModels.editor.EditorViewModel
@@ -51,7 +52,8 @@ import java.awt.event.MouseEvent
 @Composable
 fun AllAutocompleteOptionView(
     editorState: EditorState,
-    viewModel: EditorViewModel
+    viewModel: EditorViewModel,
+    errorState: EditorErrorState
 ){
 
     // Value observers
@@ -91,50 +93,59 @@ fun AllAutocompleteOptionView(
                             .fillMaxWidth()
                     ) {
                         items(viewModel.allAutocompleteOptions.value){ model ->
+                            // Check if the JSON file exists to display the option
+                            if(DocumentsManager.existsFile(model.jsonPath)){
+                                val isHoverOption = remember { mutableStateOf(false) }
 
-                            val isHoverOption = remember { mutableStateOf(false) }
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(35.dp)
-                                    .padding(horizontal = 5.dp)
-                                    .onPointerEvent(PointerEventType.Enter){ isHoverOption.value = true }
-                                    .onPointerEvent(PointerEventType.Exit){ isHoverOption.value = false }
-                                    .background(if(model == selectedOption) ThemeApp.colors.buttonColor else if(isHoverOption.value) ThemeApp.colors.hoverTab else Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                    .onPointerEvent(PointerEventType.Press){
-                                        when(it.awtEventOrNull?.button){
-                                            MouseEvent.BUTTON1 -> when(it.awtEventOrNull?.clickCount){
-                                                1 -> { viewModel.setSelectedOption(model) }
-                                                2 -> {
-                                                    // If [editorState.displayAutocompleteOptions] is true, the selectedOption function of the viewModel is executed
-                                                    if(editorState.displayAutocompleteOptions.value) viewModel.selectedOption(model)
-                                                    // If [editor.displayAutocompleteOptions] is true, the updateSelectedOption function of the viewModel is executed
-                                                    if(editorState.displayUpdateAutocompleteOption.value) viewModel.updateSelectedOption(model, editorState)
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(35.dp)
+                                        .padding(horizontal = 5.dp)
+                                        .onPointerEvent(PointerEventType.Enter){ isHoverOption.value = true }
+                                        .onPointerEvent(PointerEventType.Exit){ isHoverOption.value = false }
+                                        .background(if(model == selectedOption) ThemeApp.colors.buttonColor else if(isHoverOption.value) ThemeApp.colors.hoverTab else Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                        .onPointerEvent(PointerEventType.Press){
+                                            when(it.awtEventOrNull?.button){
+                                                MouseEvent.BUTTON1 -> when(it.awtEventOrNull?.clickCount){
+                                                    1 -> { viewModel.setSelectedOption(model) }
+                                                    2 -> {
+                                                        // If [editorState.displayAutocompleteOptions] is true, the selectedOption function of the viewModel is executed
+                                                        if(editorState.displayAutocompleteOptions.value) viewModel.selectedOption(model, errorState)
+                                                        // If [editor.displayAutocompleteOptions] is true, the updateSelectedOption function of the viewModel is executed
+                                                        if(editorState.displayUpdateAutocompleteOption.value) viewModel.updateSelectedOption(model, editorState, errorState)
+                                                    }
                                                 }
                                             }
-                                        }
-                                    },
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                                        },
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
 
-                                Spacer(modifier = Modifier.width(5.dp))
+                                    Spacer(modifier = Modifier.width(5.dp))
 
-                                Icon(
-                                    painterResource("images/ic_asm.svg"),
-                                    contentDescription = "Asm icon",
-                                    tint = ThemeApp.colors.asmIconColor,
-                                    modifier = Modifier.size(18.dp)
-                                )
+                                    Icon(
+                                        painterResource("images/ic_asm.svg"),
+                                        contentDescription = "Asm icon",
+                                        tint = ThemeApp.colors.asmIconColor,
+                                        modifier = Modifier.size(18.dp)
+                                    )
 
-                                Spacer(modifier = Modifier.width(5.dp))
+                                    Spacer(modifier = Modifier.width(5.dp))
 
-                                Text(
-                                    model.optionName,
-                                    color = ThemeApp.colors.textColor,
-                                    fontFamily = ThemeApp.text.fontFamily,
-                                    fontSize = 13.sp,
-                                )
+                                    Text(
+                                        model.optionName,
+                                        color = ThemeApp.colors.textColor,
+                                        fontFamily = ThemeApp.text.fontFamily,
+                                        fontSize = 13.sp,
+                                    )
+                                }
+                            } else {
+                                // If the JSON file does not exist, update the data in [EditorErrorState] to handle this error
+                                errorState.uuid.value = model.uuid
+                                errorState.displayErrorMessage.value = true
+                                errorState.errorDescription.value = "JSON file not found at the specified path '${model.jsonPath}'"
+                                // Gets all autocomplete options again
+                                viewModel.getAllAutocompleteOptions()
                             }
                         }
                     }

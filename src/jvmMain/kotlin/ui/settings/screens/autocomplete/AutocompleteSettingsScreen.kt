@@ -21,17 +21,20 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import domain.model.AutocompleteOptionModel
 import domain.model.SyntaxHighlightConfigModel
+import domain.utilies.DocumentsManager
 import kotlinx.coroutines.launch
 import ui.ThemeApp
 import ui.components.EmptyMessage
+import ui.settings.SettingsErrorState
 import ui.settings.lazy.AutocompleteOptionItem
 import ui.settings.lazy.NewAutocompleteOptionInput
-import java.io.File
+import ui.viewModels.settings.AutocompleteSettingsViewModel
+import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
 
 @Composable
 fun AutocompleteSettingsScreen(
     modifier: Modifier,
-    onErrorOccurred: (String) -> Unit
+    settingsErrorState: SettingsErrorState
 ) {
 
     // Scroll state for the LazyColumn
@@ -41,8 +44,8 @@ fun AutocompleteSettingsScreen(
     val scope = rememberCoroutineScope()
 
     // Inject [AutocompleteSettingsViewModel] and [AutocompleteSettingsViewModel]
-    val autocompleteSettingsViewModel = App().autocompleteSettingsViewModel
-    val syntaxHighlightViewModel = App().syntaxHighlightSettingsViewModel
+    val autocompleteSettingsViewModel: AutocompleteSettingsViewModel = App().autocompleteSettingsViewModel
+    val syntaxHighlightViewModel: SyntaxHighlightSettingsViewModel = App().syntaxHighlightSettingsViewModel
 
     // Observe the list of all autocomplete options through the ViewModel
     val allOptions = autocompleteSettingsViewModel.allAutocompleteOptions.observeAsState().value
@@ -72,19 +75,16 @@ fun AutocompleteSettingsScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(allOptions){
-                            // If the JSON file does not exist in the specified path, the [onErrorOccurred] callback is called,
-                            // ... and the option is removed from the database
-                            if(!File(it.jsonPath).exists()){
-                                scope.launch {
-                                    onErrorOccurred("JSON file not found at the specified path '${it.jsonPath}'")
-                                    autocompleteSettingsViewModel.deleteConfig(it.uuid)
-                                    autocompleteSettingsViewModel.updateAutocompleteOptions()
-                                    autocompleteSettingsViewModel.setSelectedOption(allOptions.first())
-                                }
-                            } else {
+                            // If the JSON file exists, [AutocompleteOptionItem] is displayed
+                            if(DocumentsManager.existsFile(it.jsonPath)){
                                 AutocompleteOptionItem(it, selectedOption.uuid){
                                     autocompleteSettingsViewModel.setSelectedOption(it)
                                 }
+                            } else {
+                                // If the JSON file does not exist, update the data in [EditorErrorState] to handle this error
+                                settingsErrorState.uuid.value = it.uuid
+                                settingsErrorState.displayErrorMessage.value = true
+                                settingsErrorState.errorDescription.value = "JSON file not found at the specified path '${it.jsonPath}'"
                             }
                         }
                     }

@@ -11,10 +11,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
+import ui.components.ErrorMessage
 import ui.editor.navigation.SetupNavHost
 import ui.editor.navigation.rememberNavController
+import ui.editor.tabs.TabModel
 import ui.editor.tabs.TabsState
 import ui.editor.tabs.TabsView
 import ui.viewModels.editor.EditorViewModel
@@ -22,6 +25,9 @@ import ui.viewModels.editor.TabsViewModel
 
 @Composable
 fun EditorView(tabsState: TabsState) {
+
+    // Creates an instance of [EditorErrorState]
+    val errorState = remember { EditorErrorState() }
 
     // Inject [EditorViewModel and [tabsViewModel]
     val viewModel: EditorViewModel = App().editorViewModel
@@ -59,7 +65,7 @@ fun EditorView(tabsState: TabsState) {
             Column(modifier = Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState())) {
                 TabsView(
                     tabsState,
-                    onNewTab = { viewModel.onNewTab(it) },
+                    onNewTab = { filePath, fileName -> viewModel.onNewTab(filePath, fileName, errorState) },
                     onDeleteTab = { path ->
                         viewModel.onDeleteTab(path)
                         navController.navigate(editorStates[editorStates.lastIndex].filePath.value)
@@ -78,9 +84,30 @@ fun EditorView(tabsState: TabsState) {
 
             }
 
-            if(editorStates.isNotEmpty()) AllAutocompleteOptionView(editorStates[selectedTabIndex], viewModel)
+            if(editorStates.isNotEmpty()) AllAutocompleteOptionView(editorStates[selectedTabIndex], viewModel, errorState)
 
         }
     } else EmptyEditorView()
+
+    // If [errorState.displayErrorMessage] is true, [ErrorMessage] is displayed
+    if(errorState.displayErrorMessage.value){
+        ErrorMessage(
+            errorDescription = errorState.errorDescription.value
+        ){
+            // Checks if the error state indicated that the tab should be closed
+            if(errorState.shouldCloseTab.value){
+                // Closes the tab and delete associated configurations
+                if(editorStates.isNotEmpty()){
+                    tabsState.closeTab(TabModel(editorStates[selectedTabIndex].fileName.value, editorStates[selectedTabIndex].filePath.value)){}
+                    viewModel.deleteConfigs(editorStates[selectedTabIndex].uuid.value)
+                }
+                errorState.shouldCloseTab.value = false
+            } else {
+                // Deletes configurations associated with the error state's UUID
+                viewModel.deleteConfigs(errorState.uuid.value)
+            }
+            errorState.displayErrorMessage.value = false
+        }
+    }
 
 }

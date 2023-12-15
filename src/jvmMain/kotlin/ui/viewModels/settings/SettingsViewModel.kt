@@ -3,9 +3,14 @@ package ui.viewModels.settings
 import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import domain.repositories.AutocompleteSettingsRepository
+import domain.repositories.SyntaxHighlightSettingsRepository
 import ui.settings.Screens
 
-class SettingsViewModel: ViewModel() {
+class SettingsViewModel(
+    private val autocompleteRepository: AutocompleteSettingsRepository,
+    private val syntaxHighlightRepository: SyntaxHighlightSettingsRepository
+): ViewModel() {
 
     private val _screen: MutableLiveData<Screens> = MutableLiveData(Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS)
     val screen: LiveData<Screens> = _screen
@@ -16,14 +21,19 @@ class SettingsViewModel: ViewModel() {
     private val _selectedItem: MutableLiveData<Int> = MutableLiveData(0)
     val selectedItem: MutableLiveData<Int> = _selectedItem
 
-    private val _displayErrorMessage: MutableLiveData<Boolean> = MutableLiveData(false)
-    val displayErrorMessage: LiveData<Boolean> = _displayErrorMessage
-
-    private val _errorDescription: MutableLiveData<String> = MutableLiveData("")
-    val errorDescription: LiveData<String> = _errorDescription
-
     private val _settingsOptionsWidth: MutableLiveData<Float> = MutableLiveData(220f)
     val settingsOptionsWidth: LiveData<Float> = _settingsOptionsWidth
+
+    /**
+     * Deletes an autocomplete option and its related entities
+     *
+     * @param uuid Identifier associated with the configuration to be deleted
+     */
+    suspend fun deleteConfigs(uuid: String){
+        autocompleteRepository.deleteAutocompleteOption(uuid)
+        syntaxHighlightRepository.deleteSyntaxHighlightConfig(uuid)
+        autocompleteRepository.deleteSelectedAutocompleteOption(uuid = uuid)
+    }
 
     /**
      * Sets the screen using the provided [value]
@@ -41,24 +51,6 @@ class SettingsViewModel: ViewModel() {
      */
     fun setSelectedItem(value: Int){
         _selectedItem.value = value
-    }
-
-    /**
-     * Sets the display error message using the provided [value]
-     *
-     * @param value The value to assign
-     */
-    fun setDisplayErrorMessage(value: Boolean){
-        _displayErrorMessage.value = value
-    }
-
-    /**
-     * Sets the error description using the provided [value]
-     *
-     * @param value The value to assign
-     */
-    fun setErrorDescription(value: String){
-        _errorDescription.value = value
     }
 
     /**

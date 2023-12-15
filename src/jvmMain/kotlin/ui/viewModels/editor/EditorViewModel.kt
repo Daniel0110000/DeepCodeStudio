@@ -12,6 +12,7 @@ import domain.utilies.JsonUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ui.editor.EditorErrorState
 import ui.editor.EditorState
 import ui.editor.tabs.TabModel
 import java.io.File
@@ -48,7 +49,11 @@ class EditorViewModel(
      *
      * @param filePath The file path associated with the new tab
      */
-    fun onNewTab(filePath: String){
+    fun onNewTab(
+        filePath: String,
+        fileName: String,
+        errorState: EditorErrorState
+    ){
         // Add a new state for the new tab
         _editorStates.value = _editorStates.value.plus(EditorState())
 
@@ -57,6 +62,7 @@ class EditorViewModel(
 
         // Set file path and initial code text for the tab
         _editorStates.value[_selectedTabIndex.value].apply {
+            this.fileName.value = fileName
             this.filePath.value = filePath
             this.codeText.value = TextFieldValue(File(filePath).readText())
         }
@@ -70,9 +76,11 @@ class EditorViewModel(
 
             // Load keywords and variable directives from the JSON path specified in the selected autocomplete option
             _editorStates.value[_selectedTabIndex.value].apply {
+                uuid.value = option.uuid
                 syntaxHighlightConfig.value = syntaxHighlightRepository.getSyntaxHighlightConfig(option.uuid)
-                keywords.value = JsonUtils.jsonToListString(option.jsonPath)
-                variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath)
+                syntaxHighlightRegexModel.value = JsonUtils.jsonToSyntaxHighlightRegexModel(option.jsonPath, errorState)
+                keywords.value = JsonUtils.jsonToListString(option.jsonPath, errorState)
+                variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(option.jsonPath, errorState)
             }
         }
 
@@ -83,12 +91,17 @@ class EditorViewModel(
      *
      * @param model The [AutocompleteOptionModel] representing rhe selected autocomplete option
      */
-    fun selectedOption(model: AutocompleteOptionModel){
+    fun selectedOption(
+        model: AutocompleteOptionModel,
+        errorState: EditorErrorState
+    ){
         // Sets syntax highlight configuration, keywords and variable directives based on the selected autocomplete option
         _editorStates.value[_selectedTabIndex.value].apply {
+            uuid.value = model.uuid
             syntaxHighlightConfig.value = syntaxHighlightRepository.getSyntaxHighlightConfig(model.uuid)
-            keywords.value = JsonUtils.jsonToListString(model.jsonPath)
-            variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath)
+            syntaxHighlightRegexModel.value = JsonUtils.jsonToSyntaxHighlightRegexModel(model.jsonPath, errorState)
+            keywords.value = JsonUtils.jsonToListString(model.jsonPath, errorState)
+            variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath, errorState)
 
             // Hide the autocomplete options display
             displayAutocompleteOptions.value = false
@@ -112,7 +125,11 @@ class EditorViewModel(
      * @param model The [AutocompleteOptionModel] representing the autocomplete option to be updated
      * @param editorState The current state of the editor
      */
-    fun updateSelectedOption(model: AutocompleteOptionModel, editorState: EditorState){
+    fun updateSelectedOption(
+        model: AutocompleteOptionModel,
+        editorState: EditorState,
+        errorState: EditorErrorState
+    ){
         scope.launch {
             // Updates the selected autocomplete option in the repository
             autocompleteRepository.updateSelectedAutocompleteOption(
@@ -126,11 +143,21 @@ class EditorViewModel(
 
             // Updates the editor state
             editorState.apply {
+                uuid.value = model.uuid
                 syntaxHighlightConfig.value = syntaxHighlightRepository.getSyntaxHighlightConfig(model.uuid)
-                keywords.value = JsonUtils.jsonToListString(model.jsonPath)
-                variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath)
+                syntaxHighlightRegexModel.value = JsonUtils.jsonToSyntaxHighlightRegexModel(model.jsonPath, errorState)
+                keywords.value = JsonUtils.jsonToListString(model.jsonPath, errorState)
+                variableDirectives.value = JsonUtils.extractVariablesAndConstantsKeywordsFromJson(model.jsonPath, errorState)
                 displayUpdateAutocompleteOption.value = false
             }
+        }
+    }
+
+    fun deleteConfigs(uuid: String){
+        CoroutineScope(Dispatchers.IO).launch {
+            autocompleteRepository.deleteAutocompleteOption(uuid)
+            syntaxHighlightRepository.deleteSyntaxHighlightConfig(uuid)
+            autocompleteRepository.deleteSelectedAutocompleteOption(uuid = uuid)
         }
     }
 

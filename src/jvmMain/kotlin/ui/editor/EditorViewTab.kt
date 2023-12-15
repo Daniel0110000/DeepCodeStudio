@@ -86,7 +86,7 @@ fun EditorViewTab(
                                     fontWeight = FontWeight.W500
                                 ),
                                 cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
-                                visualTransformation = EditorVisualTransformation(state.syntaxHighlightConfig.value),
+                                visualTransformation = EditorVisualTransformation(state.syntaxHighlightConfig.value, state.syntaxHighlightRegexModel.value),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .focusRequester(state.textFieldFocusRequester.value)

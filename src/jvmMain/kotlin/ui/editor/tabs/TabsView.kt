@@ -1,11 +1,15 @@
 package ui.editor.tabs
 
 import App
-import androidx.compose.foundation.*
+import androidx.compose.foundation.HorizontalScrollbar
+import androidx.compose.foundation.ScrollbarAdapter
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -18,7 +22,7 @@ import ui.viewModels.editor.TabsViewModel
 @Composable
 fun TabsView(
     tabsState: TabsState,
-    onNewTab: (String) -> Unit,
+    onNewTab: (String, String) -> Unit,
     onDeleteTab: (String) -> Unit,
     onChangeSelectedTab: (Int) -> Unit
 ) {
@@ -40,7 +44,7 @@ fun TabsView(
         if(tabsState.tabs.size > previousTabCount.value){
             // A new tab was added, update the selected tab and trigger the [onNewTab] callback
             viewModel.setTabSelected(tabsState.tabs.last().filePath)
-            onNewTab(tabsState.tabs.last().filePath)
+            onNewTab(tabsState.tabs.last().filePath, tabsState.tabs.last().fileName)
         }
 
         if(tabsState.tabs.size < previousTabCount.value){

@@ -2,6 +2,8 @@ package domain.utilies
 
 import org.apache.commons.io.FileUtils
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 object DocumentsManager {
 
@@ -90,4 +92,12 @@ object DocumentsManager {
         catch (e: Exception){ e.printStackTrace() }
     }
 
+    /**
+     * Checks if a file exists at the specified path
+     *
+     * @param path The path of the file to check for existence
+     * @return 'true' if the file exists, 'false' otherwise
+     */
+    fun existsFile(path: String): Boolean =
+        Files.exists(Paths.get(path))
 }

@@ -7,7 +7,6 @@ import androidx.compose.ui.text.withStyle
 import domain.model.SyntaxHighlightConfigModel
 import domain.model.SyntaxHighlightRegexModel
 import domain.utilies.ColorUtils
-import domain.utilies.JsonUtils
 
 object SyntaxKeywordHighlighter {
 
@@ -16,14 +15,16 @@ object SyntaxKeywordHighlighter {
      *
      * @param str The input string to be highlighted
      * @param colors The [SyntaxHighlightConfigModel] containing color information for different syntax elements
+     * @param model The [SyntaxHighlightRegexModel] containing regular expressions for syntax elements
      * @return [AnnotatedString] with applied syntax highlighting styles
      */
     fun codeString(
         str: String,
-        colors: SyntaxHighlightConfigModel
+        colors: SyntaxHighlightConfigModel,
+        model: SyntaxHighlightRegexModel
     ) = buildAnnotatedString {
 
-        val regExp = RegExpTest(JsonUtils.jsonToSyntaxHighlightRegexModel(colors.jsonPath))
+        val regExp = RegExpTest(model)
 
         withStyle(SpanStyle(ColorUtils.hexToColor(colors.simpleColor))){
             append(str)

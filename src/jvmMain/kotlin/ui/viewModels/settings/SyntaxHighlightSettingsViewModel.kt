@@ -4,12 +4,10 @@ import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import domain.model.SyntaxHighlightConfigModel
-import domain.repositories.AutocompleteSettingsRepository
 import domain.repositories.SyntaxHighlightSettingsRepository
 
 class SyntaxHighlightSettingsViewModel(
-    private val syntaxHighlightRepository: SyntaxHighlightSettingsRepository,
-    private val autocompleteRepository: AutocompleteSettingsRepository
+    private val syntaxHighlightRepository: SyntaxHighlightSettingsRepository
 ): ViewModel() {
 
     private val _allSyntaxHighlightConfigs: MutableLiveData<List<SyntaxHighlightConfigModel>> = MutableLiveData(emptyList())
@@ -91,17 +89,6 @@ class SyntaxHighlightSettingsViewModel(
             currentList[index] = value
             _isExpandColorOptionsList.value = currentList
         }
-    }
-
-    /**
-     * Deletes an autocomplete option and its related entities
-     *
-     * @param uuid Identifier associated with the configuration to be deleted
-     */
-    suspend fun deleteConfig(uuid: String){
-        autocompleteRepository.deleteAutocompleteOption(uuid)
-        syntaxHighlightRepository.deleteSyntaxHighlightConfig(uuid)
-        autocompleteRepository.deleteSelectedAutocompleteOption(uuid)
     }
 
     /**

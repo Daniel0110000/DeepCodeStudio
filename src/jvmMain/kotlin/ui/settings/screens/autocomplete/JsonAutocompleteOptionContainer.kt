@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import domain.model.AutocompleteOptionModel
 import domain.utilies.ChooseJson
+import domain.utilies.DocumentsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -130,13 +131,16 @@ fun JsonAutocompleteOptionContainer(
                     .border(1.dp, SolidColor(ThemeApp.colors.hoverTab), RoundedCornerShape(0.dp))
                     .verticalScroll(rememberScrollState())
             ){
-                Text(
-                    File(model.jsonPath).readText(),
-                    color = ThemeApp.colors.textColor,
-                    fontFamily = ThemeApp.text.fontFamily,
-                    fontSize = 13.sp,
-                    modifier = Modifier.padding(5.dp)
-                )
+                // If the JSON file exists, its content is displayed
+                if(DocumentsManager.existsFile(model.jsonPath)){
+                    Text(
+                        File(model.jsonPath).readText(),
+                        color = ThemeApp.colors.textColor,
+                        fontFamily = ThemeApp.text.fontFamily,
+                        fontSize = 13.sp,
+                        modifier = Modifier.padding(5.dp)
+                    )
+                }
             }
 
         }

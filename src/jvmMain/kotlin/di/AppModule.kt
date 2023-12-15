@@ -25,6 +25,6 @@ val appModule = module {
     single { CodeEditorViewModel() }
     single { TabsViewModel() }
     single { EditorViewModel(get(), get()) }
-    single { SettingsViewModel() }
+    single { SettingsViewModel(get(), get()) }
     single { SplitPaneViewModel() }
 }
