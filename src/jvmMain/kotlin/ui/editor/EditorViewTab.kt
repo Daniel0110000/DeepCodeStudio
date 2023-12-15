@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.LocalTextContextMenu
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +54,9 @@ fun EditorViewTab(
 
     // If the current file exists, write the editor content to the associated file
     if (File(state.filePath.value).exists()) DocumentsManager.writeFile(File(state.filePath.value), state.codeText.value.text)
+
+    // LaunchedEffect to request focus for the TextField when the view is created
+    LaunchedEffect(Unit){ state.textFieldFocusRequester.value.requestFocus() }
 
     Column(modifier = modifier) {
         Box(modifier = Modifier.weight(1f)) {

@@ -15,11 +15,14 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -43,9 +46,12 @@ fun InputDropdownMenuItem(
     modifier = Modifier.height(40.dp),
     enabled = false
 ){
-
+    val textFieldFocusRequester = mutableStateOf(FocusRequester())
     val name = remember { mutableStateOf(if(typeAction == Actions.RENAME) model.file.name else "") }
     val isKeyBeingPressed = remember { mutableStateOf(false) }
+
+    // LaunchedEffect to request focus for the TextField when the view is created
+    LaunchedEffect(Unit){ textFieldFocusRequester.value.requestFocus() }
 
     Row(
         modifier = Modifier.fillMaxSize(),
@@ -99,6 +105,8 @@ fun InputDropdownMenuItem(
                             false
                         }
                     }
+                    .focusRequester(textFieldFocusRequester.value)
+
             )
         }
 

@@ -19,8 +19,12 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +46,8 @@ fun SyntaxHighlightSettingsScreen(
     settingsErrorState: SettingsErrorState
 ) {
 
+    val textFieldFocusRequester = mutableStateOf(FocusRequester())
+
     // Inject [SyntaxHighlightViewModel]
     val viewModel: SyntaxHighlightSettingsViewModel = App().syntaxHighlightSettingsViewModel
 
@@ -53,6 +59,9 @@ fun SyntaxHighlightSettingsScreen(
     val isExpandColorOptionsList = viewModel.isExpandColorOptionsList.observeAsState().value
     // Observe the code text form the view model
     val codeText = viewModel.codeText.observeAsState()
+
+    // LaunchedEffect to request focus for the TextField when the view is created
+    LaunchedEffect(Unit){ textFieldFocusRequester.value.requestFocus() }
 
     Column(modifier.padding(8.dp)) {
 
@@ -141,6 +150,7 @@ fun SyntaxHighlightSettingsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 10.dp, horizontal = 20.dp)
+                        .focusRequester(textFieldFocusRequester.value)
                 )
             }
         }
