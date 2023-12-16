@@ -8,8 +8,8 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import di.appModule
-import kotlinx.coroutines.launch
 import domain.utilies.DocumentsManager
+import kotlinx.coroutines.launch
 import org.koin.core.context.startKoin
 import ui.CodeEditorScreen
 import java.awt.Toolkit
@@ -25,7 +25,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "DeepCode Studio",
-        icon = painterResource("images/ic_app.svg"),
+        icon = painterResource("images/ic_launcher.svg"),
         state = WindowState(
             position = WindowPosition(Alignment.Center),
             size = DpSize((toolkit.width - 100).dp, (toolkit.height - 100).dp)
