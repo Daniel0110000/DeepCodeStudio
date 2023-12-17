@@ -10,8 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogState
+import androidx.compose.ui.window.DialogWindow
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import kotlinx.coroutines.launch
 import ui.ThemeApp
@@ -38,7 +38,7 @@ fun Settings(onCloseRequest: () -> Unit) {
     // Value observers
     val screen = viewModel.screen.observeAsState().value
 
-    Dialog(
+    DialogWindow(
         visible = true,
         state = DialogState(width = 1200.dp, height = 700.dp),
         onCloseRequest = { onCloseRequest() },
