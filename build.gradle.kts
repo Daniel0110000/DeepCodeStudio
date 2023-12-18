@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
+    id("app.cash.sqldelight") version "2.0.0"
 }
 
 group = "dev.daniel"
@@ -14,6 +15,14 @@ repositories {
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")
 
+}
+
+sqldelight{
+    databases{
+        create("AppDatabase"){
+            packageName.set("dev.daniel.database")
+        }
+    }
 }
 
 dependencies {
@@ -39,10 +48,7 @@ dependencies {
     implementation("io.insert-koin:koin-core:3.5.0")
 
     // SQLite
-    implementation("org.xerial:sqlite-jdbc:3.30.1")
-
-    // Exposed
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.44.0")
+    implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
 
     // Gson & Json
     implementation("com.google.code.gson:gson:2.10.1")
@@ -77,6 +83,7 @@ compose.desktop {
     application {
         mainClass = "MainKt"
         nativeDistributions {
+            modules("java.sql")
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "DeepCodeStudio"
             packageVersion = "1.0.0"

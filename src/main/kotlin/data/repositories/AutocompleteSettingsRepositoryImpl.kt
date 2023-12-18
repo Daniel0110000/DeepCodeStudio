@@ -1,30 +1,21 @@
 package data.repositories
 
-import data.local.databaseConnection
-import data.local.tables.AutocompleteTable
-import data.local.tables.SelectedAutocompleteOptionHistoryTable
+import app.cash.sqldelight.db.SqlDriver
+import dev.daniel.database.AppDatabase
+import dev.daniel.database.AutocompleteTableQueries
+import dev.daniel.database.SelectedAutocompleteOptionHistoryTableQueries
 import domain.model.AutocompleteOptionModel
 import domain.model.SelectedAutocompleteOptionModel
 import domain.repositories.AutocompleteSettingsRepository
 import domain.utilies.CallHandler
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
-class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
+class AutocompleteSettingsRepositoryImpl(driver: SqlDriver): AutocompleteSettingsRepository {
 
-    init {
-        // Execute the database connection
-        databaseConnection()
-        // Creating the tables
-        transaction { SchemaUtils.create(AutocompleteTable, SelectedAutocompleteOptionHistoryTable) }
-    }
+    private val appDatabase: AppDatabase = AppDatabase(driver)
+    private val autocompleteTableQueries: AutocompleteTableQueries = appDatabase.autocompleteTableQueries
+    private val selectedAutocompleteTableQueries: SelectedAutocompleteOptionHistoryTableQueries = appDatabase.selectedAutocompleteOptionHistoryTableQueries
+
+    init { AppDatabase.Schema.create(driver) }
 
     /**
      * Inserts a new option for autocomplete into the database
@@ -33,13 +24,11 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      */
     override suspend fun addAutocompleteOption(model: AutocompleteOptionModel) {
         CallHandler.callHandler {
-            transaction {
-                AutocompleteTable.insert {
-                    it[uuid] = model.uuid
-                    it[optionName] = model.optionName
-                    it[jsonPath] = model.jsonPath
-                }
-            }
+            autocompleteTableQueries.insert(
+                uuid = model.uuid,
+                optionName = model.optionName,
+                jsonPath = model.jsonPath
+            )
         }
     }
 
@@ -50,9 +39,7 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      */
     override suspend fun deleteAutocompleteOption(uuid: String) {
         CallHandler.callHandler {
-            transaction {
-                AutocompleteTable.deleteWhere { AutocompleteTable.uuid eq uuid }
-            }
+            autocompleteTableQueries.delete(uuid)
         }
     }
 
@@ -64,11 +51,7 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      */
     override suspend fun updateAutocompleteOptionJsonPath(jsonPath: String, uuid: String) {
         CallHandler.callHandler {
-            transaction {
-                AutocompleteTable.update({ AutocompleteTable.uuid eq uuid }){
-                    it[AutocompleteTable.jsonPath] = jsonPath
-                }
-            }
+            autocompleteTableQueries.updateJsonPath(jsonPath, uuid)
         }
     }
 
@@ -77,15 +60,10 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      *
      * @return A list of AutocompleteOptionModel containing all autocomplete options
      */
-    override fun getAllAutocompleteOptions(): List<AutocompleteOptionModel> = transaction {
-        AutocompleteTable.selectAll().map {
-            AutocompleteOptionModel(
-                it[AutocompleteTable.uuid],
-                it[AutocompleteTable.optionName],
-                it[AutocompleteTable.jsonPath]
-            )
-        }
-    }
+    override fun getAllAutocompleteOptions(): List<AutocompleteOptionModel> =
+        autocompleteTableQueries.selectAll { id, uuid, optionName, jsonPath ->
+            AutocompleteOptionModel(uuid, optionName, jsonPath)
+        }.executeAsList()
 
     /**
      * Check if a selected autocomplete option already exists in the database
@@ -93,20 +71,8 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      * @param asmFilePath The parameter to check if the option already exists in the database
      * @return Returns 'true' if the option exists, and 'false' if it does not.
      */
-    override fun existsSelectedAutocompleteOption(asmFilePath: String): Boolean = transaction {
-        val result = SelectedAutocompleteOptionHistoryTable
-            .select { SelectedAutocompleteOptionHistoryTable.asmFilePath eq asmFilePath }
-            .map {
-                SelectedAutocompleteOptionModel(
-                    uuid = it[SelectedAutocompleteOptionHistoryTable.uuid],
-                    asmFilePath = it[SelectedAutocompleteOptionHistoryTable.asmFilePath],
-                    optionName = it[SelectedAutocompleteOptionHistoryTable.optionName],
-                    jsonPath = it[SelectedAutocompleteOptionHistoryTable.jsonPath]
-                )
-            }
-        result.isNotEmpty()
-    }
-
+    override fun existsSelectedAutocompleteOption(asmFilePath: String): Boolean =
+        selectedAutocompleteTableQueries.exists(asmFilePath).executeAsOne() > 0
 
     /**
      * Inserts a new selected autocomplete option entry into the history database
@@ -115,14 +81,12 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      */
     override suspend fun addSelectedAutocompleteOption(model: SelectedAutocompleteOptionModel) {
         CallHandler.callHandler {
-            transaction {
-                SelectedAutocompleteOptionHistoryTable.insert{
-                    it[uuid] = model.uuid
-                    it[asmFilePath] = model.asmFilePath
-                    it[optionName] = model.optionName
-                    it[jsonPath] = model.jsonPath
-                }
-            }
+            selectedAutocompleteTableQueries.insert(
+                uuid = model.uuid,
+                asmFilePath = model.asmFilePath,
+                optionName = model.optionName,
+                jsonPath = model.jsonPath
+            )
         }
     }
 
@@ -132,18 +96,12 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      * @param asmFilePath The path of the ASM file for which the option was selected
      * @return The selected autocomplete option for the specified ASM file
      */
-    override fun getSelectedAutocompleteOption(asmFilePath: String): SelectedAutocompleteOptionModel = transaction {
-        val result = SelectedAutocompleteOptionHistoryTable
-            .select { SelectedAutocompleteOptionHistoryTable.asmFilePath eq asmFilePath }
-            .map {
-                SelectedAutocompleteOptionModel(
-                    uuid = it[SelectedAutocompleteOptionHistoryTable.uuid],
-                    asmFilePath = it[SelectedAutocompleteOptionHistoryTable.asmFilePath],
-                    optionName = it[SelectedAutocompleteOptionHistoryTable.optionName],
-                    jsonPath = it[SelectedAutocompleteOptionHistoryTable.jsonPath]
-                )
-            }
-        if (result.isNotEmpty()) result[0]
+    override fun getSelectedAutocompleteOption(asmFilePath: String): SelectedAutocompleteOptionModel{
+        val result = selectedAutocompleteTableQueries.select(asmFilePath){ _, uuid, filePath, optionName, jsonPath ->
+            SelectedAutocompleteOptionModel(uuid, filePath, optionName, jsonPath)
+        }.executeAsList()
+
+        return if(result.isNotEmpty()) result[0]
         else SelectedAutocompleteOptionModel("", "", "", "")
     }
 
@@ -154,15 +112,12 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      */
     override suspend fun updateSelectedAutocompleteOption(model: SelectedAutocompleteOptionModel) {
         CallHandler.callHandler {
-            transaction {
-                SelectedAutocompleteOptionHistoryTable.update({
-                    SelectedAutocompleteOptionHistoryTable.asmFilePath eq model.asmFilePath
-                }){
-                    it[uuid] = model.uuid
-                    it[optionName] = model.optionName
-                    it[jsonPath] = model.jsonPath
-                }
-            }
+            selectedAutocompleteTableQueries.updateSelectedOption(
+                uuid = model.uuid,
+                optionName = model.optionName,
+                jsonPath = model.jsonPath,
+                asmFilePath = model.asmFilePath
+            )
         }
     }
 
@@ -174,13 +129,7 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      */
     override suspend fun updateSelectedAutocompleteOptionJsonPath(jsonPath: String, uuid: String) {
         CallHandler.callHandler {
-            transaction {
-                SelectedAutocompleteOptionHistoryTable.update(
-                    { SelectedAutocompleteOptionHistoryTable.uuid eq uuid }
-                ) {
-                    it[SelectedAutocompleteOptionHistoryTable.jsonPath] = jsonPath
-                }
-            }
+            selectedAutocompleteTableQueries.updateSelectedOptionJsonPath(jsonPath, uuid)
         }
     }
 
@@ -192,12 +141,7 @@ class AutocompleteSettingsRepositoryImpl: AutocompleteSettingsRepository {
      */
     override suspend fun deleteSelectedAutocompleteOption(asmFilePath: String, uuid: String) {
         CallHandler.callHandler {
-            transaction {
-                SelectedAutocompleteOptionHistoryTable.deleteWhere {
-                    (SelectedAutocompleteOptionHistoryTable.asmFilePath eq asmFilePath) or
-                            (SelectedAutocompleteOptionHistoryTable.uuid eq uuid)
-                }
-            }
+            selectedAutocompleteTableQueries.deleteSelectedOption(asmFilePath, uuid)
         }
     }
 

@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS SelectedAutocompleteOptionHistoryTable (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    uuid TEXT NOT NULL,
+    asmFilePath TEXT NOT NULL,
+    optionName TEXT NOT NULL,
+    jsonPath TEXT NOT NULL
+);
+
+insert:
+INSERT INTO SelectedAutocompleteOptionHistoryTable(uuid, asmFilePath, optionName, jsonPath) VALUES (?, ?, ?, ?);
+
+exists:
+SELECT COUNT(*) FROM SelectedAutocompleteOptionHistoryTable WHERE asmFilePath = (?);
+
+select:
+SELECT * FROM SelectedAutocompleteOptionHistoryTable WHERE asmFilePath = (?) LIMIT 1;
+
+updateSelectedOption:
+UPDATE SelectedAutocompleteOptionHistoryTable
+SET uuid = (?), optionName = (?), jsonPath = (?)
+WHERE asmFilePath = (?);
+
+updateSelectedOptionJsonPath:
+UPDATE SelectedAutocompleteOptionHistoryTable SET jsonPath = (?) WHERE uuid = (?);
+
+deleteSelectedOption:
+DELETE FROM SelectedAutocompleteOptionHistoryTable WHERE asmFilePath = (?) OR uuid = (?);

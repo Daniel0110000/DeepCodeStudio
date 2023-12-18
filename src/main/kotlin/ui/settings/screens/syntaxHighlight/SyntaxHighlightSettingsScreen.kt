@@ -61,7 +61,7 @@ fun SyntaxHighlightSettingsScreen(
     val codeText = viewModel.codeText.observeAsState()
 
     // LaunchedEffect to request focus for the TextField when the view is created
-    LaunchedEffect(Unit){ textFieldFocusRequester.value.requestFocus() }
+    // --> Error LaunchedEffect(Unit){ textFieldFocusRequester.value.requestFocus() }
 
     Column(modifier.padding(8.dp)) {
 

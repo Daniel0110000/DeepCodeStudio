@@ -1,5 +1,7 @@
 package di
 
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import data.repositories.AutocompleteSettingsRepositoryImpl
 import data.repositories.SyntaxHighlightSettingsRepositoryImpl
 import domain.repositories.AutocompleteSettingsRepository
@@ -17,8 +19,11 @@ import ui.viewModels.splitPane.SplitPaneViewModel
  * Define the app module for dependency injection
  */
 val appModule = module {
-    single<AutocompleteSettingsRepository> { AutocompleteSettingsRepositoryImpl() }
-    single<SyntaxHighlightSettingsRepository> { SyntaxHighlightSettingsRepositoryImpl() }
+
+    single<SqlDriver> { JdbcSqliteDriver("jdbc:sqlite:Settings.db") }
+
+    single<AutocompleteSettingsRepository> { AutocompleteSettingsRepositoryImpl(get()) }
+    single<SyntaxHighlightSettingsRepository> { SyntaxHighlightSettingsRepositoryImpl(get()) }
 
     single { SyntaxHighlightSettingsViewModel(get()) }
     single { AutocompleteSettingsViewModel(get(), get()) }

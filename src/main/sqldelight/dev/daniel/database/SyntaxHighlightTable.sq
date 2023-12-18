@@ -1,0 +1,46 @@
+CREATE TABLE IF NOT EXISTS SyntaxHighlightTable (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    uuid TEXT NOT NULL,
+    optionName TEXT NOT NULL,
+    jsonPath TEXT NOT NULL,
+    simpleColor TEXT NOT NULL,
+    instructionColor TEXT NOT NULL,
+    variableColor TEXT NOT NULL,
+    constantColor TEXT NOT NULL,
+    numberColor TEXT NOT NULL,
+    segmentColor TEXT NOT NULL,
+    systemCallColor TEXT NOT NULL,
+    registerColor TEXT NOT NULL,
+    arithmeticInstructionColor TEXT NOT NULL,
+    logicalInstructionColor TEXT NOT NULL,
+    conditionColor TEXT NOT NULL,
+    loopColor TEXT NOT NULL,
+    memoryManagementColor TEXT NOT NULL,
+    commentColor TEXT NOT NULL,
+    stringColor TEXT NOT NULL,
+    labelColor TEXT NOT NULL
+);
+
+insert:
+INSERT INTO SyntaxHighlightTable(uuid, optionName, jsonPath, simpleColor, instructionColor, variableColor,
+constantColor, numberColor, segmentColor, systemCallColor, registerColor, arithmeticInstructionColor,
+logicalInstructionColor, conditionColor, loopColor, memoryManagementColor, commentColor, stringColor, labelColor)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+selectAll:
+SELECT * FROM SyntaxHighlightTable;
+
+select:
+SELECT * FROM SyntaxHighlightTable WHERE uuid = (?) LIMIT 1;
+
+update:
+UPDATE SyntaxHighlightTable SET simpleColor = (?), instructionColor = (?), variableColor = (?), constantColor = (?),
+numberColor = (?), segmentColor = (?), systemCallColor = (?), registerColor = (?), arithmeticInstructionColor = (?),
+logicalInstructionColor = (?), conditionColor = (?), loopColor = (?), memoryManagementColor = (?), commentColor = (?),
+stringColor = (?), labelColor = (?) WHERE uuid = (?);
+
+delete:
+DELETE FROM SyntaxHighlightTable WHERE uuid = (?);
+
+updateJsonPath:
+UPDATE SyntaxHighlightTable SET jsonPath = (?) WHERE uuid = (?);

@@ -1,26 +1,19 @@
 package data.repositories
 
-import data.local.databaseConnection
-import data.local.tables.SyntaxHighlightTable
+import app.cash.sqldelight.db.SqlDriver
+import data.mapper.toSyntaxHighlightConfigModel
+import dev.daniel.database.AppDatabase
+import dev.daniel.database.SyntaxHighlightTableQueries
 import domain.model.SyntaxHighlightConfigModel
 import domain.repositories.SyntaxHighlightSettingsRepository
 import domain.utilies.CallHandler
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
-class SyntaxHighlightSettingsRepositoryImpl: SyntaxHighlightSettingsRepository {
-    init {
-        // Execute the database connection
-        databaseConnection()
-        // Creating the tables
-        transaction { SchemaUtils.create(SyntaxHighlightTable) }
-    }
+class SyntaxHighlightSettingsRepositoryImpl(driver: SqlDriver) : SyntaxHighlightSettingsRepository {
+
+    private val appDatabase: AppDatabase = AppDatabase(driver)
+    private val syntaxHighlightTableQueries: SyntaxHighlightTableQueries = appDatabase.syntaxHighlightTableQueries
+
+    init { AppDatabase.Schema.create(driver) }
 
     /**
      * Creates a new syntax highlight configuration by inserting it into the database
@@ -29,29 +22,27 @@ class SyntaxHighlightSettingsRepositoryImpl: SyntaxHighlightSettingsRepository {
      */
     override suspend fun createSyntaxHighlightConfig(model: SyntaxHighlightConfigModel) {
         CallHandler.callHandler {
-            transaction {
-                SyntaxHighlightTable.insert{
-                    it[uuid] = model.uuid
-                    it[optionName] = model.optionName
-                    it[jsonPath] = model.jsonPath
-                    it[simpleColor] = model.simpleColor
-                    it[instructionColor] = model.instructionColor
-                    it[variableColor] = model.variableColor
-                    it[constantColor] = model.constantColor
-                    it[numberColor] = model.numberColor
-                    it[segmentColor] = model.segmentColor
-                    it[systemCallColor] = model.systemCallColor
-                    it[registerColor] = model.registerColor
-                    it[arithmeticInstructionColor] = model.arithmeticInstructionColor
-                    it[logicalInstructionColor] = model.logicalInstructionColor
-                    it[conditionColor] = model.conditionColor
-                    it[loopColor] = model.loopColor
-                    it[memoryManagementColor] = model.memoryManagementColor
-                    it[commentColor] = model.commentColor
-                    it[stringColor] = model.stringColor
-                    it[labelColor] = model.labelColor
-                }
-            }
+            syntaxHighlightTableQueries.insert(
+                uuid = model.uuid,
+                optionName = model.optionName,
+                jsonPath = model.jsonPath,
+                simpleColor = model.simpleColor,
+                instructionColor = model.instructionColor,
+                variableColor = model.variableColor,
+                constantColor = model.constantColor,
+                numberColor = model.numberColor,
+                segmentColor = model.segmentColor,
+                systemCallColor = model.systemCallColor,
+                registerColor = model.registerColor,
+                arithmeticInstructionColor = model.arithmeticInstructionColor,
+                logicalInstructionColor = model.logicalInstructionColor,
+                conditionColor = model.conditionColor,
+                loopColor = model.loopColor,
+                memoryManagementColor = model.memoryManagementColor,
+                commentColor = model.commentColor,
+                stringColor = model.stringColor,
+                labelColor = model.labelColor,
+            )
         }
     }
 
@@ -60,31 +51,8 @@ class SyntaxHighlightSettingsRepositoryImpl: SyntaxHighlightSettingsRepository {
      *
      * @return A list of [SyntaxHighlightConfigModel] objects representing the configurations
      */
-    override fun getAllSyntaxHighlightConfigs(): List<SyntaxHighlightConfigModel> = transaction {
-        SyntaxHighlightTable.selectAll().map {
-            SyntaxHighlightConfigModel(
-                it[SyntaxHighlightTable.uuid],
-                it[SyntaxHighlightTable.optionName],
-                it[SyntaxHighlightTable.jsonPath],
-                it[SyntaxHighlightTable.simpleColor],
-                it[SyntaxHighlightTable.instructionColor],
-                it[SyntaxHighlightTable.variableColor],
-                it[SyntaxHighlightTable.constantColor],
-                it[SyntaxHighlightTable.numberColor],
-                it[SyntaxHighlightTable.segmentColor],
-                it[SyntaxHighlightTable.systemCallColor],
-                it[SyntaxHighlightTable.registerColor],
-                it[SyntaxHighlightTable.arithmeticInstructionColor],
-                it[SyntaxHighlightTable.logicalInstructionColor],
-                it[SyntaxHighlightTable.conditionColor],
-                it[SyntaxHighlightTable.loopColor],
-                it[SyntaxHighlightTable.memoryManagementColor],
-                it[SyntaxHighlightTable.commentColor],
-                it[SyntaxHighlightTable.stringColor],
-                it[SyntaxHighlightTable.labelColor]
-            )
-        }
-    }
+    override fun getAllSyntaxHighlightConfigs(): List<SyntaxHighlightConfigModel> =
+        syntaxHighlightTableQueries.selectAll().executeAsList().map { it.toSyntaxHighlightConfigModel() }
 
     /**
      * Retrieves a syntax highlight configuration from the database based on the specified UUID
@@ -92,33 +60,9 @@ class SyntaxHighlightSettingsRepositoryImpl: SyntaxHighlightSettingsRepository {
      * @param uuid The UUID of the syntax highlight configuration to retrieve
      * @return The retrieved [SyntaxHighlightConfigModel] or an empty model if not found
      */
-    override fun getSyntaxHighlightConfig(uuid: String): SyntaxHighlightConfigModel = transaction {
-        val result = SyntaxHighlightTable
-            .select { SyntaxHighlightTable.uuid eq uuid }
-            .map {
-                SyntaxHighlightConfigModel(
-                    it[SyntaxHighlightTable.uuid],
-                    it[SyntaxHighlightTable.optionName],
-                    it[SyntaxHighlightTable.jsonPath],
-                    it[SyntaxHighlightTable.simpleColor],
-                    it[SyntaxHighlightTable.instructionColor],
-                    it[SyntaxHighlightTable.variableColor],
-                    it[SyntaxHighlightTable.constantColor],
-                    it[SyntaxHighlightTable.numberColor],
-                    it[SyntaxHighlightTable.segmentColor],
-                    it[SyntaxHighlightTable.systemCallColor],
-                    it[SyntaxHighlightTable.registerColor],
-                    it[SyntaxHighlightTable.arithmeticInstructionColor],
-                    it[SyntaxHighlightTable.logicalInstructionColor],
-                    it[SyntaxHighlightTable.conditionColor],
-                    it[SyntaxHighlightTable.loopColor],
-                    it[SyntaxHighlightTable.memoryManagementColor],
-                    it[SyntaxHighlightTable.commentColor],
-                    it[SyntaxHighlightTable.stringColor],
-                    it[SyntaxHighlightTable.labelColor]
-                )
-            }
-        if(result.isNotEmpty()) result[0] else SyntaxHighlightConfigModel()
+    override fun getSyntaxHighlightConfig(uuid: String): SyntaxHighlightConfigModel{
+        val result = syntaxHighlightTableQueries.select(uuid).executeAsList().map { it.toSyntaxHighlightConfigModel() }
+        return if (result.isNotEmpty()) result[0] else SyntaxHighlightConfigModel()
     }
 
     /**
@@ -128,26 +72,25 @@ class SyntaxHighlightSettingsRepositoryImpl: SyntaxHighlightSettingsRepository {
      */
     override suspend fun updateSyntaxHighlightConfig(model: SyntaxHighlightConfigModel) {
         CallHandler.callHandler {
-            transaction {
-                SyntaxHighlightTable.update({ SyntaxHighlightTable.uuid eq model.uuid }){
-                    it[simpleColor] = model.simpleColor
-                    it[instructionColor] = model.instructionColor
-                    it[variableColor] = model.variableColor
-                    it[constantColor] = model.constantColor
-                    it[numberColor] = model.numberColor
-                    it[segmentColor] = model.segmentColor
-                    it[systemCallColor] = model.systemCallColor
-                    it[registerColor] = model.registerColor
-                    it[arithmeticInstructionColor] = model.arithmeticInstructionColor
-                    it[logicalInstructionColor] = model.logicalInstructionColor
-                    it[conditionColor] = model.conditionColor
-                    it[loopColor] = model.loopColor
-                    it[memoryManagementColor] = model.memoryManagementColor
-                    it[commentColor] = model.commentColor
-                    it[stringColor] = model.stringColor
-                    it[labelColor] = model.labelColor
-                }
-            }
+            syntaxHighlightTableQueries.update(
+                simpleColor = model.simpleColor,
+                instructionColor = model.instructionColor,
+                variableColor = model.variableColor,
+                constantColor = model.constantColor,
+                numberColor = model.numberColor,
+                segmentColor = model.segmentColor,
+                systemCallColor = model.systemCallColor,
+                registerColor = model.registerColor,
+                arithmeticInstructionColor = model.arithmeticInstructionColor,
+                logicalInstructionColor = model.logicalInstructionColor,
+                conditionColor = model.conditionColor,
+                loopColor = model.loopColor,
+                memoryManagementColor = model.memoryManagementColor,
+                commentColor = model.commentColor,
+                stringColor = model.stringColor,
+                labelColor = model.labelColor,
+                uuid = model.uuid
+            )
         }
     }
 
@@ -158,9 +101,7 @@ class SyntaxHighlightSettingsRepositoryImpl: SyntaxHighlightSettingsRepository {
      */
     override suspend fun deleteSyntaxHighlightConfig(uuid: String) {
         CallHandler.callHandler {
-            transaction {
-                SyntaxHighlightTable.deleteWhere { SyntaxHighlightTable.uuid eq uuid }
-            }
+            syntaxHighlightTableQueries.delete(uuid)
         }
     }
 
@@ -176,11 +117,7 @@ class SyntaxHighlightSettingsRepositoryImpl: SyntaxHighlightSettingsRepository {
         uuid: String,
     ) {
         CallHandler.callHandler {
-            transaction {
-                SyntaxHighlightTable.update({ SyntaxHighlightTable.uuid eq uuid }){
-                    it[SyntaxHighlightTable.jsonPath] = jsonPath
-                }
-            }
+            syntaxHighlightTableQueries.updateJsonPath(jsonPath, uuid)
         }
     }
 }
