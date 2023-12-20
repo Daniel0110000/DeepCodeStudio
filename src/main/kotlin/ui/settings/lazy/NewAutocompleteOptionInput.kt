@@ -2,16 +2,7 @@ package ui.settings.lazy
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.onClick
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Button
@@ -29,7 +20,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import domain.utilies.ChooseJson
+import domain.utilies.JsonChooser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,7 +78,7 @@ fun NewAutocompleteOptionInput(
             TooltipArea("Choose Json"){
                 Button(
                     onClick = {
-                        CoroutineScope(Dispatchers.IO).launch { onJsonPathSelection(ChooseJson.chooseJson() ?: "") }
+                        CoroutineScope(Dispatchers.IO).launch { onJsonPathSelection(JsonChooser.chooseJson() ?: "") }
                     },
                     modifier = Modifier.height(28.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = ThemeApp.colors.secondColor)

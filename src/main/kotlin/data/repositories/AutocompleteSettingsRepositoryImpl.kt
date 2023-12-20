@@ -61,7 +61,7 @@ class AutocompleteSettingsRepositoryImpl(driver: SqlDriver): AutocompleteSetting
      * @return A list of AutocompleteOptionModel containing all autocomplete options
      */
     override fun getAllAutocompleteOptions(): List<AutocompleteOptionModel> =
-        autocompleteTableQueries.selectAll { id, uuid, optionName, jsonPath ->
+        autocompleteTableQueries.selectAll { _, uuid, optionName, jsonPath ->
             AutocompleteOptionModel(uuid, optionName, jsonPath)
         }.executeAsList()
 

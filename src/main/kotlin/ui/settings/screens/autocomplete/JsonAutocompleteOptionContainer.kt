@@ -1,26 +1,11 @@
 package ui.settings.screens.autocomplete
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.onClick
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -38,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
 import domain.model.AutocompleteOptionModel
-import domain.utilies.ChooseJson
 import domain.utilies.DocumentsManager
+import domain.utilies.JsonChooser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -93,7 +78,7 @@ fun JsonAutocompleteOptionContainer(
                 TooltipArea("Choose Json"){
                     Button(
                         onClick = {
-                            CoroutineScope(Dispatchers.IO).launch { onUpdateJsonPathClick(ChooseJson.chooseJson() ?: "") }
+                            CoroutineScope(Dispatchers.IO).launch { onUpdateJsonPathClick(JsonChooser.chooseJson() ?: "") }
                         },
                         modifier = Modifier.height(28.dp),
                         colors = ButtonDefaults.buttonColors(backgroundColor = ThemeApp.colors.secondColor)
