@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets
  * @return A TtyConnector instance for communication with the terminal emulator
  * @throws IllegalStateException if an exception occurs during the process creation
  */
-fun createTtyConnector(): TtyConnector {
+fun createTtyConnector(currentPath: String): TtyConnector {
     return try {
         // Initialize environment variable and command for starting Zsh
         val env: MutableMap<String, String>?
@@ -22,7 +22,7 @@ fun createTtyConnector(): TtyConnector {
         env["TERM"] = "xterm-256color"
 
         // Start the PtyProcess with the configured command and environment
-        val process = PtyProcessBuilder().setCommand(command).setEnvironment(env).start()
+        val process = PtyProcessBuilder().setCommand(command).setEnvironment(env).setDirectory(currentPath).start()
 
         // Create a TtyConnector using the PtyProcess and UTF-8 encoding
         PtyProcessTtyConnector(process, StandardCharsets.UTF_8)

@@ -5,15 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -41,7 +33,10 @@ import javax.swing.UIManager
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun TerminalView(onCloseTerminal: () -> Unit){
+fun TerminalView(
+    currentPath: String,
+    onCloseTerminal: () -> Unit
+){
 
     // State to track hover effect on the close terminal button
     val hoverCloseTerminal = remember { mutableStateOf(false) }
@@ -119,7 +114,7 @@ fun TerminalView(onCloseTerminal: () -> Unit){
                         24,
                         TerminalSettingsProvider()
                     ).apply {
-                        ttyConnector = createTtyConnector()
+                        ttyConnector = createTtyConnector(currentPath)
                         start()
                     }
                 }

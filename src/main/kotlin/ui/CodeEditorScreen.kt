@@ -2,11 +2,7 @@ package ui
 
 import App
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
@@ -25,10 +21,12 @@ fun CodeEditorScreen() {
     val codeEditorViewModel: CodeEditorViewModel = App().codeEditorViewModel
     val splitPaneViewModel: SplitPaneViewModel = App().splitPaneViewModel
 
-    // Value observers for [isOpenSettings], [isCollapseSplitPane] and [isOpenTerminal]
+    // Value observers for [currentPath], [isOpenSettings], [isCollapseSplitPane] and [isOpenTerminal]
+    val currentPath = codeEditorViewModel.currentPath.observeAsState().value
     val isCollapseSplitPane = codeEditorViewModel.isCollapseSplitPane.observeAsState().value
     val isOpenTerminal = codeEditorViewModel.isOpenTerminal.observeAsState().value
     val isOpenSettings = codeEditorViewModel.isOpenSettings.observeAsState().value
+
 
     Row(
         modifier = Modifier
@@ -40,7 +38,10 @@ fun CodeEditorScreen() {
             isCollapseSplitPane,
             isOpenTerminal,
             isOpenSettings,
-            newDirectoryPath = { it?.let { splitPaneViewModel.setPath(it) } },
+            newDirectoryPath = { it?.let {
+                codeEditorViewModel.setCurrentPath(it)
+                splitPaneViewModel.setPath(it)
+            } },
             collapseOrExtendSplitPane = { codeEditorViewModel.setIsCollapseSplitPane(!isCollapseSplitPane) },
             openTerminal = { codeEditorViewModel.setIsOpenTerminal(!isOpenTerminal) },
             openSettings = { codeEditorViewModel.setIsOpenSettings(true) }
@@ -55,7 +56,7 @@ fun CodeEditorScreen() {
                 EditorView(codeEditorViewModel.tabState.value)
             }
 
-            if(isOpenTerminal) TerminalView{ codeEditorViewModel.setIsOpenTerminal(false) }
+            if(isOpenTerminal) TerminalView(currentPath){ codeEditorViewModel.setIsOpenTerminal(false) }
         }
     }
 
