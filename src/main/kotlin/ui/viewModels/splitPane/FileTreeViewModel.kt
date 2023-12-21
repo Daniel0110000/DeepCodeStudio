@@ -98,8 +98,8 @@ class FileTreeViewModel(
      * @return The depth of the target directory relative to the base path
      */
     private fun calculateRelativeDirectoryDepth(targetPath: String): Int{
-        val basePathParts = path.split("/")
-        val targetPathParts = targetPath.split("/")
+        val basePathParts = path.split(File.separator)
+        val targetPathParts = targetPath.split(File.separator)
 
         val commonParts = basePathParts.zip(targetPathParts).takeWhile { (a, b) -> a == b }
 
