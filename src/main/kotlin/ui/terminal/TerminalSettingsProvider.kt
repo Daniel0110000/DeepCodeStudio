@@ -11,6 +11,7 @@ import java.awt.Color
 import java.awt.Font
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
+import java.io.File
 import javax.swing.KeyStroke
 
 class TerminalSettingsProvider: SettingsProvider{
@@ -73,7 +74,10 @@ class TerminalSettingsProvider: SettingsProvider{
 
     override fun getTerminalColorPalette(): ColorPalette = TerminalColorPalette.PALETTE
 
-    override fun getTerminalFont(): Font = Font("Monospaced", Font.PLAIN, terminalFontSize.toInt())
+    override fun getTerminalFont(): Font = Font.createFont(Font.PLAIN, getFontFile()).deriveFont(terminalFontSize)
+
+    private fun getFontFile(): File =
+        File(this.javaClass.getResource("/font/JetBrainsMono-Regular.ttf")?.path ?: "")
 
     override fun getTerminalFontSize(): Float = 13f
 

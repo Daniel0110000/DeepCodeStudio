@@ -2,6 +2,7 @@ package ui.terminal
 
 import com.jediterm.pty.PtyProcessTtyConnector
 import com.jediterm.terminal.TtyConnector
+import com.jediterm.terminal.ui.UIUtil
 import com.pty4j.PtyProcessBuilder
 import java.nio.charset.StandardCharsets
 
@@ -13,13 +14,19 @@ import java.nio.charset.StandardCharsets
  */
 fun createTtyConnector(currentPath: String): TtyConnector {
     return try {
-        // Initialize environment variable and command for starting Zsh
-        val env: MutableMap<String, String>?
-        val command: Array<String> = arrayOf("/bin/zsh", "--login")
+        // Initialize environment variable and command for starting [zsh] or [PowerShell]
+        val env: MutableMap<String, String> = HashMap(System.getenv())
+        val command: Array<String>
 
-        // Copy the system environment and set the terminal type to xterm-256color
-        env = HashMap(System.getenv())
-        env["TERM"] = "xterm-256color"
+        if(UIUtil.isWindows){
+            // If the platform is Windows, it initializes with PowerShell
+            command = arrayOf("powershell.exe")
+        } else {
+            // If the platform is not Windows, it initializes with Zsh
+            command = arrayOf("/bin/zsh", "--login")
+            // Set the terminal type to xterm-256color
+            env["TERM"] = "xterm-256color"
+        }
 
         // Start the PtyProcess with the configured command and environment
         val process = PtyProcessBuilder().setCommand(command).setEnvironment(env).setDirectory(currentPath).start()
