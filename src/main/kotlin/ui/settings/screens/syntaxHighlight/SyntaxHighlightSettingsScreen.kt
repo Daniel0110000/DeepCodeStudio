@@ -1,22 +1,10 @@
 package ui.settings.screens.syntaxHighlight
 
 import App
-import androidx.compose.foundation.ScrollbarAdapter
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,8 +48,10 @@ fun SyntaxHighlightSettingsScreen(
     // Observe the code text form the view model
     val codeText = viewModel.codeText.observeAsState()
 
-    // LaunchedEffect to request focus for the TextField when the view is created
-    // --> Error LaunchedEffect(Unit){ textFieldFocusRequester.value.requestFocus() }
+    // LaunchedEffect to request focus for the TextField if there are existing configurations
+    LaunchedEffect(Unit){
+        if(configs.isNotEmpty()) textFieldFocusRequester.value.requestFocus()
+    }
 
     Column(modifier.padding(8.dp)) {
 
