@@ -1,5 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
@@ -7,7 +5,7 @@ plugins {
 }
 
 group = "dev.daniel"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     google()
@@ -72,9 +70,13 @@ compose.desktop {
         mainClass = "MainKt"
         nativeDistributions {
             modules("java.sql")
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "DeepCodeStudio"
             packageVersion = "1.0.0"
+            vendor = "Dr10 Technology"
+            copyright = "© 2023 Dr10 Technology. All rights reserved."
+            licenseFile.set(project.file("LICENSE"))
+            windows{ iconFile.set(project.file("ic_launcher.ico")) }
+            linux{ iconFile.set(project.file("ic_launcher.png")) }
         }
     }
 }

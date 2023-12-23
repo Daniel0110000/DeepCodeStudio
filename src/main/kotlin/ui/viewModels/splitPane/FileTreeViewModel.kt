@@ -24,8 +24,10 @@ class FileTreeViewModel(
     private val _listFiles: MutableLiveData<List<FileInfo>> = MutableLiveData(listOf(rootFile) + expandDirectory(rootFile))
     val listFiles: LiveData<List<FileInfo>> = _listFiles
 
+    private val scope = CoroutineScope(Dispatchers.IO)
+
     init {
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             // Register callbacks for file changes using the [FileObserver] class
             FileObserver(path).registerCallbacksForChanges(
                 // Callback when a new file or directory is created
@@ -46,7 +48,7 @@ class FileTreeViewModel(
 
                     if(file.extension == "asm" || file.extension == "s"){
                         // If the extension of the deleted file is 'asm' or 's', delete the selected autocomplete option from the database
-                        CoroutineScope(Dispatchers.IO).launch { repository.deleteSelectedAutocompleteOption(asmFilePath = file.absolutePath) }
+                        scope.launch { repository.deleteSelectedAutocompleteOption(asmFilePath = file.absolutePath) }
                     }
                 }
             )

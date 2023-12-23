@@ -1,5 +1,6 @@
 package ui.terminal
 
+import androidx.compose.ui.res.useResource
 import com.jediterm.terminal.HyperlinkStyle
 import com.jediterm.terminal.TerminalColor
 import com.jediterm.terminal.TextStyle
@@ -74,10 +75,11 @@ class TerminalSettingsProvider: SettingsProvider{
 
     override fun getTerminalColorPalette(): ColorPalette = TerminalColorPalette.PALETTE
 
-    override fun getTerminalFont(): Font = Font.createFont(Font.PLAIN, getFontFile()).deriveFont(terminalFontSize)
+    override fun getTerminalFont(): Font = getFontFile()
 
-    private fun getFontFile(): File =
-        File(this.javaClass.getResource("/font/JetBrainsMono-Regular.ttf")?.path ?: "")
+    private fun getFontFile(): Font = useResource("/font/JetBrainsMono-Regular.ttf"){
+        return Font.createFont(Font.TRUETYPE_FONT, it).deriveFont(terminalFontSize)
+    }
 
     override fun getTerminalFontSize(): Float = 13f
 
