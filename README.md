@@ -2,7 +2,9 @@
 
 <img src="https://github.com/Daniel0110000/DeepCodeStudio/blob/master/ic_launcher.png" alt="icon" width="100" height="100">
 
-<h2>DeepCode Studio</h2>
+## DeepCode Studio
+
+Assembly code editor, compatible with a wide range of assembly languages, designed to provide a seamless experience in both Windows and Linux environments.
 
 ![screenshot](images/screenshot.png)
 </div>
