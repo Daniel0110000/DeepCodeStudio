@@ -1,6 +1,5 @@
 package ui.editor
 
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -15,11 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
 fun editorKeyEvents(
     keyEvent: KeyEvent,
-    editorState: EditorState,
-    onScrolling: () -> Unit
+    editorState: EditorState
 ): Boolean{
     return when {
         (keyEvent.key == Key.DirectionDown && editorState.isAutoCompleteVisible.value && !editorState.isKeyBeingPressed.value) -> {
@@ -50,7 +47,6 @@ fun editorKeyEvents(
         }
         (keyEvent.key == Key.Enter && !editorState.isKeyBeingPressed.value) -> {
             editorState.lineIndex.value += 1
-            onScrolling()
 
             // Extract the current code text, cursor position, and text before the cursor
             val codeText = editorState.codeText.value.text

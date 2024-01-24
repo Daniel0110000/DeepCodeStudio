@@ -82,7 +82,7 @@ fun EditorViewTab(
                                 value = state.codeText.value,
                                 onValueChange = { state.onValueChange(it) },
                                 readOnly = state.readOnly.value,
-                                onTextLayout = { state.onTextLayout(it) },
+                                onTextLayout = { state.onTextLayout(it){ coroutineScope.launch { verticalScrollState.scrollTo(state.lineIndex.value * 10) } } },
                                 textStyle = TextStyle(
                                     fontSize = 13.sp,
                                     color = ThemeApp.colors.textColor,
@@ -94,9 +94,7 @@ fun EditorViewTab(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .focusRequester(state.textFieldFocusRequester.value)
-                                    .onPreviewKeyEvent{
-                                        editorKeyEvents(it, state){ coroutineScope.launch { verticalScrollState.scrollTo(verticalScrollState.value  * 10) } }
-                                    }
+                                    .onPreviewKeyEvent{ editorKeyEvents(it, state) }
                             )
                         }
 

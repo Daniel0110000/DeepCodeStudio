@@ -108,7 +108,7 @@ class EditorState {
      *
      * @param layout The [TextLayoutResult] containing information about the layout of the text
      */
-    fun onTextLayout(layout: TextLayoutResult){
+    fun onTextLayout(layout: TextLayoutResult, onScrolling: () -> Unit){
         // Extracts and update the line count
         val lineCount = layout.lineCount
         if (lineCount != linesCount.value) linesCount.value = lineCount
@@ -121,6 +121,7 @@ class EditorState {
             codeText.value.selection.start,
             true
         ).toInt()
+        onScrolling()
     }
 
 }
