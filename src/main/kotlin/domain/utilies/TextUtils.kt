@@ -53,6 +53,22 @@ object TextUtils {
     }
 
     /**
+     * Inserts a copy of the provided [newText] at the specified [position] in the [currentText]
+     *
+     * @param position Index where [newText] should be inserted
+     * @param currentText The text to which new text is to be inserted
+     * @param newText The text to be inserted
+     * @return The modified text with the new text inserted at the specified index
+     */
+    fun insertCopyLine(position: Int, currentText: String, newText: String): String {
+        val stringBuilder = StringBuilder(currentText.length + newText.length)
+        stringBuilder.append(currentText.substring(0, position))
+        stringBuilder.append(newText)
+        stringBuilder.append(currentText.substring(position))
+        return stringBuilder.toString()
+    }
+
+    /**
      * Inserts spaces and text at a specified index in the original text and return a new [TextFieldValue]
      *
      * @param originalText The original text where spaces and text will be inserted

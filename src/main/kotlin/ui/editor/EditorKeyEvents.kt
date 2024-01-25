@@ -3,6 +3,7 @@ package ui.editor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
@@ -110,6 +111,27 @@ fun editorKeyEvents(
 
             editorState.isKeyBeingPressed.value = true
             false
+        }
+        (keyEvent.isCtrlPressed && keyEvent.key == Key.D && !editorState.isKeyBeingPressed.value) -> {
+            val codeText = editorState.codeText.value.text
+            // Splits the text into line breaks and then retrieve the text from the current line using the index
+            // ... of the current line minus 1 [editorState.lineIndex.value - 1], then remove any trailing
+            // ... whitespace from the text
+            val lineToPaste = codeText.split('\n')[editorState.lineIndex.value - 1].trimEnd()
+
+            // Using the function [insertCopyLine], insert the value of [lineToPaste] into the code and
+            // ... save the result in the variable [newText]
+            val newText = TextUtils.insertCopyLine(
+                codeText.indexOf(lineToPaste) + lineToPaste.length,
+                codeText,
+                "\n$lineToPaste"
+            )
+
+            // Updates the content of [editorState.codeText.value] using the value of [newText].
+            editorState.codeText.value = TextFieldValue(newText, TextRange(editorState.codeText.value.selection.start + lineToPaste.length + 1))
+
+            editorState.isKeyBeingPressed.value = true
+            true
         }
         (keyEvent.type == KeyEventType.KeyUp) -> {
             editorState.isKeyBeingPressed.value = false
