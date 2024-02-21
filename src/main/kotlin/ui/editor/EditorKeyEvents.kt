@@ -47,8 +47,6 @@ fun editorKeyEvents(
             true
         }
         (keyEvent.key == Key.Enter && !editorState.isKeyBeingPressed.value) -> {
-            editorState.lineIndex.value += 1
-
             editorState.codeText.value = TextUtils.insertSpacesAfterLineBreak(editorState.codeText.value)
 
             editorState.isKeyBeingPressed.value = true
