@@ -117,4 +117,34 @@ object TextUtils {
         return functionNames + functionNames.map { "[$it]" }
     }
 
+    /**
+     * Inserts spaces after a line break based on specific conditions
+     *
+     * @param text The [TextFieldValue] with the current text
+     * @return The [TextFieldValue] with spaces inserted after the line break
+     */
+    fun insertSpacesAfterLineBreak(text: TextFieldValue): TextFieldValue {
+        // Extract information from the [TextFieldValue]
+        val codeText = text.text
+        val cursorPosition = text.selection.start
+        val textBeforeCursor = codeText.substring(0, cursorPosition)
+
+        // Extract the last line of text and individual words in the text before the cursor
+        val lastLine = textBeforeCursor.lines().last()
+        val wordsInText = textBeforeCursor.split("\\s+".toRegex())
+
+        // Determine the spaces to insert based on specific conditions
+        val spacesToInsert = if(
+            codeText.isNotBlank() &&
+            textBeforeCursor.isNotBlank() &&
+            textBeforeCursor.last() == ':' ||
+            (lastLine.contains("   ") && lastLine != "   ") ||
+            wordsInText.last() in listOf(".data", ".bss", ".text")
+        ) "\n   "
+        else "\n"
+
+        // Return the [TextFieldValue] with spaces inserted
+        return insertSpacesInText(codeText, cursorPosition, spacesToInsert)
+    }
+
 }

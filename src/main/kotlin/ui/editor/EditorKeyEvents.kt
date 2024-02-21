@@ -49,37 +49,7 @@ fun editorKeyEvents(
         (keyEvent.key == Key.Enter && !editorState.isKeyBeingPressed.value) -> {
             editorState.lineIndex.value += 1
 
-            // Extract the current code text, cursor position, and text before the cursor
-            val codeText = editorState.codeText.value.text
-            val cursorPosition = editorState.codeText.value.selection.start
-            val textBeforeCursor = codeText.substring(0, cursorPosition)
-
-            // Extract the last line of text and split the text before the cursor into individual words
-            val lastLine = textBeforeCursor.lines().last()
-            val wordsInText = textBeforeCursor.split("\\s+".toRegex())
-
-            // Check if specific conditions are met to determine whether to add spaces and newlines
-            if (codeText.isNotBlank() &&
-                textBeforeCursor.last() == ':' ||
-                (lastLine.contains("   ") && lastLine != "   ") ||
-                wordsInText.last() == ".data" ||
-                wordsInText.last() == ".bss" ||
-                wordsInText.last() == ".text"
-            ) {
-                editorState.codeText.value =
-                    TextUtils.insertSpacesInText(
-                        codeText,
-                        cursorPosition,
-                        "\n   "
-                    )
-            } else {
-                editorState.codeText.value =
-                    TextUtils.insertSpacesInText(
-                        codeText,
-                        cursorPosition,
-                        "\n"
-                    )
-            }
+            editorState.codeText.value = TextUtils.insertSpacesAfterLineBreak(editorState.codeText.value)
 
             editorState.isKeyBeingPressed.value = true
             true
