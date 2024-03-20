@@ -4,8 +4,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.HorizontalScrollbar
 import androidx.compose.foundation.ScrollbarAdapter
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,7 +59,10 @@ fun EditorViewTab(
     LaunchedEffect(Unit){ state.textFieldFocusRequester.value.requestFocus() }
 
     Column(modifier = modifier) {
-        Box(modifier = Modifier.weight(1f)) {
+        BoxWithConstraints(modifier = Modifier.weight(1f)) {
+
+            val height = this.maxHeight
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -71,35 +74,26 @@ fun EditorViewTab(
 
                     Spacer(modifier = Modifier.width(10.dp))
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .horizontalScroll(horizontalScrollState)
-                    ) {
-                        CompositionLocalProvider(LocalTextContextMenu provides EmptyContextMenu){
-                            BasicTextField(
-                                value = state.codeText.value,
-                                onValueChange = { state.onValueChange(it) },
-                                readOnly = state.readOnly.value,
-                                onTextLayout = { state.onTextLayout(it){ coroutineScope.launch { verticalScrollState.scrollTo(state.lineIndex.value * 10) } } },
-                                textStyle = TextStyle(
-                                    fontSize = 13.sp,
-                                    color = ThemeApp.colors.textColor,
-                                    fontFamily = ThemeApp.text.codeTextFontFamily,
-                                    fontWeight = FontWeight.W500
-                                ),
-                                cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
-                                visualTransformation = EditorVisualTransformation(state.syntaxHighlightConfig.value, state.syntaxHighlightRegexModel.value),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .focusRequester(state.textFieldFocusRequester.value)
-                                    .onPreviewKeyEvent{ editorKeyEvents(it, state) }
-                            )
-                        }
-
-                        Box(modifier = Modifier.fillMaxHeight().width(200.dp))
-
+                    CompositionLocalProvider(LocalTextContextMenu provides EmptyContextMenu){
+                        BasicTextField(
+                            value = state.codeText.value,
+                            onValueChange = { state.onValueChange(it) },
+                            readOnly = state.readOnly.value,
+                            onTextLayout = { state.onTextLayout(it){ coroutineScope.launch { verticalScrollState.scrollTo(state.lineIndex.value * 10) } } },
+                            textStyle = TextStyle(
+                                fontSize = 13.sp,
+                                color = ThemeApp.colors.textColor,
+                                fontFamily = ThemeApp.text.codeTextFontFamily,
+                                fontWeight = FontWeight.W500
+                            ),
+                            cursorBrush = SolidColor(ThemeApp.colors.buttonColor),
+                            visualTransformation = EditorVisualTransformation(state.syntaxHighlightConfig.value, state.syntaxHighlightRegexModel.value),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(height)
+                                .focusRequester(state.textFieldFocusRequester.value)
+                                .onPreviewKeyEvent{ editorKeyEvents(it, state) }
+                        )
                     }
 
                 }
@@ -141,9 +135,7 @@ fun EditorViewTab(
                     .fillMaxWidth(),
                 style = ThemeApp.scrollbar.scrollbarStyle
             )
-
         }
-
         // Create the bottom actions row
         BottomActionsRow(state)
     }
