@@ -19,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -33,9 +32,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ui.ThemeApp
+import com.dr10.common.ui.ThemeApp
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputDropdownMenuItem(
     typeAction: Actions,

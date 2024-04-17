@@ -18,8 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dr10.common.ui.ThemeApp
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
-import ui.ThemeApp
 import ui.splitPane.fileTree.lazy.FileTreeItemView
 import ui.viewModels.splitPane.FileTreeViewModel
 

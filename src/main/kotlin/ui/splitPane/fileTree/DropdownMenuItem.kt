@@ -18,7 +18,7 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ui.ThemeApp
+import com.dr10.common.ui.ThemeApp
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

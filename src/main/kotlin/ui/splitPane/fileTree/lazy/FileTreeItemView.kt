@@ -27,7 +27,7 @@ import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
-import ui.ThemeApp
+import com.dr10.common.ui.ThemeApp
 import ui.splitPane.fileTree.FileInfo
 import ui.splitPane.fileTree.FileOptionsMenu
 import java.awt.event.MouseEvent

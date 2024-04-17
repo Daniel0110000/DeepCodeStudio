@@ -25,10 +25,10 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dr10.common.ui.ThemeApp
+import com.dr10.database.domain.repositories.AutocompleteSettingsRepository
+import com.dr10.editor.ui.tabs.TabsState
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
-import domain.repositories.AutocompleteSettingsRepository
-import ui.ThemeApp
-import ui.editor.tabs.TabsState
 import ui.splitPane.fileTree.FileTreeView
 import ui.viewModels.splitPane.FileTreeViewModel
 import ui.viewModels.splitPane.SplitPaneViewModel

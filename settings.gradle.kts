@@ -11,4 +11,8 @@ pluginManagement {
 }
 
 rootProject.name = "DeepCodeStudio"
-
+include("database")
+include("settings")
+include("common")
+include("terminal")
+include("editor")

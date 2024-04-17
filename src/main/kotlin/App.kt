@@ -1,12 +1,12 @@
-import domain.repositories.AutocompleteSettingsRepository
+import com.dr10.database.domain.repositories.AutocompleteSettingsRepository
+import com.dr10.editor.ui.viewModels.EditorViewModel
+import com.dr10.editor.ui.viewModels.TabsViewModel
+import com.dr10.settings.ui.viewModels.AutocompleteSettingsViewModel
+import com.dr10.settings.ui.viewModels.SettingsViewModel
+import com.dr10.settings.ui.viewModels.SyntaxHighlightSettingsViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ui.viewModels.CodeEditorViewModel
-import ui.viewModels.editor.EditorViewModel
-import ui.viewModels.editor.TabsViewModel
-import ui.viewModels.settings.AutocompleteSettingsViewModel
-import ui.viewModels.settings.SettingsViewModel
-import ui.viewModels.settings.SyntaxHighlightSettingsViewModel
 import ui.viewModels.splitPane.SplitPaneViewModel
 
 /**
@@ -17,23 +17,23 @@ class App: KoinComponent {
     // Inject [AutocompleteSettingsRepository]
     val autocompleteSettingsRepository: AutocompleteSettingsRepository by inject()
 
-    // Inject [SyntaxHighlightViewModel]
+    // Inject [SyntaxHighlightSettingsViewModel]
     val syntaxHighlightSettingsViewModel: SyntaxHighlightSettingsViewModel by inject()
 
-    // Inject [AutocompleteSettingsViewModel]
+    // Inject [AutocompleteSettingsViewModel
     val autocompleteSettingsViewModel: AutocompleteSettingsViewModel by inject()
+
+    // Inject [SettingsViewModel]
+    val settingsViewModel: SettingsViewModel by inject()
 
     // Inject [CodeEditorViewModel]
     val codeEditorViewModel: CodeEditorViewModel by inject()
 
-    // Inject [TabsViewModel[
+    // Inject [TabsViewModel]
     val tabsViewModel: TabsViewModel by inject()
 
     // Inject [EditorViewModel]
     val editorViewModel: EditorViewModel by inject()
-
-    // Inject [SettingsViewModel]
-    val settingsViewModel: SettingsViewModel by inject()
 
     // Inject [SplitPaneViewModel]
     val splitPaneViewModel: SplitPaneViewModel by inject()

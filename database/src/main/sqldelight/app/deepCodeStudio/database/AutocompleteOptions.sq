@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS AutocompleteOptions (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    uuid TEXT NOT NULL,
+    optionName TEXT NOT NULL,
+    jsonPath TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM AutocompleteOptions;
+
+insert:
+INSERT INTO AutocompleteOptions(uuid, optionName, jsonPath) VALUES (?, ?, ?);
+
+updateJsonPath:
+UPDATE AutocompleteOptions SET jsonPath = (?) WHERE uuid = (?);
+
+delete:
+DELETE FROM AutocompleteOptions WHERE uuid = (?);

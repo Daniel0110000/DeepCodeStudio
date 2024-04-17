@@ -7,8 +7,11 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import com.dr10.common.utilities.DocumentsManager
+import com.dr10.database.di.databaseModule
+import com.dr10.editor.di.editorModule
+import com.dr10.settings.di.settingsModule
 import di.appModule
-import domain.utilies.DocumentsManager
 import kotlinx.coroutines.launch
 import org.koin.core.context.startKoin
 import ui.CodeEditorScreen
@@ -20,7 +23,7 @@ fun main() = application {
     rememberCoroutineScope().launch { DocumentsManager.createDefaultProjectsDirectory() }
 
     // Initialize Koin
-    startKoin { modules(appModule) }
+    startKoin { modules(appModule, databaseModule, settingsModule, editorModule) }
 
     Window(
         onCloseRequest = ::exitApplication,

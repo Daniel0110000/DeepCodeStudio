@@ -1,10 +1,10 @@
 package ui.viewModels.splitPane
 
+import com.dr10.common.utilities.Constants
+import com.dr10.common.utilities.DocumentsManager
 import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import domain.utilies.Constants
-import domain.utilies.DocumentsManager
 import java.io.File
 
 class SplitPaneViewModel: ViewModel() {

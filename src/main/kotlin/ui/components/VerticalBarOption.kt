@@ -21,8 +21,17 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
-import ui.ThemeApp
+import com.dr10.common.ui.ThemeApp
+import com.dr10.common.ui.components.TooltipArea
 
+/**
+ * Composable function to display a vertical bar option
+ *
+ * @param label The label for the option
+ * @param icon The icon representing the option
+ * @param isSelected Flag indicating whether thw option is selected
+ * @param onClick Callback function to be executed when the option is clicked
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun VerticalBarOption(

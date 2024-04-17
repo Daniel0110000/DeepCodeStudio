@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import domain.utilies.DocumentsManager
-import ui.ThemeApp
+import com.dr10.common.ui.ThemeApp
+import com.dr10.common.utilities.DocumentsManager
 
 @Composable
 fun FileOptionsMenu(

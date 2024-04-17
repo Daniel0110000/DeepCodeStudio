@@ -1,11 +1,11 @@
 package ui.viewModels
 
+import com.dr10.common.utilities.Constants
+import com.dr10.common.utilities.DocumentsManager
+import com.dr10.editor.ui.tabs.TabsState
 import dev.icerock.moko.mvvm.livedata.LiveData
 import dev.icerock.moko.mvvm.livedata.MutableLiveData
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import domain.utilies.Constants
-import domain.utilies.DocumentsManager
-import ui.editor.tabs.TabsState
 
 class CodeEditorViewModel: ViewModel() {
 

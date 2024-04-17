@@ -1,6 +1,6 @@
 package ui.splitPane.fileTree
 
-import domain.utilies.DocumentsManager
+import com.dr10.common.utilities.DocumentsManager
 import java.io.File
 
 /**

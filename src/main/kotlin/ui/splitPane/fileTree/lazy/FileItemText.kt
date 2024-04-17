@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
-import ui.ThemeApp
+import com.dr10.common.ui.ThemeApp
 import ui.splitPane.fileTree.FileInfo
 
 @Composable
