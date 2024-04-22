@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,15 +36,15 @@ import com.dr10.editor.ui.EditorState
 @Composable
 fun BottomActionsRow(
     editorState: EditorState,
-    repository: AutocompleteSettingsRepository
+    repository: AutocompleteSettingsRepository,
+    modifier: Modifier
 ) {
 
     var isHoveringAutocompleteOption by remember { mutableStateOf(false) }
     var isHoverReadOnlyButton by remember { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(25.dp)
             .background(ThemeApp.colors.secondColor)
     ){

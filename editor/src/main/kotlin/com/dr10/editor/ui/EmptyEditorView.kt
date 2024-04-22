@@ -16,25 +16,22 @@ import androidx.compose.ui.unit.sp
 import com.dr10.common.ui.ThemeApp
 
 @Composable
-fun EmptyEditorView(){
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Image(
-            painterResource("images/ic_app.svg"),
-            contentDescription = "App icon",
-            modifier = Modifier.size(300.dp)
-        )
+fun EmptyEditorView() = Column(
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally
+) {
+    Image(
+        painterResource("images/ic_app.svg"),
+        contentDescription = "App icon",
+        modifier = Modifier.size(300.dp)
+    )
 
-        Text(
-            "DeepCode Studio",
-            color = ThemeApp.colors.secondColor,
-            fontFamily = ThemeApp.text.fontFamily,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.ExtraBold
-        )
-
-    }
+    Text(
+        "DeepCode Studio",
+        color = ThemeApp.colors.secondColor,
+        fontFamily = ThemeApp.text.fontFamily,
+        fontSize = 25.sp,
+        fontWeight = FontWeight.ExtraBold
+    )
 }

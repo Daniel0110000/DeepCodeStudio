@@ -1,17 +1,13 @@
 package com.dr10.editor.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.dr10.common.ui.components.ErrorMessage
 import com.dr10.common.ui.editor.EditorErrorState
 import com.dr10.database.domain.repositories.AutocompleteSettingsRepository
@@ -62,33 +58,56 @@ fun EditorView(
     }
 
     if(isDisplayEditor.value){
-        Row(modifier = Modifier.fillMaxSize()) {
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (tabs, allAutocompleteOptions, editorNav) = createRefs()
 
-            Column(modifier = Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState())) {
-                TabsView(
-                    tabsState,
-                    tabsViewModel,
-                    onNewTab = { filePath, fileName -> viewModel.onNewTab(filePath, fileName, errorState) },
-                    onDeleteTab = { path ->
-                        viewModel.onDeleteTab(path)
-                        navController.navigate(editorStates[editorStates.lastIndex].filePath.value)
-                        },
-                    onChangeSelectedTab = {
+            TabsView(
+                tabsState,
+                tabsViewModel,
+                onNewTab = { filePath, fileName -> viewModel.onNewTab(filePath, fileName, errorState) },
+                onDeleteTab = { path ->
+                    viewModel.onDeleteTab(path)
+                    navController.navigate(editorStates[editorStates.lastIndex].filePath.value)
+                },
+                onChangeSelectedTab = {
                         index -> viewModel.setSelectedTabIndex(index)
-                        navController.navigate(editorStates[index].filePath.value)
+                    navController.navigate(editorStates[index].filePath.value)
+                },
+                modifier = Modifier.constrainAs(tabs){
+                    width = Dimension.fillToConstraints
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            )
+
+            SetupNavHost(
+                navController = navController,
+                states = editorStates,
+                modifier = Modifier.constrainAs(editorNav){
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                    top.linkTo(tabs.bottom)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(allAutocompleteOptions.start)
+                },
+                autocompleteSettingsRepository
+            )
+
+            if(editorStates.isNotEmpty()){
+                AllAutocompleteOptionView(
+                    editorStates[selectedTabIndex],
+                    viewModel,
+                    errorState,
+                    modifier = Modifier.constrainAs(allAutocompleteOptions){
+                        height = Dimension.fillToConstraints
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
                     }
                 )
-
-                SetupNavHost(
-                    navController = navController,
-                    states = editorStates,
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    autocompleteSettingsRepository
-                )
-
             }
-
-            if(editorStates.isNotEmpty()) AllAutocompleteOptionView(editorStates[selectedTabIndex], viewModel, errorState)
 
         }
     } else EmptyEditorView()

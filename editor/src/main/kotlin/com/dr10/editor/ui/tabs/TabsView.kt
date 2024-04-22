@@ -24,7 +24,8 @@ fun TabsView(
     viewModel: TabsViewModel,
     onNewTab: (String, String) -> Unit,
     onDeleteTab: (String) -> Unit,
-    onChangeSelectedTab: (Int) -> Unit
+    onChangeSelectedTab: (Int) -> Unit,
+    modifier: Modifier
 ) {
 
     // Remember the scroll state for the horizontal scrollbar
@@ -60,7 +61,7 @@ fun TabsView(
 
     }
 
-    Box {
+    Box(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
