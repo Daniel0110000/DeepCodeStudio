@@ -7,6 +7,9 @@ import java.nio.file.Paths
 
 object DocumentsManager {
 
+    private val projectsDirectory = File("${getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}")
+    val databaseDirectory = File("${projectsDirectory.absolutePath}/${Constants.DEFAULT_DATABASE_DIRECTORY_NAME}")
+
     /**
      * Retrieve the path of the user's home directory
      *
@@ -15,13 +18,16 @@ object DocumentsManager {
     fun getUserHome(): String = System.getProperty("user.home")
 
     /**
-     * Creates the default projects directory in the user's home directory if it doesn't exist
+     * Creates the necessary directories if they do not exist
      */
-    fun createDefaultProjectsDirectory(){
-        val projectsDirectory = File("${getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}")
+    fun createNecessaryDirectories(){
         if(!projectsDirectory.exists()){
             kotlin.runCatching { projectsDirectory.mkdir() }
                 .onFailure { exception -> println("An error occurred while creating the projects directory: ${exception.message}") }
+        }
+        if(!databaseDirectory.exists()) {
+            kotlin.runCatching { databaseDirectory.mkdir() }
+                .onFailure { exception -> println("An error occurred while creating the data directory: ${exception.message}") }
         }
     }
 

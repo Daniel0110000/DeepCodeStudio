@@ -20,7 +20,7 @@ import java.awt.Toolkit
 fun main() = application {
 
     val toolkit = Toolkit.getDefaultToolkit().screenSize
-    rememberCoroutineScope().launch { DocumentsManager.createDefaultProjectsDirectory() }
+    rememberCoroutineScope().launch { DocumentsManager.createNecessaryDirectories() }
 
     // Initialize Koin
     startKoin { modules(appModule, databaseModule, settingsModule, editorModule) }

@@ -2,6 +2,8 @@ package com.dr10.common.utilities
 
 object Constants {
     const val DEFAULT_PROJECTS_DIRECTORY_NAME = "DeepCodeProjects"
+    const val DEFAULT_DATABASE_DIRECTORY_NAME = ".data"
+    const val DATABASE_NAME = "AppDatabase.db"
 
     const val DEFAULT_SIMPLE_COLOR = "#ABB2BF"
     const val DEFAULT_INSTRUCTION_COLOR = "#C678DD"
