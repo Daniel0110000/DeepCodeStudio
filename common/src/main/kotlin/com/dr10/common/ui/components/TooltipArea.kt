@@ -18,6 +18,7 @@ import com.dr10.common.ui.ThemeApp
 @Composable
 fun TooltipArea(
     label: String,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) = androidx.compose.foundation.TooltipArea(
     tooltip = {
@@ -36,5 +37,6 @@ fun TooltipArea(
         }
     },
     tooltipPlacement = TooltipPlacement.CursorPoint(offset = DpOffset(20.dp, 0.dp)),
-    content = { content() }
+    content = { content() },
+    modifier = modifier
 )

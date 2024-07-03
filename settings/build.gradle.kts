@@ -7,7 +7,13 @@ group = "dev.daniel"
 version = "1.0.0"
 
 repositories {
+    google()
     mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
@@ -24,6 +30,9 @@ dependencies {
     // Flatlaf
     implementation("com.formdev:flatlaf-intellij-themes:3.2.5")
     implementation("com.formdev:flatlaf:3.2.5")
+
+    // constraintlayout
+    implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.3.1")
 
     // Common module
     implementation(project(":common"))
