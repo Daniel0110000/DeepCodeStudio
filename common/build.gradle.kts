@@ -25,8 +25,16 @@ dependencies {
     implementation("com.formdev:flatlaf:3.2.5")
     implementation("com.formdev:flatlaf-intellij-themes:3.2.5")
 
-}
+    // Mock
+    testImplementation("io.mockk:mockk:1.13.10")
 
-tasks.test {
-    useJUnitPlatform()
+    // JUnit
+    testImplementation("junit:junit:4.12")
+
+    // Truth
+    testImplementation("com.google.truth:truth:1.4.3")
+
+    // Coroutines test
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1-Beta")
+
 }

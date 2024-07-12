@@ -22,7 +22,7 @@ object DirectoryChooser {
      *
      * @return The selected directory path or `null` if canceled or an error occurred
      */
-    private suspend fun chooseDirectorySwing() = withContext(Dispatchers.IO) {
+    suspend fun chooseDirectorySwing() = withContext(Dispatchers.IO) {
         UIManager.setLookAndFeel(FlatOneDarkIJTheme())
 
         val chooser = JFileChooser(DocumentsManager.getUserHome()).apply {
