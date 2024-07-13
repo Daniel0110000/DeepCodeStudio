@@ -7,8 +7,8 @@ import java.nio.file.Paths
 
 object DocumentsManager {
 
-    private val projectsDirectory = File("${getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}")
-    val databaseDirectory = File("${projectsDirectory.absolutePath}/${Constants.DEFAULT_DATABASE_DIRECTORY_NAME}")
+    var projectsDirectory = File("${getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}")
+    var databaseDirectory = File("${projectsDirectory.absolutePath}/${Constants.DEFAULT_DATABASE_DIRECTORY_NAME}")
 
     /**
      * Retrieve the path of the user's home directory
@@ -64,8 +64,7 @@ object DocumentsManager {
      * Creates a new directory with the specified [name] at the given [path]
      *
      * @param path The path where the new directory will be created
-     * @param name
-     *  The name of the new directory
+     * @param name The name of the new directory
      */
     fun createDirectory(path: String, name: String){
         val directory = File("$path/$name")
