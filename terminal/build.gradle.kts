@@ -6,6 +6,10 @@ plugins {
 group = "dev.daniel"
 version = "1.0.0"
 
+kotlin {
+    jvmToolchain(17)
+}
+
 repositories {
     mavenCentral()
     maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")

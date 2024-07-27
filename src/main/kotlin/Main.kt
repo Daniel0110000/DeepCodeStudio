@@ -1,4 +1,3 @@
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
@@ -12,7 +11,6 @@ import com.dr10.database.di.databaseModule
 import com.dr10.editor.di.editorModule
 import com.dr10.settings.di.settingsModule
 import di.appModule
-import kotlinx.coroutines.launch
 import org.koin.core.context.startKoin
 import ui.CodeEditorScreen
 import java.awt.Toolkit
@@ -20,7 +18,8 @@ import java.awt.Toolkit
 fun main() = application {
 
     val toolkit = Toolkit.getDefaultToolkit().screenSize
-    rememberCoroutineScope().launch { DocumentsManager.createNecessaryDirectories() }
+
+    DocumentsManager.createNecessaryDirectories()
 
     // Initialize Koin
     startKoin { modules(appModule, databaseModule, settingsModule, editorModule) }

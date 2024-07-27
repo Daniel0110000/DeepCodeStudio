@@ -18,6 +18,10 @@ sqldelight {
     }
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
 
     // Koin

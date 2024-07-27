@@ -1,19 +1,30 @@
 package com.dr10.editor.ui
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.Dp
 import com.dr10.common.models.SyntaxHighlightOptionModel
 import com.dr10.common.models.SyntaxHighlightRegexModel
 import com.dr10.common.utilities.TextUtils
 import com.dr10.editor.ui.autocompleteCode.KeywordAutoCompleteUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class EditorState {
 
+    // Coroutine scope for handling coroutines within the Composable
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+
     // UUID associated with the selected from the current file
     var uuid = mutableStateOf("")
+
+    // Height of each line in the editor
+    val lineHeight = 17
 
     // The content of the code editor
     val codeText = mutableStateOf(TextFieldValue(""))
@@ -108,7 +119,7 @@ class EditorState {
      *
      * @param layout The [TextLayoutResult] containing information about the layout of the text
      */
-    fun onTextLayout(layout: TextLayoutResult, onScrolling: () -> Unit){
+    fun onTextLayout(layout: TextLayoutResult){
 
         // Update the line index
         lineIndex.value = getCursorLine(codeText.value)
@@ -125,8 +136,42 @@ class EditorState {
             codeText.value.selection.start,
             true
         ).toInt()
+    }
 
-        onScrolling()
+    /**
+     * Automatically scrolls to ensure that a specific line index is visible within a scrollable area
+     * This function calculates the current scroll offset bases on the line index and adjusts
+     * the scroll position to keep the relevant lines visible within the box height
+     *
+     * @param scrollState The current scroll state of the editor
+     * @param boxHeight The height of the box
+     */
+    fun autoScroll(
+        scrollState: ScrollState,
+        boxHeight: Dp
+    ){
+        // Calculate the current scroll offset based on the [lineIndex] and [lineHeight]
+        val currentScrollOffset = lineIndex.value * lineHeight
+
+        // Define the visible are range [visibleAreaTop, visibleAreaBottom]
+        val visibleAreaTop = scrollState.value
+        val visibleAreaBottom = ((visibleAreaTop + boxHeight.value) - 50).toInt()
+
+        // Check if the current scroll offset is outside the visible area
+        if(currentScrollOffset !in visibleAreaTop..visibleAreaBottom) {
+            // Determine the target scroll position based on the [lineIndex]
+            val targetScrollPosition = when (lineIndex.value) {
+                // If near the end of the content, scroll to the maximum scroll value
+                in linesCount.value - 40 .. linesCount.value -> scrollState.maxValue
+                // If at the beginning of the content, scroll to the top
+                in 1..20 -> 0
+                // For other cases, calculate the taget position proportionality
+                else -> (scrollState.maxValue / linesCount.value) * lineIndex.value
+            }
+
+            // Scroll to the target position
+            coroutineScope.launch { scrollState.scrollTo(targetScrollPosition) }
+        }
     }
 
 }

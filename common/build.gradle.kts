@@ -10,6 +10,10 @@ repositories {
     mavenCentral()
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
 
     implementation(compose.desktop.currentOs)
