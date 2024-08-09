@@ -1,69 +1,102 @@
 package ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.unit.dp
 import com.dr10.common.ui.ThemeApp
-import com.dr10.common.ui.components.TooltipArea
+import com.dr10.common.utilities.ColorUtils.toAWTColor
+import com.dr10.common.utilities.ImageResourceUtils
+import java.awt.*
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import javax.swing.JLabel
+import javax.swing.JPanel
 
 /**
- * Composable function to display a vertical bar option
+ * A [JPanel] that represents an individual option in the [VerticalBarOptions]
  *
- * @param label The label for the option
- * @param icon The icon representing the option
- * @param isSelected Flag indicating whether thw option is selected
- * @param onClick Callback function to be executed when the option is clicked
+ * @param cornerRadius The radius of the corners for the background round rectangle
+ * @param enteredBackgroundColor The background color when the mouse is over the component
+ * @param exitedBackgroundColor The background color when the mouse is not over the component
+ * @param iconResourcePath The path to the icon resource used for this option
+ * @param iconWidth The width of the icon
+ * @param iconHeight The height of the icon
+ * @param onClickListener The callback function to be invoked when the component is clicked
  */
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun VerticalBarOption(
-    label: String,
-    icon: Painter,
-    isSelected: Boolean = false,
-    onClick: () -> Unit
-){
-    var isHover by remember { mutableStateOf(false) }
+class VerticalBarOption(
+    private val cornerRadius: Int,
+    private var enteredBackgroundColor: Color,
+    private var exitedBackgroundColor: Color,
+    private val iconResourcePath: String,
+    private val iconWidth: Int = 23,
+    private val iconHeight: Int = 23,
+    private val onClickListener: () -> Unit
+): JPanel() {
 
-    TooltipArea(label){
-        Box(
-            modifier = Modifier
-                .height(30.dp)
-                .width(35.dp)
-                .background(
-                    if(isSelected) ThemeApp.colors.buttonColor
-                    else if(isHover) ThemeApp.colors.background
-                    else Color.Transparent,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .onPointerEvent(PointerEventType.Enter){ isHover = true }
-                .onPointerEvent(PointerEventType.Exit){ isHover = false }
-                .clickable { onClick() },
-            contentAlignment = Alignment.Center
-        ){
-            Icon(
-                icon,
-                contentDescription = label,
-                tint = ThemeApp.colors.textColor,
-                modifier = Modifier.size(22.dp)
-            )
+    var backgroundColor = exitedBackgroundColor
+
+    // Internal state to track of the option is selected
+    private var _isSelected = false
+    var isSelected: Boolean
+        get() = _isSelected
+        set(value) {
+            _isSelected = value
+
+            // Update background color based on selection state
+            backgroundColor = if(value) ThemeApp.colors.buttonColor.toAWTColor()
+            else exitedBackgroundColor
+
+            repaint()
         }
+
+    init { onCreate() }
+
+    private fun onCreate() {
+        this.layout = GridBagLayout()
+        preferredSize = Dimension(30, 30)
+        isOpaque = false
+
+        addMouseListener(object : MouseAdapter() {
+            override fun mouseEntered(event: MouseEvent) {
+                // Change background color on mouse enter if not selected
+                if(!isSelected) {
+                    backgroundColor = enteredBackgroundColor
+                    repaint()
+                }
+            }
+
+            override fun mouseExited(event: MouseEvent) {
+                // Revert background color on mouse exit if not selected
+                if(!isSelected) {
+                    backgroundColor = exitedBackgroundColor
+                    repaint()
+                }
+            }
+
+            override fun mouseClicked(event: MouseEvent) {
+                onClickListener()
+            }
+
+        })
+
+        add(
+            JLabel().apply {
+                icon = ImageResourceUtils.loadResourceImage(iconResourcePath, iconWidth, iconHeight)
+            },
+            GridBagConstraints().apply {
+                anchor = GridBagConstraints.CENTER
+            }
+        )
+    }
+
+    /**
+     * Paints the component with the current background color and rounded corners
+     *
+     * @param graphics The Graphics context to be used for painting
+     */
+    override fun paintComponent(graphics: Graphics) {
+        val graphics2D = graphics as Graphics2D
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+
+        graphics.color = backgroundColor
+        graphics.fillRoundRect(0, 0, width - 1, height - 1, cornerRadius, cornerRadius)
+
     }
 }

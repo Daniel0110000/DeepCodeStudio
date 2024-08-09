@@ -24,4 +24,13 @@ object ColorUtils {
      */
     fun hexToColor(hexString: String): Color =
         Color(("ff" + hexString.removePrefix("#").lowercase()).toLong(16))
+
+
+    /**
+     * Convert a Compose [Color] to an AWT [java.awt.Color]
+     *
+     * @return A [java.awt.Color] instance representing the same color
+     */
+    fun Color.toAWTColor(): java.awt.Color =
+        java.awt.Color(red, green, blue, alpha)
 }

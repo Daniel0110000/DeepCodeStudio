@@ -29,6 +29,10 @@ dependencies {
     implementation("com.formdev:flatlaf:3.2.5")
     implementation("com.formdev:flatlaf-intellij-themes:3.2.5")
 
+    // Batik
+    implementation("org.apache.xmlgraphics:batik-transcoder:1.17")
+    implementation("org.apache.xmlgraphics:batik-codec:1.17")
+
 }
 
 tasks.test {

@@ -1,87 +1,72 @@
 package ui
 
 import App
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import com.dr10.common.ui.ThemeApp
-import com.dr10.editor.ui.EditorView
-import com.dr10.settings.ui.Settings
-import com.dr10.terminal.TerminalView
-import dev.icerock.moko.mvvm.livedata.compose.observeAsState
+import com.dr10.common.utilities.UIStateManager
+import com.dr10.settings.ui.SettingsWindow
 import ui.components.VerticalBarOptions
-import ui.splitPane.SplitPane
 import ui.viewModels.CodeEditorViewModel
-import ui.viewModels.splitPane.SplitPaneViewModel
+import javax.swing.GroupLayout
+import javax.swing.JFrame
 
-@Composable
-fun CodeEditorScreen() {
+/**
+ * Main screen for the code editor
+ *
+ * @param window The [JFrame] instance representing the main application window
+ */
+class CodeEditorScreen(
+    private val window: JFrame
+) {
 
     // ViewModels initialization
-    val codeEditorViewModel: CodeEditorViewModel = App().codeEditorViewModel
-    val splitPaneViewModel: SplitPaneViewModel = App().splitPaneViewModel
-    val syntaxHighlightSettingsViewModel = App().syntaxHighlightSettingsViewModel
-    val autocompleteSettingsViewModel = App().autocompleteSettingsViewModel
-    val settingsViewModel = App().settingsViewModel
-    val editorViewModel = App().editorViewModel
-    val tabsViewModel = App().tabsViewModel
+    private val codeEditorViewModel: CodeEditorViewModel = App().codeEditorViewModel
+    private val syntaxHighlightSettingsViewModel = App().syntaxHighlightSettingsViewModel
+    private val autocompleteSettingsViewModel = App().autocompleteSettingsViewModel
+    private val settingsViewModel = App().settingsViewModel
 
-    val autocompleteSettingsRepository = App().autocompleteSettingsRepository
-
-    // Value observers for [currentPath], [isOpenSettings], [isCollapseSplitPane] and [isOpenTerminal]
-    val currentPath = codeEditorViewModel.currentPath.observeAsState().value
-    val isCollapseSplitPane = codeEditorViewModel.isCollapseSplitPane.observeAsState().value
-    val isOpenTerminal = codeEditorViewModel.isOpenTerminal.observeAsState().value
-    val isOpenSettings = codeEditorViewModel.isOpenSettings.observeAsState().value
-
-
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(ThemeApp.colors.background)
-    ) {
-
-        VerticalBarOptions(
-            isCollapseSplitPane,
-            isOpenTerminal,
-            isOpenSettings,
-            newDirectoryPath = { it?.let {
-                codeEditorViewModel.setCurrentPath(it)
-                splitPaneViewModel.setPath(it)
-            } },
-            collapseOrExtendSplitPane = { codeEditorViewModel.setIsCollapseSplitPane(!isCollapseSplitPane) },
-            openTerminal = { codeEditorViewModel.setIsOpenTerminal(!isOpenTerminal) },
-            openSettings = { codeEditorViewModel.setIsOpenSettings(true) }
-        )
-
-        Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                if(!isCollapseSplitPane) SplitPane(codeEditorViewModel.tabState.value){
-                    codeEditorViewModel.setIsCollapseSplitPane(true)
-                }
-
-                EditorView(
-                    tabsState = codeEditorViewModel.tabState.value,
-                    viewModel = editorViewModel,
-                    tabsViewModel = tabsViewModel,
-                    autocompleteSettingsRepository = autocompleteSettingsRepository
-                )
-            }
-
-            if(isOpenTerminal) TerminalView(currentPath){ codeEditorViewModel.setIsOpenTerminal(false) }
-        }
+    init {
+        onCreate()
     }
 
-    if(isOpenSettings) Settings(
-        onCloseRequest = { codeEditorViewModel.setIsOpenSettings(false) },
-        viewModel = settingsViewModel,
-        syntaxHighlightSettingsViewModel = syntaxHighlightSettingsViewModel,
-        autocompleteSettingsViewModel = autocompleteSettingsViewModel
-    )
+    private fun onCreate() {
+        val windowLayout = GroupLayout(window.contentPane)
+        window.contentPane.layout = windowLayout
+
+        val verticalBarOptions = VerticalBarOptions(
+            codeEditorViewModel = codeEditorViewModel,
+            collapseOrExtendSplitPane = { codeEditorViewModel.setIsCollapseSplitPane(true) },
+            newDirectoryPath = { it?.let {
+                codeEditorViewModel.setCurrentPath(it)
+            } },
+            openSettings = { codeEditorViewModel.setIsOpenSettings(true)  },
+            openTerminal = { codeEditorViewModel.setIsOpenTerminal(true) }
+        )
+
+        windowLayout.setHorizontalGroup(
+            windowLayout.createSequentialGroup()
+                .addComponent(verticalBarOptions, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+        )
+
+        windowLayout.setVerticalGroup(
+            windowLayout.createParallelGroup()
+                .addComponent(verticalBarOptions)
+        )
+
+
+        // Set up a UI state manager to listen for changes in the code editor's state
+        UIStateManager(
+            stateFlow = codeEditorViewModel.state,
+            onStateChanged = { state: CodeEditorViewModel.CodeEditorState ->
+                if(state.isOpenSettings) {
+                    // Show the settings window if [state.isOpenSettings] is true
+                    SettingsWindow(
+                        window = window,
+                        settingsViewModel = settingsViewModel,
+                        syntaxHighlightSettingsViewModel = syntaxHighlightSettingsViewModel,
+                        autocompleteSettingsViewModel = autocompleteSettingsViewModel
+                    ) { codeEditorViewModel.setIsOpenSettings(false) }
+                }
+            }
+        )
+    }
 
 }

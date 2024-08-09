@@ -2,61 +2,86 @@ package ui.viewModels
 
 import com.dr10.common.utilities.Constants
 import com.dr10.common.utilities.DocumentsManager
-import com.dr10.editor.ui.tabs.TabsState
-import dev.icerock.moko.mvvm.livedata.LiveData
-import dev.icerock.moko.mvvm.livedata.MutableLiveData
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class CodeEditorViewModel: ViewModel() {
+class CodeEditorViewModel {
 
-    val tabState: MutableLiveData<TabsState> = MutableLiveData(TabsState())
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private val _currentPath: MutableLiveData<String> = MutableLiveData("${DocumentsManager.getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}")
-    val currentPath: LiveData<String> = _currentPath
-
-    private val _isCollapseSplitPane: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isCollapseSplitPane: LiveData<Boolean> = _isCollapseSplitPane
-
-    private val _isOpenTerminal: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isOpenTerminal: LiveData<Boolean> = _isOpenTerminal
-
-    private val _isOpenSettings: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isOpenSettings: LiveData<Boolean> = _isOpenSettings
+    private val _state = MutableStateFlow(CodeEditorState())
+    val state: StateFlow<CodeEditorState> = _state.asStateFlow()
 
     /**
-     * Sets the [_currentPath] using the provided [value]
+     * Data class for the state of the code editor
+     *
+     * @property currentPath The current path
+     * @property isCollapseSplitPane Indicates if the split pane is collapse
+     * @property isOpenTerminal Indicated if the terminal is open
+     * @property isOpenSettings Indicated if the settings is open
+     */
+    data class CodeEditorState(
+        val currentPath: String = "${DocumentsManager.getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}",
+        val isCollapseSplitPane: Boolean = false,
+        val isOpenTerminal: Boolean = false,
+        val isOpenSettings: Boolean = false
+    )
+
+    /**
+     * Sets the [CodeEditorState.currentPath] using the provided [value]
      *
      * @param value The value to assign
      */
-    fun setCurrentPath(value: String){
-        _currentPath.value = value
+    fun setCurrentPath(value: String) {
+        coroutineScope.launch {
+            _state.update { it.copy(
+                currentPath = value
+            ) }
+        }
     }
 
     /**
-     * Sets the [_isCollapseSplitPane] using the provided [value]
+     * Sets the [CodeEditorState.isCollapseSplitPane] using the provided [value]
      *
      * @param value The value to assign
      */
-    fun setIsCollapseSplitPane(value: Boolean){
-        _isCollapseSplitPane.value = value
+    fun setIsCollapseSplitPane(value: Boolean) {
+        coroutineScope.launch {
+            _state.update { it.copy(
+                isCollapseSplitPane = value
+            ) }
+        }
     }
 
     /**
-     * Sets the [_isOpenTerminal] using the provided [value]
+     * Sets the [CodeEditorState.isOpenSettings] using the provided [value]
      *
      * @param value The value to assign
      */
-    fun setIsOpenTerminal(value: Boolean){
-        _isOpenTerminal.value = value
+    fun setIsOpenSettings(value: Boolean) {
+        coroutineScope.launch {
+            _state.update { it.copy(
+                isOpenSettings = value
+            ) }
+        }
     }
 
     /**
-     * Sets the [_isOpenSettings] using the provided [value]
+     * Sets the [CodeEditorState.isOpenTerminal] using the provided [value]
      *
      * @param value The value to assign
      */
-    fun setIsOpenSettings(value: Boolean){
-        _isOpenSettings.value = value
+    fun setIsOpenTerminal(value: Boolean) {
+        coroutineScope.launch {
+            _state.update { it.copy(
+                isOpenTerminal = value
+            ) }
+        }
     }
 
 }

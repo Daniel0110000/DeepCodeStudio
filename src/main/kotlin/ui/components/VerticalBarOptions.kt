@@ -1,83 +1,109 @@
 package ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.dr10.common.ui.ThemeApp
+import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.DirectoryChooser
+import com.dr10.common.utilities.UIStateManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ui.viewModels.CodeEditorViewModel
+import java.awt.Color
+import java.awt.Dimension
+import javax.swing.GroupLayout
+import javax.swing.JPanel
 
 /**
- * Composable function to display a vertical bar containing various options
+ * A [JPanel] that represents a vertical bar options for interacting with the code editor
  *
- * @param isCollapseFileTree Flag indicating whether the file tree is collapsed
- * @param isOpenTerminal Flag indicating whether the terminal is open
- * @param isOpenSettings Flag indicating whether the settings are open
- * @param newDirectoryPath Callback function to be executed when a new directory is chosen
- * @param collapseOrExtendSplitPane Callback function to be executed when the split pane is collapsed or extended
- * @param openTerminal Callback function to be executed when the terminal option is clicked
- * @param openSettings Callback function to be executed when the settings option is clicked
+ * @param codeEditorViewModel The viewModel that manages the state of the code editor
+ * @param newDirectoryPath A callback function to handle the selection fo a new directory
+ * @param collapseOrExtendSplitPane A callback function to collapse or extend the split pane
+ * @param openTerminal A callback function to open the terminal
+ * @param openSettings A callback function to open the settings
  */
-@Composable
-fun VerticalBarOptions(
-    isCollapseFileTree: Boolean,
-    isOpenTerminal: Boolean,
-    isOpenSettings: Boolean,
-    newDirectoryPath: (String?) -> Unit,
-    collapseOrExtendSplitPane: () -> Unit,
-    openTerminal: () -> Unit,
-    openSettings: () -> Unit
-) {
-    val coroutineScope = rememberCoroutineScope()
+class VerticalBarOptions(
+    private val codeEditorViewModel: CodeEditorViewModel,
+    private val newDirectoryPath: (String?) -> Unit,
+    private val collapseOrExtendSplitPane: () -> Unit,
+    private val openTerminal: () -> Unit,
+    private val openSettings: () -> Unit
+): JPanel() {
 
-    Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .width(45.dp)
-            .background(ThemeApp.colors.secondColor),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-        Spacer(modifier = Modifier.height(10.dp))
+    init { onCreate() }
 
-        VerticalBarOption(
-            label = if(isCollapseFileTree) "Extend" else "Collapse",
-            icon = if(isCollapseFileTree) painterResource("images/ic_extend.svg") else painterResource("images/ic_collapse.svg"),
-            isSelected = !isCollapseFileTree,
-        ){ collapseOrExtendSplitPane() }
+    private fun onCreate() {
+        val layout = GroupLayout(this)
+        this.layout = layout
 
-        Spacer(modifier = Modifier.height(5.dp))
+        preferredSize = Dimension(45, Short.MAX_VALUE.toInt())
+        background = ThemeApp.colors.secondColor.toAWTColor()
 
-        VerticalBarOption(
-            label = "Choose Folder",
-            icon = painterResource("images/ic_folder.svg")
-        ){ coroutineScope.launch { newDirectoryPath(DirectoryChooser.chooseDirectory()) } }
+        val collapseOption = VerticalBarOption(
+            10, Color(255, 255, 255, 25),
+            ThemeApp.colors.secondColor.toAWTColor(), "images/ic_collapse.svg",
+            25, 25,
+            onClickListener = { collapseOrExtendSplitPane() },
+        )
 
-        Spacer(modifier = Modifier.weight(1f))
+        val folderOption =  VerticalBarOption(
+            10, Color(255, 255, 255, 25),
+            ThemeApp.colors.secondColor.toAWTColor(), "images/ic_folder.svg",
+            onClickListener = { coroutineScope.launch { newDirectoryPath(DirectoryChooser.chooseDirectory()) } }
+        )
 
-        VerticalBarOption(
-            label = "Terminal",
-            icon = painterResource("images/ic_terminal.svg"),
-            isSelected = isOpenTerminal
-        ){ openTerminal() }
+        val terminalOption =  VerticalBarOption(
+            10, Color(255, 255, 255, 25),
+            ThemeApp.colors.secondColor.toAWTColor(),
+            "images/ic_terminal.svg",
+            onClickListener = {
+                openTerminal()
+                codeEditorViewModel.setIsOpenSettings(false)
+            }
+        )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        val settingsOption =  VerticalBarOption(
+            10, Color(255, 255, 255, 25),
+            ThemeApp.colors.secondColor.toAWTColor(), "images/ic_settings.svg",
+            onClickListener = { openSettings() }
+        )
 
-        VerticalBarOption(
-            label = "Settings",
-            icon = painterResource("images/ic_settings.svg"),
-            isSelected = isOpenSettings
-        ){ openSettings() }
+        layout.setHorizontalGroup(
+            layout.createSequentialGroup()
+                .addGap(0, Short.MAX_VALUE.toInt(), Short.MAX_VALUE.toInt())
+                .addGroup(
+                    layout.createParallelGroup()
+                        .addComponent(collapseOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(folderOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(terminalOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(settingsOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
+                .addGap(0, Short.MAX_VALUE.toInt(), Short.MAX_VALUE.toInt())
+        )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        layout.setVerticalGroup(
+            layout.createSequentialGroup()
+                .addGap(10)
+                .addComponent(collapseOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addGap(5)
+                .addComponent(folderOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addGap(0, Short.MAX_VALUE.toInt(), Short.MAX_VALUE.toInt())
+                .addComponent(terminalOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addGap(5)
+                .addComponent(settingsOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addGap(10)
+        )
+
+        // Set up a UI state manager to listen for changes in the code editor's state
+        UIStateManager(
+            stateFlow = codeEditorViewModel.state,
+            onStateChanged = { state: CodeEditorViewModel.CodeEditorState ->
+                settingsOption.isSelected = state.isOpenSettings
+            }
+        )
+
     }
+
 }

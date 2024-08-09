@@ -10,4 +10,5 @@ import ui.viewModels.splitPane.SplitPaneViewModel
 val appModule = module {
     single { CodeEditorViewModel() }
     single { SplitPaneViewModel() }
+    single { CodeEditorViewModel() }
 }
