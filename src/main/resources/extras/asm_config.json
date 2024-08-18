@@ -1,0 +1,252 @@
+{
+    "data": {
+        "instructions": [
+            "aaa", "aad", "aam", "aas", "arpl", "bound", "bsf", "bsr", "bswap", "bt",
+            "btc", "btr", "bts", "call", "call far", "cbw", "cdq", "clc", "cld", "cli",
+            "clts", "cmc", "cpuid", "cwd", "cwde", "daa", "das", "hlt", "in", "ins", "int",
+            "int0", "invd", "invlpg", "invpcid", "iret", "iretd", "lahf", "lar", "lds",
+            "lea", "leave", "les", "lfs", "lgdt", "lgs", "lidt", "lldt", "lmsw", "lock",
+            "lods", "lodsb", "lodsw", "lodsd", "lsl", "lss", "ltr", 
+
+            "mov", "movb", "movw", "movl", "movd", "movq", "movbe", "movs", "movsb", "movsw", "movsd",
+            "movsx", "movzx", "movaps", "movhlps", "movhps", "movlhps", "movlps", "movmskps",
+            "movss", "movapd", "movhpd", "movlpd", "movmskpd", "movsd", "movupd",
+            "movdqa", "movdqu", "movq2dq", "movdq2q", "maskmovdqu", "movntpd", "movntdq", 
+            "monnti", "movddup", "movshdup", "movsldup",
+            
+            "nop", "out", "outs", "pause", "lfence", "mfence",
+            
+            "pop", "popa", "popad", "popf", "popfq", "popfd", 
+            "push", "pusha", "pushad", "pushf", "pushfd",
+
+            "rdmsr", "rdpmc", "rdtsc", "rdtscp", "set", "sgdt", "swapgs",
+            
+            "rep ins", "rep lods", "rep movs", "rep movs", "rep outs", "rep stos", 
+            "repe cmps", "repe scas",
+            "repne cmps", "repne scas", 
+
+            "ret", "rsm", "sahf", "dist", "sldt", "smsw", "stc", "std", "sti", "stos",
+            "stosb", "stosw", "stosd", "str", "ud0", "ud1", "ud2", "verw", "wait",
+            "wbinvd", "wrmsr", "xchg", "xlat", "xlatb", "verr",
+            "packssdw", "packsswb", "packuswb", "punpckh", "punpckl", "xgetbv",
+            "xrstor", "xsave", "xsetbv", "fxrstor", "fxsave", "cvtpip2ps", "cvtps2pi",
+            "cvtsi2ss", "cvtss2si", "cvttps2pi", "cvttss2si", "ldmxcsr", "maxps",
+            "maxss", "minps", "minss", "rcpps", "rcpss", "rsqrtps", "rsqrtss", "shufps",
+            "sqrtps", "swrtss", "stmxcsr", "unpckhps", "unpcklps", "pavgb", "pavgw",
+            "pextrw", "pinsrw", "pmaxsw", "pminsw", "pminub", "pmovmskb", "pmulhuw",
+            "psadbw", "pshufw", "maskmovq", "movntps", "prefetcht0", "prefetcht1", "prefetcht2", "prefetchtA",
+            "sfence", "cvtpi2pd", "cvtsd2si", "cvtsi2sd", "cvttpd2pi", "cvttsd2si", "cvtpd2ps",
+            "cvtps2pd", "cvtsd2ss", "cvtss2ss", "cvtss2sd", "cvtpd2dq", "cvtdq2pd", "cvtps2dq",
+            "cvttps2dq", "cvtdq2ps", "maxpd", "maxsd", "minpd", "minsd",
+            "fld", "fst", "fadd", "shufpd", "ucomisd", "unpckhpd", "unpcklpd",
+            "fsub", "fmul", "fdiv", "fsin", "fcos", "fsqrt", "cmpxchg", "pshuflw",
+            "pshufhw", "pshufd", "pslldq", "psll", "psra", "psqldq", "psubq", "punpckl",
+            "punpcklqdq", "clflush", "monitor", "mwait", "fisttp", "lddqu",
+            "pabsb", "pabsd", "pabsw", "palignr",  "pshufb", "psignb", "psignd",
+            "psignw",
+
+            "aesdec", "aesdeclast", "aesenc", "aesenclast", "aesimc", "aeskeygenassist",
+
+            "retn", "blenpdp", "blendvpd", "blendvps", "dppd", "dpps", "extractps", "insertps", 
+            "movntdqa", "mpsadw", "packusdw", "pblendvb", "pblebdw", "pcmpeqq", "pextrb",
+            "pextrd", "pextrq", "phminposuw", "pinsrb", "pinsrd", "pinsrq", "pmaxwb",
+            "pmaxsd", "pmaxud", "pmaxuw", "pminsb", "pminsd", "pminud", "pminuw",
+            "pmovsxbd", "pmovsxbq", "pmovsxbw", "pmovsxwd", "pmovsxwq", "pmovsxdq", "pmovzxbd",
+            "pmovzxbq", "pmovzxbw", "pmovzxwd", "pmovzxwq", "pmovzxdq", "pmuldq", "pmulld",
+            "ptest", "roundpd", "roundps", "roundsd", "roundss", 
+            "crc32", "pcmpestri", "pcmpestrm", "pcmpistri", "pcmpistrm", "pcmpgtq", "popcnt",
+
+            "vblendpd", "vblendps", "vblendvpd", "vblendvps", "vdppd", "vdpps", "vextractps", "vextractps",
+            "vmovntdqa", "vmpsadbw", "vpackusdw", "vpblendb", "vpblendw", "vpccmpeqq",
+            "voextrb", "vpextrb", "vpextrq", "vpextrw", "vphminposuw", "vpinsrb", "vpinsrd",
+            "vpinsrq"
+
+        ],
+
+        "variables": [ 
+            "db",   "dw",   "dd",    "dq",    "dt",   "ddq",
+            "resb", "resw", "resd",  "resq",  "rest", "resy",
+            "byte", "word", "dword", "qword", "tbyte",
+            "doubleword"
+        ],
+        "constants": [
+            "equ",   "times", 
+            "%assign", "%define", "%if", "%elif", "%else", "%endif", "%include",
+
+            "__DATE__", "__TIME__", "__DATE_NUM__", "__TIME_NUM__", "__UTC_DATE__",
+            "__UTC_DATE_NUM__", "__UTC_TIME_NUM__", "__POSIX_TIME__", "__BITS__",
+            "__utf16__", "__utf16le__", "__utf16be__", "__utf32__", "__utf32le__", "__utf32be__",
+
+            "struc", "endstruc", 
+            "bits 16", "bits 32", "bits 64", 
+            "extern", "progbits", "alloc", "noexec", "exec", "write", "nowrite",
+            ".type", ".globl", "@function"
+        ],
+
+        "segments": [
+            "section", ".data", ".text", ".bss", ".rodata", "_start", "global"
+        ],
+
+        "registers": [
+            "rax", "rbx", "rcx", "rdx", "rsi", "rdi", "rbp", "rsp", "rflags",
+            "r8",   "r9",   "r10",  "r11",  "r12",  "r13", "r14", "r15", 
+            "dr0",  "dr1",  "dr2",  "dr3",  "dr4",  "dr5", "dr6", "dr7", "dr8", "dr9", 
+            "dr10", "dr11", "dr12", "dr13", "dr14", "dr15", 
+
+            
+            "r8d", "r9d", "r10d", "r11d", "r12d", "r13d", "r14d", "r15d",
+            "eax", "ebx", "ecx",  "edx",  "esi",  "edi",  "ebp",  "esp",   "eflags",
+            "es",  "fs",
+
+            "ax",  "bx",   "cx",   "dx",   "si",   "di",   "bp",   "sp",   "flags",
+            "gs",  "ss",   "ds",   "cs",   "gdtr", "idtr", "tr",   "ldtr", 
+            "cr0", "cr1",  "cr2",  "cr3",  "cr4",  "cr5",  "cr6",  "cr7",  "cr8", 
+            "cr9", "cr10", "cr11", "cr12", "cr13", "cr14", "cr15", "msw",
+            "mxcsr",
+
+            "r8w", "r9w", "r10w", "r11w", "r12w", "r13w", "r14w", "r15w",
+
+            "al", "ah", "cl", "ch", "dl", "dh", "bl", "bh", "spl", "bpl", "sil", "dil", 
+            "r8b", "r9b", "r10b", "r11b", "r12b", "r13b", "r14b", "r15b",
+
+            "cw", "sw", "tw", "fp_ds", "fp_opc", "fp_dp", "fp_ip", "fp_cs",
+
+            "st(0)", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)",
+            "mm0",   "mm1",   "mm2",   "mm3",   "mm4",   "mm5",   "mm6",   "mm7", 
+
+            "xmm0",  "xmm1",  "xmm2",  "xmm3",  "xmm4",  "xmm5",  "xmm6",  "xmm7", "xmm8", 
+            "xmm9",  "xmm10", "xmm11", "xmm12", "xmm13", "xmm14", "xmm15",
+            "ymm0",  "ymm1",  "ymm2",  "ymm3",  "ymm4",  "ymm5",  "ymm6",  "ymm7", "ymm8", 
+            "ymm9",  "ymm10", "ymm11", "ymm12", "ymm13", "ymm14", "ymm15",
+            "zmm0",  "zmm1",  "zmm2",  "zmm3",  "zmm4",  "zmm5",  "zmm6",  "zmm7", "zmm8",
+            "zmm9",  "zmm10", "zmm11", "zmm12", "zmm13", "zmm14", "zmm15", "zmm16", "zmm17", 
+            "zmm18", "zmm19", "zmm20", "zmm21", "zmm22", "zmm23", "zmm24", "zmm25", "zmm26",
+            "zmm27", "zmm28", "zmm29", "zmm30", "zmm31",
+
+            "msr"
+        ],
+
+        "systemCall": [
+            "int 0x80", "int 80h",  "int 0x21", "int 21h",  "int 0x10", "int 10h", 
+            
+            "sys_read", "sys_write", "sys_open", "sys_close", "sys_stat", "sys_fstat",
+            "sys_lstat", "sys_poll", "sys_lseek", "sys_mmap", "sys_mprotect", 
+            "sys_munmap", "sys_brk", "sys_rt_sigaction", "sys_rt_sigprocmask", 
+            "sys_rt_sigreturn", "sys_ioctl", "sys_pread64", "sys_pwrite64", "sys_readv", 
+            "sys_writev", "sys_access", "sys_pipe", "sys_select", "sys_sched_yield", 
+            "sys_mremap", "sys_msync", "sys_mincore", "sys_madvise", "sys_shmget", 
+            "sys_shmat", "sys_shmctl", "sys_dup", "sys_dup2", "sys_pause", 
+            "sys_nanosleep", "sys_getitimer", "sys_alarm", "sys_setitimer", 
+            "sys_getpid", "sys_sendfile", "sys_socket", "sys_connect", 
+            "sys_accept", "sys_sendto", "sys_recvfrom", "sys_sendmsg", "sys_recvmsg", 
+            "sys_shutdown", "sys_bind", "sys_listen", "sys_getsockname", "sys_getpeername", 
+            "sys_socketpair", "sys_setsockopt", "sys_getsockopt", "sys_clone", "sys_fork", 
+            "sys_vfork", "sys_execve", "sys_exit", "sys_wait4", "sys_kill", "sys_uname", 
+            "sys_semget", "sys_semop", "sys_semctl", "sys_shmdt", "sys_msgget", "sys_msgsnd", 
+            "sys_msgrcv", "sys_msgctl", "sys_fcntl", "sys_flock", "sys_fsync", "sys_fdatasync", 
+            "sys_truncate", "sys_ftruncate", "sys_getdents", "sys_getcwd", "sys_chdir", 
+            "sys_fchdir", "sys_rename", "sys_mkdir", "sys_rmdir", "sys_creat", "sys_link", 
+            "sys_unlink", "sys_symlink", "sys_readlink", "sys_chmod", "sys_fchmod", "sys_chown", 
+            "sys_fchown", "sys_lchown", "sys_umask", "sys_gettimeofday", "sys_getrlimit", 
+            "sys_getrusage", "sys_sysinfo", "sys_times", "sys_ptrace", "sys_getuid", "sys_syslog", 
+            "sys_getgid", "sys_setuid", "sys_setgid", "sys_geteuid", "sys_getegid", "sys_setpgid", 
+            "sys_getppid", "sys_getpgrp", "sys_setsid", "sys_setreuid", "sys_setregid", 
+            "sys_getgroups", "sys_setgroups", "sys_setresuid", "sys_getresuid", "sys_setresgid", 
+            "sys_getresgid", "sys_getpgid", "sys_setfsuid", "sys_setfsgid", "sys_getsid", 
+            "sys_capget", "sys_capset", "sys_rt_sigpending", "sys_rt_sigtimedwait", 
+            "sys_rt_sigqueueinfo", "sys_rt_sigsuspend", "sys_sigaltstack", "sys_utime", 
+            "sys_mknod", "sys_uselib", "sys_personality", "sys_ustat", "sys_statfs", 
+            "sys_fstatfs", "sys_sysfs", "sys_getpriority", "sys_setpriority", "sys_sched_setparam", 
+            "sys_sched_getparam", "sys_sched_setscheduler", "sys_sched_getscheduler", 
+            "sys_sched_get_priority_max", "sys_sched_get_priority_min", "sys_sched_rr_get_interval", 
+            "sys_mlock", "sys_munlock", "sys_mlockall", "sys_munlockall", "sys_vhangup", 
+            "sys_modify_ldt", "sys_pivot_root", "sys__sysctl", "sys_prctl", "sys_arch_prctl", 
+            "sys_adjtimex", "sys_setrlimit", "sys_chroot", "sys_sync", "sys_acct", 
+            "sys_settimeofday", "sys_mount", "sys_umount2", "sys_swapon", "sys_swapoff", 
+            "sys_reboot", "sys_sethostname", "sys_setdomainname", "sys_iopl", "sys_ioperm", 
+            "sys_create_module", "sys_init_module", "sys_delete_module", "sys_get_kernel_syms", 
+            "sys_query_module", "sys_quotactl", "sys_nfsservctl", "sys_getpmsg", "sys_putpmsg", 
+            "sys_afs_syscall", "sys_tuxcall", "sys_security", "sys_gettid", "sys_readahead", 
+            "sys_setxattr", "sys_lsetxattr", "sys_fsetxattr", "sys_getxattr", "sys_lgetxattr", 
+            "sys_fgetxattr", "sys_listxattr", "sys_llistxattr", "sys_flistxattr", 
+            "sys_removexattr", "sys_lremovexattr", "sys_fremovexattr", "sys_tkill", "sys_time", 
+            "sys_futex", "sys_sched_setaffinity", "sys_sched_getaffinity", 
+            "sys_set_thread_area", "sys_io_setup", "sys_io_destroy", "sys_io_getevents", 
+            "sys_io_submit", "sys_io_cancel", "sys_get_thread_area", "sys_lookup_dcookie", 
+            "sys_epoll_create", "sys_epoll_ctl_old", "sys_epoll_wait_old", "sys_remap_file_pages", 
+            "sys_getdents64", "sys_set_tid_address", "sys_restart_syscall", "sys_semtimedop", 
+            "sys_fadvise64", "sys_timer_create", "sys_timer_settime", "sys_timer_gettime", 
+            "sys_timer_getoverrun", "sys_timer_delete", "sys_clock_settime", "sys_clock_gettime", 
+            "sys_clock_getres", "sys_clock_nanosleep", "sys_exit_group", "sys_epoll_wait", 
+            "sys_epoll_ctl", "sys_tgkill", "sys_utimes", "sys_vserver", "sys_mbind", 
+            "sys_set_mempolicy", "sys_get_mempolicy", "sys_mq_open", "sys_mq_unlink", 
+            "sys_mq_timedsend", "sys_mq_timedreceive", "sys_mq_notify", "sys_mq_getsetattr", 
+            "sys_kexec_load", "sys_waitid", "sys_add_key", "sys_request_key", "sys_keyctl", 
+            "sys_ioprio_set", "sys_ioprio_get", "sys_inotify_init", "sys_inotify_add_watch", 
+            "sys_inotify_rm_watch", "sys_migrate_pages", "sys_openat", "sys_mkdirat", 
+            "sys_mknodat", "sys_fchownat", "sys_futimesat", "sys_newfstatat", "sys_unlinkat", 
+            "sys_renameat", "sys_linkat", "sys_symlinkat", "sys_readlinkat", "sys_fchmodat", 
+            "sys_faccessat", "sys_pselect6", "sys_ppoll", "sys_unshare", "sys_set_robust_list", 
+            "sys_get_robust_list", "sys_splice", "sys_tee", "sys_sync_file_range", 
+            "sys_vmsplice", "sys_move_pages", "sys_utimensat", "sys_epoll_pwait", "sys_signalfd", 
+            "sys_timerfd_create", "sys_eventfd", "sys_fallocate", "sys_timerfd_settime", 
+            "sys_timerfd_gettime", "sys_accept4", "sys_signalfd4", "sys_eventfd2", 
+            "sys_epoll_create1", "sys_dup3", "sys_pipe2", "sys_inotify_init1", "sys_preadv", 
+            "sys_pwritev", "sys_rt_tgsigqueueinfo", "sys_perf_event_open", "sys_recvmmsg", 
+            "sys_fanotify_init", "sys_fanotify_mark", "sys_prlimit64", "sys_name_to_handle_at", 
+            "sys_open_by_handle_at", "sys_clock_adjtime", "sys_syncfs", "sys_sendmmsg", 
+            "sys_setns", "sys_getcpu", "sys_process_vm_readv", "sys_process_vm_writev", 
+            "sys_kcmp", "sys_finit_module", "sys_sched_setattr", "sys_sched_getattr", 
+            "sys_renameat2", "sys_seccomp", "sys_getrandom", "sys_memfd_create", 
+            "sys_kexec_file_load", "sys_bpf", "stub_execveat", "userfaultfd", "membarrier", 
+            "mlock2", "copy_file_range", "preadv2", "pwritev2", "pkey_mprotect", "pkey_alloc", 
+            "pkey_free", "statx", "io_pgetevents", "rseq", "pkey_mprotect",
+            
+            "call", "syscall", "call far", "sysret", "sysenter", "sysexit"
+        ],
+
+        "arithmeticInstructions": [
+            "inc", "dec", "add", "sub", "mul", "imul", "div", "idiv", "neg", "lea",
+            "sal", "sar", "sbb", "xadd", "padd", "padds", "paddus", "pmaddwd", "pmulhuw",
+            "pmulhw", "pmullw", "psub", "psubs", "psubus", "addps", "addss", "divps", "divss",
+            "mulps", "mulss", "subps", "subss", "addpd", "addsd", "divpd", "divsd",
+            "mulpd", "mulsd", "swrtpd", "sqrtsd", "subpd", "subsd",  "paddq", "pmaxub",
+            "pmuludq", "addsubpd", "addsubps", "haddpd", "haddps", "hsubpd", "hsubps",
+            "phaddd", "phaddsw", "phaddw", "phsubd", "phsubsw", "phsubw", "pmaddubsw",
+            "pmulhrsw", "pclmulqdq", 
+
+            "pow", "sqrt", "sin", "tan", "sen", "cos", "mod"
+        ],
+
+        "logicalInstructions": [
+            "and", "or", "xor", "test", "not", "shld", "shrd", "rcl", "rcr", "rol",
+            "ror", "shl", "shld", "shr", "shrd", "pand", "pandn", "por", "psll", "psrl",
+            "pxor", "andnps", "andps", "orps", "xorps", "andnpd", "andpd", "orpd", 
+            "xorpd", 
+
+            "&", "|", "^", "~", "!", "!=", "==", "!=", "<", "<=", ">", ">=", "&&", "||", "$", "$$"
+        ],
+
+        "conditions": [
+            "cmp", "cmps", "cmpsb", "cmpsw", "cmpsd", "cmpxchg", "pcmeq", "pcmpgt",
+            "cmov", "fcmov", "cmpss", "comiss", "ucomiss", "cmppd", "comisd",  "pcmpeq", "pcmpgt",
+            "jcc", 
+            "jcxz", "jecxz", "jmp",
+            "je", "jz", "jg", "jnle", "jge", "jnl", "jl", "jnge", "jle", "jng",
+            "jc", "jnc", "jo", "jno", "jp", "jpe", "jnp", "jpo", "js", "jns", "jz",
+            "jne", "jnz", "ja", "jnbe", "jb", "jnb", "jb", "jnae", "jbe", "jna",
+            "jae"
+        ],
+
+        "loops": [
+            "loop", 
+            "loopz", "loope", 
+            "loopnz", "loopne",  "jmp", "rep"
+        ],
+
+        "memoryManagement": [
+            "malloc", "free", "calloc", "realloc", "VirtualAlloc", "VirtualAllocEx",
+            "mmap", "mmap2", "NtAllocateVirtualMemory", "HeapAlloc", "HeapFree"
+        ]
+    }
+}
