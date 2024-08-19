@@ -78,6 +78,5 @@ You can customize syntax highlighting colors in `Settings -> Syntax Keyword High
 - [ ] Optimization
 - [ ] 🚀 New release
 
-## 📜 License & Credits
-
-💤 Working on updating the README ...
+## 📜 License
+[Apache-2.0](/LICENSE)
