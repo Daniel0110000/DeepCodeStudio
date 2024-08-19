@@ -7,6 +7,8 @@
 
 Welcome to **DeepCode Studio**, an assembly code editor, compatible with a wide range of assembly languages, designed to provide a seamless experience in both Windows and Linux environments.
 
+![image](https://github.com/user-attachments/assets/7cf1536a-cf39-47ce-8644-8df1ae365059)
+
 ![GitHub](https://img.shields.io/github/license/daniel0110000/deepcodestudio?style=for-the-badge&labelColor=282C34&color=1F6FEB) ![GitHub](https://img.shields.io/github/v/release/daniel0110000/deepcodestudio?style=for-the-badge&labelColor=282C34&color=1F6FEB)
 
 <img src="https://img.shields.io/badge/Linux-282C34?style=for-the-badge&logo=linux&logoColor=white"/>
