@@ -58,7 +58,15 @@ In this version of **DeepCode Studio**, a JSON is used for code autocompletion a
   
 </div>
 
-## 🖼️ Screenshots
+### 🎨 Customize syntax highlighting colors
+
+You can customize syntax highlighting colors in `Settings -> Syntax Keyword Highlighter`:
+
+<div align="center">
+  
+  ![image](https://github.com/user-attachments/assets/7780619f-cbb8-42a4-bd7b-14a89cb0f542)
+  
+</div>
 
 ## 🚧 RoadMap
 
