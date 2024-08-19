@@ -76,6 +76,8 @@ You can customize syntax highlighting colors in `Settings -> Syntax Keyword High
     - [ ] Autocomplete
     - [ ] Syntax Highlighting
 - [ ] Program customization
+- [ ] Smarter autocompletion
+- [ ] Terminal type selection
 - [ ] Automatic compilation and execution
 - [ ] Optimization
 - [ ] 🚀 New release
