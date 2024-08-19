@@ -11,8 +11,13 @@ Welcome to **DeepCode Studio**, an assembly code editor, compatible with a wide 
 
 ![GitHub](https://img.shields.io/github/license/daniel0110000/deepcodestudio?style=for-the-badge&labelColor=282C34&color=1F6FEB) ![GitHub](https://img.shields.io/github/v/release/daniel0110000/deepcodestudio?style=for-the-badge&labelColor=282C34&color=1F6FEB)
 
-<img src="https://img.shields.io/badge/Linux-282C34?style=for-the-badge&logo=linux&logoColor=white"/>
-<img src="https://img.shields.io/badge/Windows-282C34?style=for-the-badge&logo=window&logoColor=white"/>
+<a href="https://github.com/Daniel0110000/DeepCodeStudio/releases/tag/v1.0.0-alpha.2">
+  <img src="https://img.shields.io/badge/Linux-282C34?style=for-the-badge&logo=linux&logoColor=white"/>
+</a>
+
+<a href="https://github.com/Daniel0110000/DeepCodeStudio/releases/tag/v1.0.0-alpha.2">
+  <img src="https://img.shields.io/badge/Windows-282C34?style=for-the-badge&logo=window&logoColor=white"/>
+</a>
 
 </div>
 
@@ -40,7 +45,7 @@ In this version of **DeepCode Studio**, a JSON is used for code autocompletion a
 }
 ```
 
-<a href="https://github.com/Daniel0110000/DeepCodeStudio/blob/master/src/main/resources/extras/asm_config.json" download/>
+<a href="https://github.com/Daniel0110000/DeepCodeStudio/blob/master/src/main/resources/extras/asm_config.json"/>
   <img src="https://img.shields.io/badge/Download%20Example-1F6FEB?style=for-the-badge&logo=google-cloud&logoColor=white"/>
 <a/>
 
