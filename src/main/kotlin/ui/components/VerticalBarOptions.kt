@@ -41,16 +41,15 @@ class VerticalBarOptions(
         preferredSize = Dimension(45, Short.MAX_VALUE.toInt())
         background = ThemeApp.colors.secondColor.toAWTColor()
 
-        val collapseOption = VerticalBarOption(
+        val fileTreeOption = VerticalBarOption(
             10, Color(255, 255, 255, 25),
-            ThemeApp.colors.secondColor.toAWTColor(), "images/ic_collapse.svg",
-            25, 25,
+            ThemeApp.colors.secondColor.toAWTColor(), "images/ic_folder.svg",
             onClickListener = { collapseOrExtendSplitPane() },
         )
 
         val folderOption =  VerticalBarOption(
             10, Color(255, 255, 255, 25),
-            ThemeApp.colors.secondColor.toAWTColor(), "images/ic_folder.svg",
+            ThemeApp.colors.secondColor.toAWTColor(), "images/ic_select_directory.svg",
             onClickListener = { coroutineScope.launch { newDirectoryPath(DirectoryChooser.chooseDirectory()) } }
         )
 
@@ -75,7 +74,7 @@ class VerticalBarOptions(
                 .addGap(0, Short.MAX_VALUE.toInt(), Short.MAX_VALUE.toInt())
                 .addGroup(
                     layout.createParallelGroup()
-                        .addComponent(collapseOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(fileTreeOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addComponent(folderOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addComponent(terminalOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addComponent(settingsOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -86,7 +85,7 @@ class VerticalBarOptions(
         layout.setVerticalGroup(
             layout.createSequentialGroup()
                 .addGap(10)
-                .addComponent(collapseOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(fileTreeOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addGap(5)
                 .addComponent(folderOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addGap(0, Short.MAX_VALUE.toInt(), Short.MAX_VALUE.toInt())
@@ -101,6 +100,7 @@ class VerticalBarOptions(
             stateFlow = codeEditorViewModel.state,
             onStateChanged = { state: CodeEditorViewModel.CodeEditorState ->
                 settingsOption.isSelected = state.isOpenSettings
+                fileTreeOption.isSelected = !state.isCollapseSplitPane
             }
         )
 

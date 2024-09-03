@@ -33,6 +33,10 @@ dependencies {
     implementation("dev.icerock.moko:mvvm-flow-compose:0.16.1")
     implementation("dev.icerock.moko:mvvm-livedata-compose:0.16.1")
 
+    // Flatlaf
+    implementation("com.formdev:flatlaf:3.2.5")
+    implementation("com.formdev:flatlaf-intellij-themes:3.2.5")
+
     // Database module
     implementation(project(":database"))
 

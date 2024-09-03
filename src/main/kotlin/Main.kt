@@ -1,4 +1,5 @@
 import com.dr10.common.ui.ThemeApp
+import com.dr10.common.ui.UIManagerConfig
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.DocumentsManager
 import com.dr10.database.di.databaseModule
@@ -12,9 +13,15 @@ import javax.swing.JFrame
 import javax.swing.SwingUtilities
 import javax.swing.WindowConstants
 
+
 fun main() = SwingUtilities.invokeLater {
+
+    // Set the necessary properties of the UI Manager
+    UIManagerConfig.config()
+
     val toolkit = Toolkit.getDefaultToolkit().screenSize
 
+    // Create the necessary directories for the program
     DocumentsManager.createNecessaryDirectories()
 
     // Initialize Koin

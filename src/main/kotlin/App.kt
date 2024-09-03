@@ -7,7 +7,7 @@ import com.dr10.settings.ui.viewModels.SyntaxHighlightSettingsViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ui.viewModels.CodeEditorViewModel
-import ui.viewModels.splitPane.SplitPaneViewModel
+import ui.viewModels.FileTreeViewModel
 
 /**
  * A [KoinComponent] class for provided the dependency injection
@@ -29,12 +29,12 @@ class App: KoinComponent {
     // Inject [CodeEditorViewModel]
     val codeEditorViewModel: CodeEditorViewModel by inject()
 
+    // Inject [FileTreeViewModel]
+    val fileTreeViewModel: FileTreeViewModel by inject()
+
     // Inject [TabsViewModel]
     val tabsViewModel: TabsViewModel by inject()
 
     // Inject [EditorViewModel]
     val editorViewModel: EditorViewModel by inject()
-
-    // Inject [SplitPaneViewModel]
-    val splitPaneViewModel: SplitPaneViewModel by inject()
 }

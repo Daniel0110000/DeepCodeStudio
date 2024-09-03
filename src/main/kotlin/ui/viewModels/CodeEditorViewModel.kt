@@ -1,7 +1,5 @@
 package ui.viewModels
 
-import com.dr10.common.utilities.Constants
-import com.dr10.common.utilities.DocumentsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,30 +18,15 @@ class CodeEditorViewModel {
     /**
      * Data class for the state of the code editor
      *
-     * @property currentPath The current path
      * @property isCollapseSplitPane Indicates if the split pane is collapse
      * @property isOpenTerminal Indicated if the terminal is open
      * @property isOpenSettings Indicated if the settings is open
      */
     data class CodeEditorState(
-        val currentPath: String = "${DocumentsManager.getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}",
         val isCollapseSplitPane: Boolean = false,
         val isOpenTerminal: Boolean = false,
         val isOpenSettings: Boolean = false
     )
-
-    /**
-     * Sets the [CodeEditorState.currentPath] using the provided [value]
-     *
-     * @param value The value to assign
-     */
-    fun setCurrentPath(value: String) {
-        coroutineScope.launch {
-            _state.update { it.copy(
-                currentPath = value
-            ) }
-        }
-    }
 
     /**
      * Sets the [CodeEditorState.isCollapseSplitPane] using the provided [value]

@@ -3,10 +3,12 @@ package com.dr10.common.ui
 import androidx.compose.foundation.ScrollbarStyle
 import androidx.compose.foundation.defaultScrollbarStyle
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.useResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.dp
+import java.awt.Font
 
 object ThemeApp {
 
@@ -29,8 +31,15 @@ object ThemeApp {
 
     class Text(
         val fontFamily: FontFamily = FontFamily(Font(resource = "font/Inter-Regular.ttf")),
-        val codeTextFontFamily: FontFamily = FontFamily(Font(resource = "font/JetBrainsMonoItalic.ttf"))
-    )
+        val codeTextFontFamily: FontFamily = FontFamily(Font(resource = "font/JetBrainsMonoItalic.ttf")),
+        val fontInterBold: Font = useResource("font/Inter-Bold.ttf") {
+            Font.createFont(Font.TRUETYPE_FONT, it).deriveFont(15f)
+        }
+    ) {
+        fun fontInterRegular(size: Float): Font = useResource("font/Inter-Regular.ttf") {
+            Font.createFont(Font.TRUETYPE_FONT, it).deriveFont(size)
+        }
+    }
 
     class Scrollbar(
         val scrollbarStyle: ScrollbarStyle =  defaultScrollbarStyle().copy(

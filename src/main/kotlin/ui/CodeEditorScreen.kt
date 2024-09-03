@@ -1,17 +1,21 @@
 package ui
 
 import App
+import com.dr10.common.ui.ThemeApp
+import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.UIStateManager
 import com.dr10.settings.ui.SettingsWindow
 import ui.components.VerticalBarOptions
+import ui.fileTree.FileTreeView
 import ui.viewModels.CodeEditorViewModel
-import javax.swing.GroupLayout
-import javax.swing.JFrame
+import ui.viewModels.FileTreeViewModel
+import java.awt.Dimension
+import javax.swing.*
 
 /**
  * Main screen for the code editor
  *
- * @param window The [JFrame] instance representing the main application window
+ * @property window The [JFrame] instance representing the main application window
  */
 class CodeEditorScreen(
     private val window: JFrame
@@ -19,9 +23,14 @@ class CodeEditorScreen(
 
     // ViewModels initialization
     private val codeEditorViewModel: CodeEditorViewModel = App().codeEditorViewModel
+    private val fileTreeViewModel: FileTreeViewModel = App().fileTreeViewModel
     private val syntaxHighlightSettingsViewModel = App().syntaxHighlightSettingsViewModel
     private val autocompleteSettingsViewModel = App().autocompleteSettingsViewModel
     private val settingsViewModel = App().settingsViewModel
+
+    // State variables for split pane behavior
+    private var collapseOrExtend: Boolean = true
+    private var dividerLocation = 300
 
     init {
         onCreate()
@@ -33,24 +42,33 @@ class CodeEditorScreen(
 
         val verticalBarOptions = VerticalBarOptions(
             codeEditorViewModel = codeEditorViewModel,
-            collapseOrExtendSplitPane = { codeEditorViewModel.setIsCollapseSplitPane(true) },
-            newDirectoryPath = { it?.let {
-                codeEditorViewModel.setCurrentPath(it)
-            } },
+            collapseOrExtendSplitPane = { codeEditorViewModel.setIsCollapseSplitPane(collapseOrExtend) },
+            newDirectoryPath = { it?.let { fileTreeViewModel.setCurrentPath(it) } },
             openSettings = { codeEditorViewModel.setIsOpenSettings(true)  },
             openTerminal = { codeEditorViewModel.setIsOpenTerminal(true) }
         )
 
+        val fileTreeView = FileTreeView(window, fileTreeViewModel)
+
+        val splitPane = JSplitPane(
+            SwingConstants.VERTICAL,
+            fileTreeView,
+            JPanel().apply { background = ThemeApp.colors.background.toAWTColor() }
+        ).apply {
+            isContinuousLayout = true
+        }
+
         windowLayout.setHorizontalGroup(
             windowLayout.createSequentialGroup()
                 .addComponent(verticalBarOptions, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(splitPane, 0, 0, Short.MAX_VALUE.toInt())
         )
 
         windowLayout.setVerticalGroup(
             windowLayout.createParallelGroup()
                 .addComponent(verticalBarOptions)
+                .addComponent(splitPane, 0, 0, Short.MAX_VALUE.toInt())
         )
-
 
         // Set up a UI state manager to listen for changes in the code editor's state
         UIStateManager(
@@ -65,6 +83,20 @@ class CodeEditorScreen(
                         autocompleteSettingsViewModel = autocompleteSettingsViewModel
                     ) { codeEditorViewModel.setIsOpenSettings(false) }
                 }
+                if (state.isCollapseSplitPane) {
+                    // Collapse the split pane if [state.isCollapseSplitPane] is true
+                    dividerLocation = splitPane.dividerLocation
+                    splitPane.setDividerLocation(0.0)
+                    splitPane.dividerSize = 0
+                    splitPane.leftComponent.minimumSize = Dimension()
+                } else {
+                    // Restore the split pane if [state.isCollapseSplitPane] is false
+                    splitPane.setDividerLocation(dividerLocation)
+                    splitPane.dividerSize = 5
+                    splitPane.leftComponent.minimumSize = Dimension(100,  Short.MAX_VALUE.toInt())
+                }
+                // Toggle the collapse/extend state
+                collapseOrExtend = !state.isCollapseSplitPane
             }
         )
     }

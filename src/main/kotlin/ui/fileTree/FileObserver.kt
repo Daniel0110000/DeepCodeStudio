@@ -1,13 +1,29 @@
-package ui.splitPane.fileTree
+package ui.fileTree
 
 import org.apache.commons.io.monitor.FileAlterationListener
 import org.apache.commons.io.monitor.FileAlterationMonitor
 import org.apache.commons.io.monitor.FileAlterationObserver
 import java.io.File
 
-class FileObserver(path: String){
-    private val observer = FileAlterationObserver(path)
-    private val monitor = FileAlterationMonitor(1000)
+/**
+ * Class to file system changes in a specified directory
+ *
+ * @property path The directory path to observe file system changes
+ * @property isLoading Callback function to indicate whether the file monitoring is loading
+ */
+class FileObserver(
+    private val path: String,
+    private val isLoading: (Boolean) -> Unit
+){
+    private var observer: FileAlterationObserver? = null
+    private var monitor: FileAlterationMonitor? = null
+
+    init {
+        // Stop any existing monitoring and remove listeners
+        monitor?.stop()
+        observer?.removeListener(null)
+        monitor?.removeObserver(observer)
+    }
 
     /**
      * Register callback function for file and directory creation
@@ -19,7 +35,9 @@ class FileObserver(path: String){
         onCreate: (File) -> Unit,
         onDelete: (File) -> Unit
     ){
-        observer.addListener(object : FileAlterationListener{
+        observer = FileAlterationObserver(path)
+        monitor = FileAlterationMonitor(500)
+        observer?.addListener(object : FileAlterationListener{
             override fun onDirectoryChange(directory: File?) {}
 
             override fun onDirectoryCreate(directory: File) { onCreate(directory) }
@@ -37,7 +55,9 @@ class FileObserver(path: String){
             override fun onStop(observer: FileAlterationObserver?) {}
         })
 
-        monitor.addObserver(observer)
-        monitor.start()
+        monitor?.addObserver(observer)
+        isLoading(true)
+        monitor?.start()
+        isLoading(false)
     }
 }
