@@ -5,6 +5,8 @@ import javax.swing.plaf.IconUIResource
 
 object AppIcons {
 
+    val appIcon = ImageResourceUtils.loadResourceImage("images/ic_app.svg", 300, 300)
+
     val folderIconFT = ImageResourceUtils.loadResourceImage("images/ic_folder_ft.svg", 20, 20)
     val asmIcon = ImageResourceUtils.loadResourceImage("images/ic_asm.svg", 20, 20)
     val unknownFile = ImageResourceUtils.loadResourceImage("images/ic_unknown.svg", 20, 20)
@@ -16,4 +18,7 @@ object AppIcons {
     val folderIcon = ImageResourceUtils.loadResourceImage("images/ic_new_folder.svg", 17, 17)
     val renameIcon = ImageResourceUtils.loadResourceImage("images/ic_rename.svg", 17, 17)
     val deleteIcon = ImageResourceUtils.loadResourceImage("images/ic_delete.svg", 17, 17)
+
+    val closeIcon = ImageResourceUtils.loadResourceImage("images/ic_close.svg", 15, 15)
+
 }

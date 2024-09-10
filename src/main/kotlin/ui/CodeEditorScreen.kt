@@ -1,16 +1,19 @@
 package ui
 
 import App
-import com.dr10.common.ui.ThemeApp
-import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.UIStateManager
+import com.dr10.editor.ui.EditorPanel
+import com.dr10.editor.ui.viewModels.TabsViewModel
 import com.dr10.settings.ui.SettingsWindow
 import ui.components.VerticalBarOptions
 import ui.fileTree.FileTreeView
 import ui.viewModels.CodeEditorViewModel
 import ui.viewModels.FileTreeViewModel
 import java.awt.Dimension
-import javax.swing.*
+import javax.swing.GroupLayout
+import javax.swing.JFrame
+import javax.swing.JSplitPane
+import javax.swing.SwingConstants
 
 /**
  * Main screen for the code editor
@@ -24,6 +27,7 @@ class CodeEditorScreen(
     // ViewModels initialization
     private val codeEditorViewModel: CodeEditorViewModel = App().codeEditorViewModel
     private val fileTreeViewModel: FileTreeViewModel = App().fileTreeViewModel
+    private val tabsViewModel: TabsViewModel = App().tabsViewModel
     private val syntaxHighlightSettingsViewModel = App().syntaxHighlightSettingsViewModel
     private val autocompleteSettingsViewModel = App().autocompleteSettingsViewModel
     private val settingsViewModel = App().settingsViewModel
@@ -48,12 +52,12 @@ class CodeEditorScreen(
             openTerminal = { codeEditorViewModel.setIsOpenTerminal(true) }
         )
 
-        val fileTreeView = FileTreeView(window, fileTreeViewModel)
+        val fileTreeView = FileTreeView(window, fileTreeViewModel, tabsViewModel)
 
         val splitPane = JSplitPane(
             SwingConstants.VERTICAL,
             fileTreeView,
-            JPanel().apply { background = ThemeApp.colors.background.toAWTColor() }
+            EditorPanel(tabsViewModel)
         ).apply {
             isContinuousLayout = true
         }

@@ -50,7 +50,7 @@ class DragPanel(
         background = java.awt.Color(47,52,63)
 
         val title = JLabel(typeAction.getTitle()).apply {
-            font = ThemeApp.text.fontInterBold
+            font = ThemeApp.text.fontInterBold()
             foreground = ThemeApp.colors.textColor.toAWTColor()
         }
 

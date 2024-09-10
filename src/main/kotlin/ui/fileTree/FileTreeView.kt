@@ -3,6 +3,7 @@ package ui.fileTree
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.UIStateManager
+import com.dr10.editor.ui.viewModels.TabsViewModel
 import ui.viewModels.FileTreeViewModel
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -21,7 +22,8 @@ import javax.swing.border.EmptyBorder
  */
 class FileTreeView(
     private val window: JFrame,
-    private val fileTreeViewModel: FileTreeViewModel
+    private val fileTreeViewModel: FileTreeViewModel,
+    private val tabsViewModel: TabsViewModel
 ): JPanel() {
 
     init { onCreate() }
@@ -32,7 +34,7 @@ class FileTreeView(
         background = ThemeApp.colors.background.toAWTColor()
 
         val title = JLabel("Folders", SwingConstants.CENTER).apply {
-            font = ThemeApp.text.fontInterBold
+            font = ThemeApp.text.fontInterBold()
             foreground = ThemeApp.colors.textColor.toAWTColor()
             border = EmptyBorder(10, 0, 10, 0)
         }
@@ -51,9 +53,10 @@ class FileTreeView(
                 when {
                     e.clickCount == 2 -> {
                         val selectedFile = fileTree.lastSelectedPathComponent as File
-                        selectedFile.takeIf { it.isFile }?.let {
-                            // Check if the file ends with .s or .asm and open file in the editor
-                            // ...
+                        selectedFile.takeIf { it.isFile }?.let { file ->
+                            if (file.name.endsWith(".s") || file.name.endsWith(".asm")) {
+                                tabsViewModel.openTab(file)
+                            }
                         }
                     }
                     SwingUtilities.isRightMouseButton(e) -> {

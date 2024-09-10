@@ -49,7 +49,7 @@ class VerticalBarOption(
     init { onCreate() }
 
     private fun onCreate() {
-        this.layout = GridBagLayout()
+        layout = GridBagLayout()
         preferredSize = Dimension(30, 30)
         isOpaque = false
 
@@ -77,9 +77,7 @@ class VerticalBarOption(
         })
 
         add(
-            JLabel().apply {
-                icon = ImageResourceUtils.loadResourceImage(iconResourcePath, iconWidth, iconHeight)
-            },
+            JLabel(ImageResourceUtils.loadResourceImage(iconResourcePath, iconWidth, iconHeight)),
             GridBagConstraints().apply {
                 anchor = GridBagConstraints.CENTER
             }

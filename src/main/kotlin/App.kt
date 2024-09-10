@@ -1,5 +1,4 @@
 import com.dr10.database.domain.repositories.AutocompleteSettingsRepository
-import com.dr10.editor.ui.viewModels.EditorViewModel
 import com.dr10.editor.ui.viewModels.TabsViewModel
 import com.dr10.settings.ui.viewModels.AutocompleteSettingsViewModel
 import com.dr10.settings.ui.viewModels.SettingsViewModel
@@ -35,6 +34,4 @@ class App: KoinComponent {
     // Inject [TabsViewModel]
     val tabsViewModel: TabsViewModel by inject()
 
-    // Inject [EditorViewModel]
-    val editorViewModel: EditorViewModel by inject()
 }

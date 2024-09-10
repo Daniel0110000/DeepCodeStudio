@@ -32,10 +32,15 @@ object ThemeApp {
     class Text(
         val fontFamily: FontFamily = FontFamily(Font(resource = "font/Inter-Regular.ttf")),
         val codeTextFontFamily: FontFamily = FontFamily(Font(resource = "font/JetBrainsMonoItalic.ttf")),
-        val fontInterBold: Font = useResource("font/Inter-Bold.ttf") {
-            Font.createFont(Font.TRUETYPE_FONT, it).deriveFont(15f)
+        val fontJetBrains: Font = useResource("font/JetBrainsMonoItalic.ttf") {
+            Font.createFont(Font.TRUETYPE_FONT, it).deriveFont(13f)
         }
     ) {
+
+        fun fontInterBold(size: Float = 15f): Font = useResource("font/Inter-Bold.ttf") {
+            Font.createFont(Font.TRUETYPE_FONT, it).deriveFont(size)
+        }
+
         fun fontInterRegular(size: Float): Font = useResource("font/Inter-Regular.ttf") {
             Font.createFont(Font.TRUETYPE_FONT, it).deriveFont(size)
         }
