@@ -6,7 +6,8 @@ import com.dr10.common.utilities.UIStateManager
 import com.dr10.editor.ui.tabs.EditorTab
 import com.dr10.editor.ui.tabs.TabView
 import com.dr10.editor.ui.viewModels.TabsViewModel
-import javax.swing.GroupLayout
+import java.awt.BorderLayout
+import java.awt.CardLayout
 import javax.swing.JPanel
 import javax.swing.JTabbedPane
 
@@ -25,20 +26,17 @@ class EditorPanel(
     init { onCreate() }
 
     private fun onCreate() {
-        val editorLayout = GroupLayout(this)
-        layout = editorLayout
+        layout = BorderLayout()
 
+        val cardLayout = CardLayout()
+        val mainPanel = JPanel(cardLayout)
         val tabPanel = JTabbedPane().apply { background = ThemeApp.colors.secondColor.toAWTColor() }
+        val emptyPanel = EmptyEditorPanel()
 
-        editorLayout.setHorizontalGroup(
-            editorLayout.createParallelGroup()
-                .addComponent(tabPanel)
-        )
+        mainPanel.add(emptyPanel, EMPTY_PANEL)
+        mainPanel.add(tabPanel, TABS_PANEL)
 
-        editorLayout.setVerticalGroup(
-            editorLayout.createSequentialGroup()
-                .addComponent(tabPanel)
-        )
+        add(mainPanel, BorderLayout.CENTER)
 
         UIStateManager(
             stateFlow = tabsViewModel.state,
@@ -74,14 +72,26 @@ class EditorPanel(
                                     tabPanel.selectedIndex = if (indexToSelected == -1) tabPanel.tabCount - 1
                                     else indexToSelected
                                 }
+
+                                // Show emptyPanel if no tabs are left
+                                if (tabPanel.tabCount == 0) cardLayout.show(mainPanel, EMPTY_PANEL)
                             }
                         })
                         // Set the newly added tab as the selected tab
                         tabPanel.selectedIndex = tabPanel.tabCount - 1
                     }
                 }
+
+                // Show the appropriate panel based on whether there are tabs or not
+                if (state.tabs.isEmpty()) cardLayout.show(mainPanel, EMPTY_PANEL)
+                else cardLayout.show(mainPanel, TABS_PANEL)
+
             }
         )
+    }
 
+     companion object {
+        private const val TABS_PANEL = "TABS_MODEL"
+        private const val EMPTY_PANEL = "EMPTY_PANEL"
     }
 }
