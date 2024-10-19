@@ -9,6 +9,9 @@ object DocumentsManager {
 
     private val projectsDirectory = File("${getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}")
     val databaseDirectory = File("${projectsDirectory.absolutePath}/${Constants.DEFAULT_DATABASE_DIRECTORY_NAME}")
+    val localDirectory = File("${getUserHome()}/${Constants.DEFAULT_LOCAL_DIRECTORY_NAME}")
+    val javaFilesDirectory = File("${localDirectory}/${Constants.JAVA_DIRECTORY_NAME}")
+    val classFilesDirectory = File("${localDirectory}/${Constants.CLASSES_DIRECTORY_NAME}")
 
     /**
      * Retrieve the path of the user's home directory
@@ -29,6 +32,12 @@ object DocumentsManager {
             kotlin.runCatching { databaseDirectory.mkdir() }
                 .onFailure { exception -> println("An error occurred while creating the data directory: ${exception.message}") }
         }
+
+        if(!localDirectory.exists()) {
+            kotlin.runCatching { localDirectory.mkdir() }
+                .onFailure { exception -> println("An error occurred while creating the local directory: ${exception.message}") }
+        }
+
     }
 
     /**
@@ -106,4 +115,18 @@ object DocumentsManager {
      */
     fun existsFile(path: String): Boolean =
         Files.exists(Paths.get(path))
+
+    /**
+     * Deletes generated JFlex, Java, and class files associated with a specific class name
+     *
+     * @param className The name of the class for which generated files will be deleted
+     */
+    fun deleteGeneratedFiles(className: String){
+        val jFlexFilePath = File("${localDirectory}/${className}${Constants.JFLEX_EXTENSION}")
+        val javaFilePath = File("${javaFilesDirectory}/${className}${Constants.JAVA_EXTENSION}")
+        val classFilePath = File("${classFilesDirectory}/${className}${Constants.JAVA_CLASS_EXTENSION}")
+        deleteFileOrDirectory(jFlexFilePath)
+        deleteFileOrDirectory(javaFilePath)
+        deleteFileOrDirectory(classFilePath)
+    }
 }

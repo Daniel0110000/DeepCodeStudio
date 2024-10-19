@@ -15,7 +15,7 @@ class SettingsViewModel(
     private val _screen: MutableLiveData<Screens> = MutableLiveData(Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS)
     val screen: LiveData<Screens> = _screen
 
-    val options: MutableLiveData<List<String>> = MutableLiveData(listOf("Syntax Keyword Highlighter", "Autocomplete"))
+    val options: MutableLiveData<List<String>> = MutableLiveData(listOf("Color Scheme", "Syntax & Suggestions"))
     val screens: MutableLiveData<List<Screens>> = MutableLiveData(listOf(Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS, Screens.AUTOCOMPLETE_SETTINGS))
 
     private val _selectedItem: MutableLiveData<Int> = MutableLiveData(0)

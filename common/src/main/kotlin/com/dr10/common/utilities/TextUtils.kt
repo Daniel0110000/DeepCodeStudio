@@ -2,8 +2,25 @@ package com.dr10.common.utilities
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import java.util.stream.Collectors
 
 object TextUtils {
+
+    /**
+     * Replaces all spaces in the string
+     *
+     * @return The string with all spaces removed
+     */
+    fun String.deleteWhiteSpaces(): String = this.replace(" ", "")
+
+    /**
+     * Converts a [MutableList] of [Any] to a formatted string
+     *
+     * @return An string with the format: "word1 | word2 | word3 | ..."
+     */
+    fun MutableList<Any>.toFormat(): String = this.stream()
+        .map { word -> "\"" + word + "\"" }
+        .collect(Collectors.joining(" | "))
 
     /**
      * Extracts the word surrounding the cursor position in a given string

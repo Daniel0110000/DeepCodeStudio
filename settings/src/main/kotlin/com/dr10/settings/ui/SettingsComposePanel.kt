@@ -11,9 +11,8 @@ import androidx.compose.ui.Modifier
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.ErrorMessage
 import com.dr10.common.utilities.SettingsErrorState
-import com.dr10.settings.ui.screens.AutocompleteSettingsScreen
+import com.dr10.settings.ui.screens.SyntaxAndSuggestionsScreen
 import com.dr10.settings.ui.screens.SyntaxHighlightSettingsScreen
-import com.dr10.settings.ui.viewModels.AutocompleteSettingsViewModel
 import com.dr10.settings.ui.viewModels.SettingsViewModel
 import com.dr10.settings.ui.viewModels.SyntaxHighlightSettingsViewModel
 import dev.icerock.moko.mvvm.livedata.compose.observeAsState
@@ -22,8 +21,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsComposePanel(
     viewModel: SettingsViewModel,
-    syntaxHighlightSettingsViewModel: SyntaxHighlightSettingsViewModel,
-    autocompleteSettingsViewModel: AutocompleteSettingsViewModel
+    syntaxHighlightSettingsViewModel: SyntaxHighlightSettingsViewModel
 ) {
 
     // Create an instance of [SettingsErrorState]
@@ -47,7 +45,7 @@ fun SettingsComposePanel(
 
         when(screen){
             Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS -> SyntaxHighlightSettingsScreen(modifier, errorState, syntaxHighlightSettingsViewModel)
-            Screens.AUTOCOMPLETE_SETTINGS -> AutocompleteSettingsScreen(modifier, errorState, autocompleteSettingsViewModel)
+            Screens.AUTOCOMPLETE_SETTINGS -> SyntaxAndSuggestionsScreen(modifier, errorState)
         }
 
     }

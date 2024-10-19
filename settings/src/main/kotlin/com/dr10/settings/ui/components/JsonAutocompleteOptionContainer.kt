@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,8 +20,6 @@ import androidx.compose.foundation.onClick
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -36,30 +33,21 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dr10.common.models.AutocompleteOptionModel
+import com.dr10.common.models.SyntaxAndSuggestionModel
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.TooltipArea
 import com.dr10.common.utilities.DocumentsManager
-import com.dr10.common.utilities.JsonChooser
-import com.dr10.settings.ui.viewModels.AutocompleteSettingsViewModel
-import dev.icerock.moko.mvvm.livedata.compose.observeAsState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.dr10.settings.ui.viewModels.SyntaxAndSuggestionsViewModel
 import java.awt.Cursor
 import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun JsonAutocompleteOptionContainer(
-    model: AutocompleteOptionModel,
-    viewModel: AutocompleteSettingsViewModel,
-    onDeleteOptionClick: () -> Unit,
-    onUpdateJsonPathClick: (String) -> Unit
+    model: SyntaxAndSuggestionModel,
+    viewModel: SyntaxAndSuggestionsViewModel,
+    width: Float
 ){
-
-    // Observes the value of [jsonAutocompleteOptionContainerWidth]
-    val width = viewModel.jsonAutocompleteOptionContainerWidth.observeAsState().value
 
     Box(
         modifier = Modifier
@@ -90,25 +78,6 @@ fun JsonAutocompleteOptionContainer(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                TooltipArea("Choose Json"){
-                    Button(
-                        onClick = {
-                            CoroutineScope(Dispatchers.IO).launch { onUpdateJsonPathClick(JsonChooser.chooseJson() ?: "") }
-                        },
-                        modifier = Modifier.height(28.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = ThemeApp.colors.secondColor)
-                    ){
-                        Text(
-                            "Browse",
-                            color = ThemeApp.colors.textColor,
-                            fontSize = 10.sp,
-                            fontFamily = ThemeApp.text.fontFamily
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-
                 TooltipArea("Delete Option"){
                     Icon(
                         Icons.Rounded.Close,
@@ -116,7 +85,7 @@ fun JsonAutocompleteOptionContainer(
                         tint = ThemeApp.colors.textColor,
                         modifier = Modifier
                             .size(18.dp)
-                            .onClick { onDeleteOptionClick() }
+                            .onClick { viewModel.deleteConfig(model) }
                             .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)))
                     )
                 }

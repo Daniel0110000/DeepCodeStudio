@@ -1,7 +1,9 @@
 package com.dr10.common.utilities
 
+import com.dr10.common.models.SyntaxHighlightModel
 import com.dr10.common.models.SyntaxHighlightRegexModel
 import com.dr10.common.ui.editor.EditorErrorState
+import com.dr10.common.utilities.TextUtils.toFormat
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -64,6 +66,59 @@ object JsonUtils {
             errorState.errorDescription.value = "Error in [extractVariablesAndConstantsKeywordsFromJson]" + e.message.toString()
             ""
         }
+    }
+
+    /**
+     * Converts a JSON file into a [SyntaxHighlightModel] object
+     *
+     * @param jsonPath The path to the JSON file
+     * @param errorState The state object to manage and display errors in case of an exception
+     * @return The [SyntaxHighlightModel] parsed from the JSON
+     */
+    fun jsonToSyntaxHighlightModel(
+        jsonPath: String,
+        errorState: EditorErrorState? = null,
+        settingsErrorState: SettingsErrorState? = null
+    ): SyntaxHighlightModel = try {
+        val jsonString = File(jsonPath).readText()
+
+        val jsonObject = JSONObject(jsonString)
+        val dataObject = jsonObject.getJSONObject("data")
+
+        val instructionsList = dataObject.getJSONArray("instructions")
+        val variablesList = dataObject.getJSONArray("variables")
+        val constantsList = dataObject.getJSONArray("constants")
+        val segmentsList = dataObject.getJSONArray("segments")
+        val registersList = dataObject.getJSONArray("registers")
+        val systemCallsList = dataObject.getJSONArray("systemCall")
+        val arithmeticInstructionsList = dataObject.getJSONArray("arithmeticInstructions")
+        val logicalInstructionsList = dataObject.getJSONArray("logicalInstructions")
+        val conditionsList = dataObject.getJSONArray("conditions")
+        val loopsList = dataObject.getJSONArray("loops")
+        val memoryManagementList = dataObject.getJSONArray("memoryManagement")
+
+        SyntaxHighlightModel(
+            instructions = instructionsList.toList().toFormat(),
+            variables = variablesList.toList().toFormat(),
+            constants = constantsList.toList().toFormat(),
+            segments = segmentsList.toList().toFormat(),
+            systemCalls = systemCallsList.toList().toFormat(),
+            registers = registersList.toList().toFormat(),
+            arithmeticInstructions = arithmeticInstructionsList.toList().toFormat(),
+            logicalInstructions = logicalInstructionsList.toList().toFormat(),
+            conditions = conditionsList.toList().toFormat(),
+            loops = loopsList.toList().toFormat(),
+            memoryManagements = memoryManagementList.toList().toFormat()
+        )
+    } catch (e: Exception) {
+        errorState?.displayErrorMessage?.value = true
+        errorState?.shouldCloseTab?.value = true
+        errorState?.errorDescription?.value = "Error in jsonToSyntaxHighlightRegexModel" + e.message.toString()
+
+        settingsErrorState?.displayErrorMessage?.value = true
+        settingsErrorState?.errorDescription?.value = e.message.toString()
+
+        SyntaxHighlightModel()
     }
 
     /**

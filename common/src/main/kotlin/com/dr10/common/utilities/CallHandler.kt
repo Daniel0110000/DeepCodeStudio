@@ -7,7 +7,7 @@ class CallHandler {
          *
          * @param block The function to execute
          */
-        fun <T> callHandler(block: () -> T){
+        suspend fun <T> callHandler(block: suspend () -> T){
             try { block() }
             catch (e: Exception){ println("An unexpected error has occurred: ${e.message}") }
         }

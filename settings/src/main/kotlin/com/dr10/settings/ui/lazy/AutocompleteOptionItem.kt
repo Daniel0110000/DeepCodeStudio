@@ -28,13 +28,13 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dr10.common.models.AutocompleteOptionModel
+import com.dr10.common.models.SyntaxAndSuggestionModel
 import com.dr10.common.ui.ThemeApp
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun AutocompleteOptionItem(
-    model: AutocompleteOptionModel,
+    model: SyntaxAndSuggestionModel,
     selectedOption: String,
     onClick: () -> Unit
 ){
@@ -44,7 +44,7 @@ fun AutocompleteOptionItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(35.dp)
-            .background(if(selectedOption == model.uuid) ThemeApp.colors.buttonColor else if(isHover) ThemeApp.colors.hoverTab else Color.Transparent, shape = RoundedCornerShape(5.dp))
+            .background(if(selectedOption == model.uniqueId) ThemeApp.colors.buttonColor else if(isHover) ThemeApp.colors.hoverTab else Color.Transparent, shape = RoundedCornerShape(5.dp))
             .onPointerEvent(PointerEventType.Enter){ isHover = true }
             .onPointerEvent(PointerEventType.Exit){ isHover = false }
             .onClick { onClick() },

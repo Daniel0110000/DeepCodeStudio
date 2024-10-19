@@ -3,7 +3,27 @@ package com.dr10.common.utilities
 object Constants {
     const val DEFAULT_PROJECTS_DIRECTORY_NAME = "DeepCodeProjects"
     const val DEFAULT_DATABASE_DIRECTORY_NAME = ".data"
+    const val DEFAULT_LOCAL_DIRECTORY_NAME = ".local/share/DeepCodeStudio"
+    const val JAVA_DIRECTORY_NAME = "java"
+    const val CLASSES_DIRECTORY_NAME = "classes"
     const val DATABASE_NAME = "AppDatabase.db"
+
+    const val JFLEX_EXTENSION = ".flex"
+    const val JAVA_EXTENSION = ".java"
+    const val JAVA_CLASS_EXTENSION = ".class"
+
+    const val DEFAULT_JFLEX_CLASS_NAME = "TokenMarkerTemplate"
+    const val CLASS_EXTENSION = "TokenMarker"
+    const val INSTRUCTIONS_IDENTIFIER = "{{INSTRUCTIONS}}"
+    const val VARIABLES_IDENTIFIER = "{{VARIABLES}}"
+    const val CONSTANTS_IDENTIFIER = "{{CONSTANTS}}"
+    const val SEGMENTS_IDENTIFIER = "{{SEGMENTS}}"
+    const val SYSTEM_CALLS_IDENTIFIER = "{{SYSTEM_CALLS}}"
+    const val REGISTERS_IDENTIFIER = "{{REGISTERS}}"
+    const val ARITH_INSTRUCTIONS_IDENTIFIER = "{{ARITH_INSTRUCTIONS}}"
+    const val LOGICAL_INSTRUCTIONS_IDENTIFIER = "{{LOGICAL_INSTRUCTIONS}}"
+    const val CONDITIONS_IDENTIFIER = "{{CONDITIONS}}"
+    const val MEMORY_MANAGEMENTS_IDENTIFIER = "{{MEMORY_MANAGEMENTS}}"
 
     const val DEFAULT_SIMPLE_COLOR = "#ABB2BF"
     const val DEFAULT_INSTRUCTION_COLOR = "#C678DD"

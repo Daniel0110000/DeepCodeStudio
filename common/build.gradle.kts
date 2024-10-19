@@ -33,6 +33,17 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-transcoder:1.17")
     implementation("org.apache.xmlgraphics:batik-codec:1.17")
 
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+
+    // JFlex
+    implementation("de.jflex:jflex:1.4.1")
+
+    // Java Parser
+    implementation("com.github.javaparser:javaparser-core:3.26.2")
+
 }
 
 tasks.test {
