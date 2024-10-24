@@ -1,6 +1,4 @@
-import com.dr10.database.domain.repositories.AutocompleteSettingsRepository
 import com.dr10.editor.ui.viewModels.TabsViewModel
-import com.dr10.settings.ui.viewModels.AutocompleteSettingsViewModel
 import com.dr10.settings.ui.viewModels.SettingsViewModel
 import com.dr10.settings.ui.viewModels.SyntaxHighlightSettingsViewModel
 import org.koin.core.component.KoinComponent
@@ -13,14 +11,8 @@ import ui.viewModels.FileTreeViewModel
  */
 class App: KoinComponent {
 
-    // Inject [AutocompleteSettingsRepository]
-    val autocompleteSettingsRepository: AutocompleteSettingsRepository by inject()
-
     // Inject [SyntaxHighlightSettingsViewModel]
     val syntaxHighlightSettingsViewModel: SyntaxHighlightSettingsViewModel by inject()
-
-    // Inject [AutocompleteSettingsViewModel
-    val autocompleteSettingsViewModel: AutocompleteSettingsViewModel by inject()
 
     // Inject [SettingsViewModel]
     val settingsViewModel: SettingsViewModel by inject()
@@ -33,5 +25,4 @@ class App: KoinComponent {
 
     // Inject [TabsViewModel]
     val tabsViewModel: TabsViewModel by inject()
-
 }

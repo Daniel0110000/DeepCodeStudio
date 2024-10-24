@@ -7,10 +7,13 @@ import app.deepCodeStudio.database.AppDatabase
 import com.dr10.common.utilities.Constants
 import com.dr10.common.utilities.DocumentsManager
 import com.dr10.database.data.repositories.AutocompleteSettingsRepositoryImpl
+import com.dr10.database.data.repositories.EditorRepositoryImpl
 import com.dr10.database.data.repositories.SyntaxAndSuggestionsRepositoryImpl
 import com.dr10.database.data.repositories.SyntaxHighlightSettingsRepositoryImpl
+import com.dr10.database.data.room.SelectedConfigsHistoryDao
 import com.dr10.database.data.room.SyntaxAndSuggestionsDao
 import com.dr10.database.domain.repositories.AutocompleteSettingsRepository
+import com.dr10.database.domain.repositories.EditorRepository
 import com.dr10.database.domain.repositories.SyntaxAndSuggestionsRepository
 import com.dr10.database.domain.repositories.SyntaxHighlightSettingsRepository
 import org.koin.dsl.module
@@ -38,8 +41,14 @@ val databaseModule = module {
         dbInstance.syntaxAndSuggestionsDao()
     }
 
+    single<SelectedConfigsHistoryDao> {
+        val dbInstance = get<com.dr10.database.data.room.AppDatabase>()
+        dbInstance.selectedConfigsHistoryDao()
+    }
+
     single<AutocompleteSettingsRepository> { AutocompleteSettingsRepositoryImpl(get()) }
     single<SyntaxHighlightSettingsRepository> { SyntaxHighlightSettingsRepositoryImpl(get()) }
     single<SyntaxAndSuggestionsRepository> { SyntaxAndSuggestionsRepositoryImpl(get()) }
+    single<EditorRepository> { EditorRepositoryImpl(get()) }
 
 }

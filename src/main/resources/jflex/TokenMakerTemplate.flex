@@ -77,6 +77,7 @@ import org.fife.ui.rsyntaxtextarea.*;
 Letter				= ([A-Za-z_])
 Digit				= ([0-9])
 Number				= ({Digit}+)
+Hexadecimal         = "-"?"0"[xX][0-9A-Fa-f]+
 
 Identifier			= (({Letter}|{Digit})[^ \t\f\n\,\.\+\-\*\/\%\[\]]+)
 
@@ -113,23 +114,19 @@ Operator				= ("+"|"-"|"*"|"/"|"%"|"^"|"|"|"&"|"~"|"!"|"="|"<"|">")
 
     {WhiteSpace}+					{ addToken(Token.WHITESPACE); }
 
-    /* String/Character Literals. */
     {CharLiteral}					{ addToken(Token.LITERAL_CHAR); }
     {UnclosedCharLiteral}			{ addToken(Token.ERROR_CHAR); }
     {StringLiteral}				{ addToken(Token.LITERAL_STRING_DOUBLE_QUOTE); }
     {UnclosedStringLiteral}			{ addToken(Token.ERROR_STRING_DOUBLE); addNullToken(); return firstToken; }
 
-    /* Labels. */
     {Label}						{ addToken(Token.FUNCTION); }
 
-    /* Comment Literals. */
     {CommentBegin}.*				{ addToken(Token.COMMENT_EOL); addNullToken(); return firstToken; }
 
-    /* Operators. */
     {Operator}					{ addToken(Token.OPERATOR); }
 
-    /* Numbers */
     {Number}						{ addToken(Token.LITERAL_NUMBER_DECIMAL_INT); }
+    {Hexadecimal}                   { addToken(Token.LITERAL_NUMBER_HEXADECIMAL); }
 
     <<EOF>> { addNullToken(); return firstToken; }
 

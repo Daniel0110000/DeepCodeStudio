@@ -21,4 +21,7 @@ object AppIcons {
 
     val closeIcon = ImageResourceUtils.loadResourceImage("images/ic_close.svg", 15, 15)
 
+    val readOnlyIcon = ImageResourceUtils.loadResourceImage("images/ic_lock.svg", 15, 15)
+    val writeEnableIcon = ImageResourceUtils.loadResourceImage("images/ic_lock_open.svg", 15, 15)
+
 }

@@ -31,6 +31,10 @@ dependencies {
     // RSyntaxTextArea
     implementation("com.fifesoft:rsyntaxtextarea:3.5.1")
 
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
+
     // Koin
     implementation("io.insert-koin:koin-core:3.5.0")
 

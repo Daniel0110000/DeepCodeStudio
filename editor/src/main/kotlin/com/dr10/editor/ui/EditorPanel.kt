@@ -16,9 +16,7 @@ import javax.swing.JTabbedPane
  *
  * @property tabsViewModel ViewModel that manages the state of the open tabs
  */
-class EditorPanel(
-    private val tabsViewModel: TabsViewModel
-): JPanel() {
+class EditorPanel(private val tabsViewModel: TabsViewModel): JPanel() {
 
     // Map to keep track of the open tabs
     private val openTabs = mutableMapOf<String, EditorTab>()

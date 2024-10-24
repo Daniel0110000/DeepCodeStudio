@@ -29,7 +29,6 @@ class CodeEditorScreen(
     private val fileTreeViewModel: FileTreeViewModel = App().fileTreeViewModel
     private val tabsViewModel: TabsViewModel = App().tabsViewModel
     private val syntaxHighlightSettingsViewModel = App().syntaxHighlightSettingsViewModel
-    private val autocompleteSettingsViewModel = App().autocompleteSettingsViewModel
     private val settingsViewModel = App().settingsViewModel
 
     // State variables for split pane behavior
@@ -83,8 +82,7 @@ class CodeEditorScreen(
                     SettingsWindow(
                         window = window,
                         settingsViewModel = settingsViewModel,
-                        syntaxHighlightSettingsViewModel = syntaxHighlightSettingsViewModel,
-                        autocompleteSettingsViewModel = autocompleteSettingsViewModel
+                        syntaxHighlightSettingsViewModel = syntaxHighlightSettingsViewModel
                     ) { codeEditorViewModel.setIsOpenSettings(false) }
                 }
                 if (state.isCollapseSplitPane) {

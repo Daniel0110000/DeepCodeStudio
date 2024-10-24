@@ -17,4 +17,7 @@ interface SyntaxAndSuggestionsDao {
     @Query("SELECT * FROM syntax_and_suggestions")
     fun getAll(): Flow<List<SyntaxAndSuggestionsEntity>>
 
+    @Query("SELECT * FROM syntax_and_suggestions")
+    suspend fun getAllAsList(): List<SyntaxAndSuggestionsEntity>
+
 }

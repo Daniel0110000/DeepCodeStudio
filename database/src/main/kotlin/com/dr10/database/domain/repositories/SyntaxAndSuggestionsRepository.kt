@@ -10,4 +10,6 @@ interface SyntaxAndSuggestionsRepository {
 
     suspend fun getConfigs(): Flow<List<SyntaxAndSuggestionModel>>
 
+    suspend fun getConfigsAsList(): List<SyntaxAndSuggestionModel>
+
 }

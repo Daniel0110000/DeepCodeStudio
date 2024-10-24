@@ -4,9 +4,9 @@ import com.dr10.common.models.SyntaxAndSuggestionModel
 import com.dr10.database.data.room.SyntaxAndSuggestionsEntity
 
 /**
- * Convert [SyntaxAndSuggestionModel] model to a [SyntaxAndSuggestionsEntity] model
+ * Converts [SyntaxAndSuggestionModel] to [SyntaxAndSuggestionsEntity]
  *
- * @return The converted [SyntaxAndSuggestionsEntity] model
+ * @return The converted [SyntaxAndSuggestionsEntity]
  */
 fun SyntaxAndSuggestionModel.toEntity(): SyntaxAndSuggestionsEntity = SyntaxAndSuggestionsEntity(
     uniqueId = uniqueId,

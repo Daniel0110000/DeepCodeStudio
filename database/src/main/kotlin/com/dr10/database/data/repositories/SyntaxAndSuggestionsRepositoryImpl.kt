@@ -26,14 +26,14 @@ class SyntaxAndSuggestionsRepositoryImpl(
      * Process the provider model, generates and compiles syntax files, and inserts the configuration into the database
      *
      * @param model The model containing syntax and suggestion data to be added
-     * @param isLoading A lambda function to indicate loading status, true when loading starts and false when it ends
+     * @param loading A callback function to indicate loading status, true when loading starts and false when it ends
      */
     override suspend fun addConfig(
         model: SyntaxAndSuggestionModel,
-        isLoading: (Boolean) -> Unit
+        loading: (Boolean) -> Unit
     ) {
         CallHandler.callHandler {
-            isLoading(true)
+            loading(true)
             val syntaxModel = JsonUtils.jsonToSyntaxHighlightModel(jsonPath = model.jsonPath)
             JFlexProcessor.generateAndCompileSyntaxFiles(
                 optionName = model.optionName,
@@ -41,7 +41,7 @@ class SyntaxAndSuggestionsRepositoryImpl(
             ) { className ->
                 scope.launch {
                     syntaxAndSuggestionsDao.insert(model.copy(className = className).toEntity())
-                    isLoading(false)
+                    loading(false)
                 }
             }
 
@@ -66,5 +66,13 @@ class SyntaxAndSuggestionsRepositoryImpl(
      * @return A flow emitting a list of all syntax and suggestion models
      */
     override suspend fun getConfigs(): Flow<List<SyntaxAndSuggestionModel>>  =
-        syntaxAndSuggestionsDao.getAll().map { it.map { it.toModel() } }
+        syntaxAndSuggestionsDao.getAll().map { list -> list.map { it.toModel() } }
+
+    /**
+     * Retrieves all configurations as [List<SyntaxAndSuggestionModel>]
+     *
+     * @return A [List<SyntaxAndSuggestionModel>] with all syntax and suggestion models
+     */
+    override suspend fun getConfigsAsList(): List<SyntaxAndSuggestionModel> =
+        syntaxAndSuggestionsDao.getAllAsList().map { it.toModel() }
 }

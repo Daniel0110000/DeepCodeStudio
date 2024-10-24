@@ -3,7 +3,6 @@ package com.dr10.settings.ui
 import androidx.compose.ui.awt.ComposePanel
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.utilities.ColorUtils.toAWTColor
-import com.dr10.settings.ui.viewModels.AutocompleteSettingsViewModel
 import com.dr10.settings.ui.viewModels.SettingsViewModel
 import com.dr10.settings.ui.viewModels.SyntaxHighlightSettingsViewModel
 import java.awt.event.WindowAdapter
@@ -18,14 +17,12 @@ import javax.swing.WindowConstants
  * @param window The main [JFrame] of the application
  * @param settingsViewModel The viewModel that manages the state of the settings window
  * @param syntaxHighlightSettingsViewModel The viewModel that manages the state of the syntax highlighting settings
- * @param autocompleteSettingsViewModel The viewModel that manages the state of the autocomplete settings
  * @param onCloseWindow Callback function invoked when the settings window is closed
  */
 class SettingsWindow(
     private val window: JFrame,
     private val settingsViewModel: SettingsViewModel,
     private val syntaxHighlightSettingsViewModel: SyntaxHighlightSettingsViewModel,
-    private val autocompleteSettingsViewModel: AutocompleteSettingsViewModel,
     private val onCloseWindow: () -> Unit
 ): JFrame() {
 
@@ -54,8 +51,7 @@ class SettingsWindow(
                     setContent {
                         SettingsComposePanel(
                             viewModel = settingsViewModel,
-                            syntaxHighlightSettingsViewModel = syntaxHighlightSettingsViewModel,
-                            autocompleteSettingsViewModel = autocompleteSettingsViewModel
+                            syntaxHighlightSettingsViewModel = syntaxHighlightSettingsViewModel
                         )
                     }
                 }

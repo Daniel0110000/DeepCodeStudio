@@ -45,7 +45,6 @@ class TabCloseButton(
             JLabel(AppIcons.closeIcon),
             GridBagConstraints().apply {
                 anchor = GridBagConstraints.CENTER
-
             }
         )
     }
