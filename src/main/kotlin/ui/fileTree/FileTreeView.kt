@@ -1,6 +1,7 @@
 package ui.fileTree
 
 import com.dr10.common.ui.ThemeApp
+import com.dr10.common.ui.components.CustomScrollBar
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.UIStateManager
 import com.dr10.editor.ui.viewModels.TabsViewModel
@@ -11,7 +12,13 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.io.File
-import javax.swing.*
+import javax.swing.JFrame
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JScrollPane
+import javax.swing.JTree
+import javax.swing.SwingConstants
+import javax.swing.SwingUtilities
 import javax.swing.border.EmptyBorder
 
 /**
@@ -73,7 +80,11 @@ class FileTreeView(
 
         fileTree.addMouseListener(clickListener)
 
-        val scrollPanel = JScrollPane(fileTree).apply { border = null }
+        val scrollPanel = JScrollPane(fileTree).apply {
+            border = null
+            verticalScrollBar.setUI(CustomScrollBar())
+            horizontalScrollBar.setUI(CustomScrollBar())
+        }
 
         val labelLoading = JLabel("Loading ...", SwingConstants.CENTER).apply {
             font = ThemeApp.text.fontInterRegular(12f)

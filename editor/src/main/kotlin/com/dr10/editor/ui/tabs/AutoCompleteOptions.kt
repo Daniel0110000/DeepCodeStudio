@@ -2,6 +2,7 @@ package com.dr10.editor.ui.tabs
 
 import com.dr10.common.models.SyntaxAndSuggestionModel
 import com.dr10.common.ui.ThemeApp
+import com.dr10.common.ui.components.CustomScrollBar
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.FlowStateHandler
 import com.dr10.common.utilities.setState
@@ -10,7 +11,11 @@ import java.awt.Dimension
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
-import javax.swing.*
+import javax.swing.GroupLayout
+import javax.swing.JLabel
+import javax.swing.JList
+import javax.swing.JPanel
+import javax.swing.JScrollPane
 import javax.swing.border.EmptyBorder
 
 /**
@@ -56,7 +61,10 @@ class AutoCompleteOptions(
         }
         options.addMouseListener(mouseListener)
 
-        val scroll = JScrollPane(options).apply { border = EmptyBorder(0, 5, 0, 10) }
+        val scroll = JScrollPane(options).apply {
+            border = EmptyBorder(0, 5, 0, 10)
+            verticalScrollBar.setUI(CustomScrollBar(ThemeApp.colors.secondColor.toAWTColor()))
+        }
 
         autoCompleteOptionsLayout.setHorizontalGroup(
             autoCompleteOptionsLayout.createParallelGroup()
