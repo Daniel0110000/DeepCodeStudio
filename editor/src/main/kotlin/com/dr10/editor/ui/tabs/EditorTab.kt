@@ -60,7 +60,7 @@ class EditorTab(private val tab: TabModel): JPanel() {
                 editorSplitPane.rightComponent.minimumSize = Dimension()
             } else {
                 editorSplitPane.setDividerLocation(dividerLocation)
-                editorSplitPane.dividerSize = 5
+                editorSplitPane.dividerSize = 3
                 editorSplitPane.rightComponent.minimumSize = Dimension(200,  Short.MAX_VALUE.toInt())
             }
         }

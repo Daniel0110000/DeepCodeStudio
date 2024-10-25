@@ -57,9 +57,7 @@ class CodeEditorScreen(
             SwingConstants.VERTICAL,
             fileTreeView,
             EditorPanel(tabsViewModel)
-        ).apply {
-            isContinuousLayout = true
-        }
+        ).apply { isContinuousLayout = true }
 
         windowLayout.setHorizontalGroup(
             windowLayout.createSequentialGroup()
@@ -94,7 +92,7 @@ class CodeEditorScreen(
                 } else {
                     // Restore the split pane if [state.isCollapseSplitPane] is false
                     splitPane.setDividerLocation(dividerLocation)
-                    splitPane.dividerSize = 5
+                    splitPane.dividerSize = 3
                     splitPane.leftComponent.minimumSize = Dimension(100,  Short.MAX_VALUE.toInt())
                 }
                 // Toggle the collapse/extend state

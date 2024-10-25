@@ -1,5 +1,6 @@
 package com.dr10.common.ui
 
+import com.dr10.common.ui.components.CustomSplitPaneDivider
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme
 import java.awt.Insets
@@ -23,6 +24,8 @@ object UIManagerConfig {
             UIManager.put("TabbedPane.selectedBackground", ThemeApp.colors.secondColor)
             UIManager.put("TabbedPane.underlineColor", ThemeApp.colors.buttonColor.toAWTColor())
             UIManager.put("TabbedPane.inactiveUnderlineColor", ThemeApp.colors.buttonColor.toAWTColor())
+
+            UIManager.put("SplitPaneUI", CustomSplitPaneDivider::class.java.name)
 
         } catch (e: Exception) {
             println("Error: ${e.message}")
