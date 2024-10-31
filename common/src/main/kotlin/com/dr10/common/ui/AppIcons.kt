@@ -24,4 +24,7 @@ object AppIcons {
     val readOnlyIcon = ImageResourceUtils.loadResourceImage("images/ic_lock.svg", 15, 15)
     val writeEnableIcon = ImageResourceUtils.loadResourceImage("images/ic_lock_open.svg", 15, 15)
 
+    val suggestionWordIcon = ImageResourceUtils.loadResourceImage("images/ic_suggestion_word.svg", 15, 15)
+    val suggestionWordSelectedIcon = ImageResourceUtils.loadResourceImage("images/ic_suggestion_word_selected.svg", 15, 15)
+
 }

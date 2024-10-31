@@ -12,5 +12,6 @@ fun SelectedConfigsHistoryEntity.toModel(): SelectedConfigHistoryModel = Selecte
     uniqueId = uniqueId,
     optionName = optionName,
     className = className,
-    asmFilePath = asmFilePath
+    asmFilePath = asmFilePath,
+    jsonPath = jsonPath
 )

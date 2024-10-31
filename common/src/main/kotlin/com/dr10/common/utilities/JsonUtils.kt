@@ -20,7 +20,7 @@ object JsonUtils {
      */
     fun jsonToListString(
         jsonPath: String,
-        errorState: EditorErrorState
+        errorState: EditorErrorState? = null
     ): List<String>{
         return try {
             val jsonString = File(jsonPath).readText()
@@ -31,9 +31,9 @@ object JsonUtils {
                 dataObject.getJSONArray(key).toList().map { it.toString() }
             }.toList()
         } catch (e: Exception){
-            errorState.displayErrorMessage.value = true
-            errorState.shouldCloseTab.value = true
-            errorState.errorDescription.value = "Error in [JsonToListString]" + e.message.toString()
+            errorState?.displayErrorMessage?.value = true
+            errorState?.shouldCloseTab?.value = true
+            errorState?.errorDescription?.value = "Error in [JsonToListString]" + e.message.toString()
             emptyList()
         }
     }
@@ -48,7 +48,7 @@ object JsonUtils {
      */
     fun extractVariablesAndConstantsKeywordsFromJson(
         jsonPath: String,
-        errorState: EditorErrorState
+        errorState: EditorErrorState? = null
     ): String{
         return try {
             val jsonString = File(jsonPath).readText()
@@ -61,9 +61,9 @@ object JsonUtils {
 
             variablesList.joinToString("|"){ it.toString() } + "|" + constantsList.joinToString("|"){ it.toString() }
         } catch (e: Exception){
-            errorState.displayErrorMessage.value = true
-            errorState.shouldCloseTab.value = true
-            errorState.errorDescription.value = "Error in [extractVariablesAndConstantsKeywordsFromJson]" + e.message.toString()
+            errorState?.displayErrorMessage?.value = true
+            errorState?.shouldCloseTab?.value = true
+            errorState?.errorDescription?.value = "Error in [extractVariablesAndConstantsKeywordsFromJson]" + e.message.toString()
             ""
         }
     }

@@ -38,7 +38,8 @@ class EditorRepositoryImpl(
             uniqueId = model.uniqueId,
             optionName = model.optionName,
             className = model.className,
-            asmFilePath = model.asmFilePath
+            asmFilePath = model.asmFilePath,
+            jsonPath = model.jsonPath
         )
     }
 

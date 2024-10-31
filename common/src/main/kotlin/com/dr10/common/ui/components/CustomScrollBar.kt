@@ -1,7 +1,6 @@
 package com.dr10.common.ui.components
 
 import com.dr10.common.ui.ThemeApp
-import com.dr10.common.utilities.ColorUtils.toAWTColor
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
@@ -15,10 +14,12 @@ import javax.swing.plaf.basic.BasicScrollBarUI
 /**
  * Creates a custom scrollbar for vertical and horizontal [JScrollBar]
  *
- * @param gTrackColor The color for the track of the scrollbar
+ * @property gTrackColor The color for the track of the scrollbar
+ * @property gThumbColor The color for the thumb of the scrollbar
  */
 class CustomScrollBar(
-    private val gTrackColor: Color = ThemeApp.colors.background.toAWTColor()
+    private val gTrackColor: Color = ThemeApp.AwtColors().primaryColor,
+    private val gThumbColor: Color = ThemeApp.AwtColors().thumbColor
 ): BasicScrollBarUI() {
 
     override fun paintTrack(g: Graphics, c: JComponent?, trackBounds: Rectangle) {
@@ -27,7 +28,7 @@ class CustomScrollBar(
     }
 
     override fun paintThumb(g: Graphics, c: JComponent?, thumbBounds: Rectangle) {
-        g.color = Color(250, 250, 250, 30)
+        g.color = gThumbColor
         if (scrollbar.orientation == JScrollBar.VERTICAL) {
             g.fillRoundRect(thumbBounds.x, thumbBounds.y, 8, thumbBounds.height, 2, 2)
         } else {

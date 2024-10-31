@@ -2,6 +2,7 @@ package com.dr10.editor.ui.viewModels
 
 import com.dr10.common.models.SelectedConfigHistoryModel
 import com.dr10.common.models.SyntaxAndSuggestionModel
+import com.dr10.common.utilities.JsonUtils
 import com.dr10.database.domain.repositories.EditorRepository
 import com.dr10.database.domain.repositories.SyntaxAndSuggestionsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -41,7 +42,8 @@ class EditorTabViewModel(
         val allConfigs: List<SyntaxAndSuggestionModel> = emptyList(),
         val isEditable: Boolean = true,
         val isCollapseAutocompleteOptions: Boolean = true,
-        val selectedConfig: SelectedConfigHistoryModel? = null
+        val selectedConfig: SelectedConfigHistoryModel? = null,
+        val suggestionsFromJson: List<String> = emptyList()
     )
 
 
@@ -52,7 +54,12 @@ class EditorTabViewModel(
         coroutineScope.launch {
             val config = editorRepository.getSelectedConfig(_state.value.currentFilePath)
             setIsCollapseAutocompleteOptions(config != null)
-            if (config != null) _state.update { it.copy(selectedConfig = config) }
+            if (config != null) _state.update {
+                it.copy(
+                    selectedConfig = config,
+                    suggestionsFromJson = JsonUtils.jsonToListString(config.jsonPath)
+                )
+            }
         }
     }
 
@@ -67,12 +74,19 @@ class EditorTabViewModel(
                 uniqueId = model.uniqueId,
                 optionName = model.optionName,
                 className = model.className,
-                asmFilePath = _state.value.currentFilePath
+                asmFilePath = _state.value.currentFilePath,
+                jsonPath = model.jsonPath
             )
             if (_state.value.selectedConfig != null) editorRepository.updateSelectedConfig(newModel)
             else editorRepository.insertSelectedConfig(newModel)
 
-            _state.update { it.copy(selectedConfig = newModel) }
+            _state.update {
+                it.copy(
+                    selectedConfig = newModel,
+                    suggestionsFromJson = JsonUtils.jsonToListString(newModel.jsonPath)
+                )
+            }
+
             setIsCollapseAutocompleteOptions(true)
         }
     }

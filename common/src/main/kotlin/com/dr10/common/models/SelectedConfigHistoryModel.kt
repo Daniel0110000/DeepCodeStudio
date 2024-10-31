@@ -4,5 +4,6 @@ data class SelectedConfigHistoryModel(
     val uniqueId: String,
     val optionName: String,
     val className: String,
-    val asmFilePath: String
+    val asmFilePath: String,
+    val jsonPath: String
 )

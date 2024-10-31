@@ -28,7 +28,7 @@ dependencies {
     // constraintlayout
     implementation("tech.annexflow.compose:constraintlayout-compose-multiplatform:0.3.1")
 
-    // RSyntaxTextArea
+    // RSyntaxTextArea & Autocomplete
     implementation("com.fifesoft:rsyntaxtextarea:3.5.1")
 
     // Coroutines
@@ -43,6 +43,9 @@ dependencies {
 
     // Database module
     implementation(project(":database"))
+
+    // Editor -> Autocomplete module
+    implementation(project(":editor:AutoComplete"))
 
 }
 

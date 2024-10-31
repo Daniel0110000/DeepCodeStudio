@@ -13,11 +13,12 @@ interface SelectedConfigsHistoryDao {
     @Query("SELECT * FROM selected_configs_history WHERE asmFilePath = :asmFilePath LIMIT 1")
     suspend fun getSelectedConfig(asmFilePath: String): SelectedConfigsHistoryEntity?
 
-    @Query("UPDATE selected_configs_history SET uniqueId = :uniqueId, optionName = :optionName, className = :className WHERE asmFilePath = :asmFilePath")
+    @Query("UPDATE selected_configs_history SET uniqueId = :uniqueId, optionName = :optionName, className = :className, jsonPath = :jsonPath WHERE asmFilePath = :asmFilePath")
     suspend fun update(
         uniqueId: String,
         optionName: String,
         className: String,
+        jsonPath: String,
         asmFilePath: String
     )
 

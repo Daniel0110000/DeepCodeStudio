@@ -29,6 +29,14 @@ object ThemeApp {
         val lineNumberTextColor: Color = Color(0xFF515A6C),
     )
 
+    class AwtColors(
+        val primaryColor: java.awt.Color = java.awt.Color(40, 44, 52),
+        val secondaryColor: java.awt.Color = java.awt.Color(30, 34, 41),
+        val complementaryColor: java.awt.Color = java.awt.Color(31, 111, 235),
+        val textColor: java.awt.Color = java.awt.Color(171, 178, 191),
+        val thumbColor: java.awt.Color = java.awt.Color(250, 250, 250, 30)
+    )
+
     class Text(
         val fontFamily: FontFamily = FontFamily(Font(resource = "font/Inter-Regular.ttf")),
         val codeTextFontFamily: FontFamily = FontFamily(Font(resource = "font/JetBrainsMonoItalic.ttf")),

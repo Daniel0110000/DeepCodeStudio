@@ -20,3 +20,5 @@ include("settings")
 include("common")
 include("terminal")
 include("editor")
+include("editor:AutoComplete")
+findProject(":editor:AutoComplete")?.name = "AutoComplete"

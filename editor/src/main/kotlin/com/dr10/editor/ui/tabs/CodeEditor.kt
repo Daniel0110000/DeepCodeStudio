@@ -1,6 +1,11 @@
 package com.dr10.editor.ui.tabs
 
+import com.dr10.autocomplete.AutoCompletion
+import com.dr10.autocomplete.BasicCompletion
+import com.dr10.autocomplete.CompletionProvider
+import com.dr10.autocomplete.DefaultCompletionProvider
 import com.dr10.common.ui.ThemeApp
+import com.dr10.common.ui.components.CustomScrollBar
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.Constants
 import com.dr10.common.utilities.FlowStateHandler
@@ -18,9 +23,12 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory
 import org.fife.ui.rtextarea.RTextScrollPane
 import java.io.File
+import java.io.StringReader
 import javax.swing.GroupLayout
 import javax.swing.JPanel
+import javax.swing.SwingUtilities
 import javax.swing.border.EmptyBorder
+
 
 /**
  * Custom [JPanel] that display the code editor and the action bottom bar
@@ -38,13 +46,16 @@ class CodeEditor(
     private val classLoader = JavaUtils.createCustomClasLoader()
     private val abstractTokenMakerFactory: AbstractTokenMakerFactory = TokenMakerFactory.getDefaultInstance() as AbstractTokenMakerFactory
 
-    init { onCreate() }
+    init {
+        onCreate()
+    }
 
     private fun onCreate() = CoroutineScope(Dispatchers.Swing).launch {
         val codeEditorLayout = GroupLayout(this@CodeEditor)
         layout = codeEditorLayout
 
         val editor = RSyntaxTextArea().apply {
+            read(StringReader(File(tab.filePath).readText()), null)
             isCodeFoldingEnabled = false
             background = ThemeApp.colors.background.toAWTColor()
             foreground = ThemeApp.colors.textColor.toAWTColor()
@@ -52,7 +63,6 @@ class CodeEditor(
             font = ThemeApp.text.fontJetBrains
             currentLineHighlightColor = ThemeApp.colors.hoverTab.toAWTColor()
             caretColor = ThemeApp.colors.buttonColor.toAWTColor()
-            text = File(tab.filePath).readText()
             caretPosition = 0
             setState(editorTabState, EditorTabViewModel.EditorTabState::isEditable) { value -> isEditable = value }
             setState(editorTabState, EditorTabViewModel.EditorTabState::selectedConfig) { config ->
@@ -65,6 +75,13 @@ class CodeEditor(
             }
         }
 
+        setState(editorTabState, EditorTabViewModel.EditorTabState::suggestionsFromJson) { suggestions ->
+            val provider = createCompletionProvider(suggestions)
+            val autoCompletion = AutoCompletion(provider).apply { isAutoActivationEnabled = true }
+            autoCompletion.install(editor)
+        }
+
+
         val bottomActionsRow = BottomActionsRow(viewModel, editorTabState)
 
 
@@ -73,6 +90,8 @@ class CodeEditor(
             foreground = ThemeApp.colors.lineNumberTextColor.toAWTColor()
             font = ThemeApp.text.fontInterRegular(13f)
             gutter.borderColor = ThemeApp.colors.lineNumberTextColor.toAWTColor()
+            verticalScrollBar.setUI(CustomScrollBar())
+            horizontalScrollBar.setUI(CustomScrollBar())
         }
 
         codeEditorLayout.setHorizontalGroup(
@@ -86,5 +105,18 @@ class CodeEditor(
                 .addComponent(scrollPane, 0, 0, Short.MAX_VALUE.toInt())
                 .addComponent(bottomActionsRow, 0, 0, 25)
         )
+
+        SwingUtilities.invokeLater { editor.requestFocusInWindow() }
+    }
+
+    private fun createCompletionProvider(suggestions: List<String>): CompletionProvider {
+        val provider = DefaultCompletionProvider()
+        provider.setAutoActivationRules(true, ".")
+
+        suggestions.forEach { suggestion ->
+            provider.addCompletion(BasicCompletion(provider, suggestion.replace(".", "")))
+        }
+
+        return provider
     }
 }
