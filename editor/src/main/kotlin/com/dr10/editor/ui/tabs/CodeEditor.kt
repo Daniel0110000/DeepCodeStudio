@@ -21,6 +21,7 @@ import kotlinx.coroutines.swing.Swing
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory
+import org.fife.ui.rtextarea.Gutter.GutterBorder
 import org.fife.ui.rtextarea.RTextScrollPane
 import java.io.File
 import java.io.StringReader
@@ -57,13 +58,14 @@ class CodeEditor(
         val editor = RSyntaxTextArea().apply {
             read(StringReader(File(tab.filePath).readText()), null)
             isCodeFoldingEnabled = false
-            background = ThemeApp.colors.background.toAWTColor()
-            foreground = ThemeApp.colors.textColor.toAWTColor()
+            background = ThemeApp.awtColors.primaryColor
+            foreground = ThemeApp.awtColors.textColor
             syntaxScheme.setDefaultSyntaxScheme()
             font = ThemeApp.text.fontJetBrains
             currentLineHighlightColor = ThemeApp.colors.hoverTab.toAWTColor()
-            caretColor = ThemeApp.colors.buttonColor.toAWTColor()
+            caretColor = ThemeApp.awtColors.complementaryColor
             caretPosition = 0
+            selectionColor = ThemeApp.awtColors.complementaryColor
             setState(editorTabState, EditorTabViewModel.EditorTabState::isEditable) { value -> isEditable = value }
             setState(editorTabState, EditorTabViewModel.EditorTabState::selectedConfig) { config ->
                 val syntaxKey = "syntax/${config?.optionName ?: Constants.DEFAULT_ASM_SYNTAX_NAME}".deleteWhiteSpaces()
@@ -89,7 +91,10 @@ class CodeEditor(
             border = EmptyBorder(0, 0, 0, 0)
             foreground = ThemeApp.colors.lineNumberTextColor.toAWTColor()
             font = ThemeApp.text.fontInterRegular(13f)
-            gutter.borderColor = ThemeApp.colors.lineNumberTextColor.toAWTColor()
+            gutter.lineNumberColor = ThemeApp.colors.lineNumberTextColor.toAWTColor()
+            gutter.lineNumberFont = ThemeApp.text.fontInterRegular(12f)
+            gutter.border = GutterBorder(0, 10, 0, 10).apply { color = ThemeApp.colors.hoverTab.toAWTColor() }
+            gutter.currentLineNumberColor = ThemeApp.awtColors.complementaryColor
             verticalScrollBar.setUI(CustomScrollBar())
             horizontalScrollBar.setUI(CustomScrollBar())
         }

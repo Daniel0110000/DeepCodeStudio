@@ -16,6 +16,8 @@ object ThemeApp {
     val text: Text = Text()
     val scrollbar: Scrollbar = Scrollbar()
     val code: Code = Code()
+    val awtColors: AwtColors = AwtColors()
+
 
     class Colors(
         val background: Color = Color(0xFF282C34),
