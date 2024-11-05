@@ -27,4 +27,13 @@ object AppIcons {
     val suggestionWordIcon = ImageResourceUtils.loadResourceImage("images/ic_suggestion_word.svg", 15, 15)
     val suggestionWordSelectedIcon = ImageResourceUtils.loadResourceImage("images/ic_suggestion_word_selected.svg", 15, 15)
 
+    val jsonIcon = ImageResourceUtils.loadResourceImage("images/ic_json.svg", 18, 18)
+    val deleteOpIcon = ImageResourceUtils.loadResourceImage("images/ic_delete_op.svg", 18, 18)
+    val addIcon = ImageResourceUtils.loadResourceImage("images/ic_add.svg", 18, 18)
+    val simpleFolderIcon = ImageResourceUtils.loadResourceImage("images/ic_folder.svg", 18, 18)
+
+    val successIcon = ImageResourceUtils.loadResourceImage("images/ic_success.svg", 18, 18)
+    val errorIcon = ImageResourceUtils.loadResourceImage("images/ic_error.svg", 18, 18)
+    val infoIcon = ImageResourceUtils.loadResourceImage("images/ic_info.svg", 18, 18)
+    val warningIcon = ImageResourceUtils.loadResourceImage("images/ic_warning.svg", 18, 18)
 }
