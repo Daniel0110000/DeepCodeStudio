@@ -1,6 +1,7 @@
 package ui
 
 import App
+import com.dr10.common.ui.components.CustomSplitPaneDivider
 import com.dr10.common.utilities.UIStateManager
 import com.dr10.editor.ui.EditorPanel
 import com.dr10.editor.ui.viewModels.TabsViewModel
@@ -28,8 +29,6 @@ class CodeEditorScreen(
     private val codeEditorViewModel: CodeEditorViewModel = App().codeEditorViewModel
     private val fileTreeViewModel: FileTreeViewModel = App().fileTreeViewModel
     private val tabsViewModel: TabsViewModel = App().tabsViewModel
-    private val syntaxHighlightSettingsViewModel = App().syntaxHighlightSettingsViewModel
-    private val settingsViewModel = App().settingsViewModel
 
     // State variables for split pane behavior
     private var collapseOrExtend: Boolean = true
@@ -57,7 +56,10 @@ class CodeEditorScreen(
             SwingConstants.VERTICAL,
             fileTreeView,
             EditorPanel(tabsViewModel)
-        ).apply { isContinuousLayout = true }
+        ).apply {
+            setUI(CustomSplitPaneDivider())
+            isContinuousLayout = true
+        }
 
         windowLayout.setHorizontalGroup(
             windowLayout.createSequentialGroup()
@@ -77,11 +79,7 @@ class CodeEditorScreen(
             onStateChanged = { state: CodeEditorViewModel.CodeEditorState ->
                 if(state.isOpenSettings) {
                     // Show the settings window if [state.isOpenSettings] is true
-                    SettingsWindow(
-                        window = window,
-                        settingsViewModel = settingsViewModel,
-                        syntaxHighlightSettingsViewModel = syntaxHighlightSettingsViewModel
-                    ) { codeEditorViewModel.setIsOpenSettings(false) }
+                    SettingsWindow(window = window) { codeEditorViewModel.setIsOpenSettings(false) }
                 }
                 if (state.isCollapseSplitPane) {
                     // Collapse the split pane if [state.isCollapseSplitPane] is true

@@ -89,7 +89,7 @@ class EditorPanel(private val tabsViewModel: TabsViewModel): JPanel() {
     }
 
      companion object {
-        private const val TABS_PANEL = "TABS_MODEL"
+        private const val TABS_PANEL = "TABS_PANEL"
         private const val EMPTY_PANEL = "EMPTY_PANEL"
     }
 }

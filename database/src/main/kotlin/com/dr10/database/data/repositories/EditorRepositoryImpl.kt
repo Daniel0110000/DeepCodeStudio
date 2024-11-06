@@ -43,4 +43,14 @@ class EditorRepositoryImpl(
         )
     }
 
+    /**
+     * Deletes the selected config using the [uniqueId] or [asmFilePath]
+     *
+     * @param uniqueId The unique id of the selected config
+     * @param asmFilePath The assembly file path of the selected config
+     */
+    override suspend fun deleteSelectedConfig(uniqueId: String, asmFilePath: String) {
+        selectedConfigsHistoryDao.delete(uniqueId, asmFilePath)
+    }
+
 }

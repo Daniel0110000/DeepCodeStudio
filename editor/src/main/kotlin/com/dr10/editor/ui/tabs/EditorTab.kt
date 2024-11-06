@@ -1,6 +1,7 @@
 package com.dr10.editor.ui.tabs
 
 import com.dr10.common.ui.ThemeApp
+import com.dr10.common.ui.components.CustomSplitPaneDivider
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.FlowStateHandler
 import com.dr10.common.utilities.setState
@@ -42,10 +43,9 @@ class EditorTab(private val tab: TabModel): JPanel() {
         val editorSplitPane = JSplitPane(
             SwingConstants.VERTICAL,
             CodeEditor(tab, viewModel, editorTabState),
-            AutoCompleteOptions(viewModel, editorTabState) { model ->
-                viewModel.insertOrUpdateSelectedConfig(model)
-            }
+            AutoCompleteOptions(viewModel, editorTabState) { model -> viewModel.insertOrUpdateSelectedConfig(model) }
         ).apply {
+            setUI(CustomSplitPaneDivider())
             resizeWeight = 1.0
             isContinuousLayout = true
         }

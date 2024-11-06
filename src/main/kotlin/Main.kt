@@ -32,6 +32,7 @@ fun main() = SwingUtilities.invokeLater {
         setSize(toolkit.width - 100, toolkit.height - 100)
         contentPane.background = ThemeApp.colors.background.toAWTColor()
         title = "DeepCode Studio"
+        setLocationRelativeTo(null)
     }
 
     CodeEditorScreen(window)

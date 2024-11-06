@@ -9,4 +9,6 @@ interface EditorRepository {
 
     suspend fun updateSelectedConfig(model: SelectedConfigHistoryModel)
 
+    suspend fun deleteSelectedConfig(uniqueId: String = "", asmFilePath: String = "")
+
 }

@@ -64,6 +64,7 @@ class AutoCompleteOptions(
         val scroll = JScrollPane(options).apply {
             border = EmptyBorder(0, 5, 0, 10)
             verticalScrollBar.setUI(CustomScrollBar(ThemeApp.colors.secondColor.toAWTColor()))
+            horizontalScrollBar.setUI(CustomScrollBar())
         }
 
         autoCompleteOptionsLayout.setHorizontalGroup(

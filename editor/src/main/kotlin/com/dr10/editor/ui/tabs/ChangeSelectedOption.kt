@@ -1,11 +1,17 @@
 package com.dr10.editor.ui.tabs
 
 import com.dr10.common.ui.ThemeApp
+import com.dr10.common.ui.extensions.mouseEventListener
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.FlowStateHandler
 import com.dr10.common.utilities.setState
 import com.dr10.editor.ui.viewModels.EditorTabViewModel
-import java.awt.*
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.Insets
+import java.awt.RenderingHints
 import javax.swing.JLabel
 import javax.swing.JPanel
 

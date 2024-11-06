@@ -37,6 +37,7 @@ class Notification(
 ): JWindow() {
 
     private val notificationPanel: JPanel = JPanel()
+    private var timer: Timer? = null
 
     init { onCreate() }
 
@@ -73,6 +74,7 @@ class Notification(
                 override fun mouseClicked(e: java.awt.event.MouseEvent?) {
                     dismiss()
                     onDismiss()
+                    timer?.stop()
                 }
             })
         }
@@ -106,6 +108,8 @@ class Notification(
         // Position the notification and configure auto-dismiss if enabled
         setPosition()
         setupAutoDismiss()
+
+        isVisible = true
     }
 
     /**
@@ -113,7 +117,10 @@ class Notification(
      */
     private fun setupAutoDismiss() {
         if (isAutoDismiss) {
-            Timer(delay) { dismiss() }.apply {
+            timer = Timer(delay){
+                dismiss()
+                onDismiss()
+            }.apply {
                 isRepeats = false
                 start()
             }

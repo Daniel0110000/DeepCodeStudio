@@ -97,20 +97,25 @@ class FileTreeView(
         UIStateManager(
             stateFlow = fileTreeViewModel.state,
             onStateChanged = { state: FileTreeViewModel.FileTreeState ->
-                fileTree.model = FileSystemModel(File(state.currentPath), fileTree) {
-                    if (it) {
-                        // Show the loading label while the file tree is loading
-                        remove(scrollPanel)
-                        add(labelLoading, BorderLayout.CENTER)
-                    } else {
-                        // Show the file tree once loading is complete
-                        remove(labelLoading)
-                        add(scrollPanel, BorderLayout.CENTER)
-                    }
-                    // Refresh the UI to reflect changes
-                    revalidate()
-                    repaint()
-                }
+                fileTree.model = FileSystemModel(
+                    File(state.currentPath),
+                    fileTree,
+                    isLoading = {
+                        if (it) {
+                            // Show the loading label while the file tree is loading
+                            remove(scrollPanel)
+                            add(labelLoading, BorderLayout.CENTER)
+                        } else {
+                            // Show the file tree once loading is complete
+                            remove(labelLoading)
+                            add(scrollPanel, BorderLayout.CENTER)
+                        }
+                        // Refresh the UI to reflect changes
+                        revalidate()
+                        repaint()
+                    },
+                    onDeleteFile = { fileTreeViewModel.deleteSelectedConfig(it) }
+                )
             }
         )
 

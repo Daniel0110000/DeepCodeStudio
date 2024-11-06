@@ -1,5 +1,6 @@
 package com.dr10.settings.di
 
+import com.dr10.settings.ui.viewModels.SettingsViewModel
 import com.dr10.settings.ui.viewModels.SyntaxAndSuggestionsViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -10,4 +11,6 @@ import org.koin.core.component.inject
 class Inject: KoinComponent {
     // Injecting the [SyntaxAndSuggestionsViewModel]
     val syntaxAndSuggestionsViewModel: SyntaxAndSuggestionsViewModel by inject()
+    // Injecting the [SettingsViewModel]
+    val settingsViewModel: SettingsViewModel by inject()
 }

@@ -1,7 +1,7 @@
 package ui.fileTree
 
 import java.io.File
-import java.util.*
+import java.util.Vector
 import javax.swing.JTree
 import javax.swing.event.TreeModelEvent
 import javax.swing.event.TreeModelListener
@@ -11,7 +11,8 @@ import javax.swing.tree.TreePath
 class FileSystemModel(
     private val root: File,
     private val jTree: JTree,
-    private val isLoading: (Boolean) -> Unit
+    private val isLoading: (Boolean) -> Unit,
+    private val onDeleteFile: (File) -> Unit
 ): TreeModel {
 
     private val listeners = Vector<TreeModelListener>()
@@ -20,7 +21,10 @@ class FileSystemModel(
         val fileObserver = FileObserver(root.path){ isLoading(it) }
         fileObserver.registerCallbacksForChanges(
             onCreate = { file -> notifyFileSystemChange(file) },
-            onDelete = { file -> notifyFileSystemChange(file) }
+            onDelete = { file ->
+                onDeleteFile(file)
+                notifyFileSystemChange(file)
+            }
         )
     }
 

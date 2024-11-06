@@ -1,4 +1,4 @@
-package com.dr10.editor.ui.tabs
+package com.dr10.common.ui.extensions
 
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -14,7 +14,7 @@ import javax.swing.JPanel
 fun JPanel.mouseEventListener(
     onEnter: () -> Unit,
     onExit: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit = {}
 ) {
     isOpaque = false
     addMouseListener(object : MouseAdapter() {
