@@ -1,4 +1,4 @@
-package com.dr10.terminal
+package com.dr10.terminal.ui
 
 import androidx.compose.ui.res.useResource
 import com.jediterm.terminal.HyperlinkStyle

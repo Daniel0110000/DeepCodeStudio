@@ -1,4 +1,4 @@
-package com.dr10.editor.ui.tabs
+package com.dr10.common.ui.components
 
 import com.dr10.common.ui.AppIcons
 import com.dr10.common.ui.ThemeApp
@@ -12,7 +12,7 @@ import javax.swing.JPanel
 /**
  * Custom button used for closing tabs in the editor
  *
- * @property onCloseTab Callback function to be invoked when the button is clicked
+ * @property onCloseTab Callback function invoked when the button is clicked
  */
 class TabCloseButton(
     private val onCloseTab: () -> Unit

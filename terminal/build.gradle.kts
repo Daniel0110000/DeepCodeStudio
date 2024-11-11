@@ -36,6 +36,9 @@ dependencies {
     implementation("com.formdev:flatlaf:3.2.5")
     implementation("com.formdev:flatlaf-intellij-themes:3.2.5")
 
+    // Koin
+    implementation("io.insert-koin:koin-core:3.5.0")
+
     // Common module
     implementation(project(":common"))
 

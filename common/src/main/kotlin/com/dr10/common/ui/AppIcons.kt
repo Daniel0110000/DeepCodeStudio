@@ -20,6 +20,18 @@ object AppIcons {
     val deleteIcon = ImageResourceUtils.loadResourceImage("images/ic_delete.svg", 17, 17)
 
     val closeIcon = ImageResourceUtils.loadResourceImage("images/ic_close.svg", 15, 15)
+    val closeTerminalIcon = ImageResourceUtils.loadResourceImage("images/ic_close.svg", 18, 18)
+    val minimizeTerminalIcon = ImageResourceUtils.loadResourceImage("images/ic_minimize.svg", 18, 18)
+    val newTerminalIcon = ImageResourceUtils.loadResourceImage("images/ic_new_terminal.svg", 18, 18)
+    val arrowDownIcon = ImageResourceUtils.loadResourceImage("images/ic_arrow.svg", 18, 18)
+
+    val defaultShellLinux = ImageResourceUtils.loadResourceImage("images/ic_linux.svg", 15, 15)
+    val defaultShellWindows = ImageResourceUtils.loadResourceImage("images/ic_windows.svg", 15, 15)
+    val bashIcon = ImageResourceUtils.loadResourceImage("images/ic_bash.svg", 15, 15)
+    val zshIcon = ImageResourceUtils.loadResourceImage("images/ic_zsh_cmd.svg", 15, 15)
+    val fishIcon = ImageResourceUtils.loadResourceImage("images/ic_fish.svg", 15, 15)
+    val powershellIcon = ImageResourceUtils.loadResourceImage("images/ic_powershell.svg", 15, 15)
+    val cmdIcon = ImageResourceUtils.loadResourceImage("images/ic_zsh_cmd.svg", 15, 15)
 
     val readOnlyIcon = ImageResourceUtils.loadResourceImage("images/ic_lock.svg", 15, 15)
     val writeEnableIcon = ImageResourceUtils.loadResourceImage("images/ic_lock_open.svg", 15, 15)

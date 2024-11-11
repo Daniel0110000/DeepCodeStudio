@@ -54,7 +54,7 @@ class EditorPanel(private val tabsViewModel: TabsViewModel): JPanel() {
 
                         // A custom design is assigned to the tab
                         tabPanel.setTabComponentAt(tabPanel.tabCount - 1, TabView(tab) { tabToClose ->
-                            // "Find the index of the tab to close using the hashCode of its filePath
+                            // Find the index of the tab to close using the hashCode of its filePath
                             val tabIndex = tabPanel.indexOfTab(tabToClose.filePath.hashCode().toString())
                             // Get the index of the currently selected tab
                             val currentSelectedIndex = tabPanel.selectedIndex

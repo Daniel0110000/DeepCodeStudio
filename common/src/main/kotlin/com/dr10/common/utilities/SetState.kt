@@ -13,3 +13,10 @@ import kotlin.reflect.KProperty1
 fun <T, R> JComponent.setState(state: FlowStateHandler.StateWrapper<T>, prop: KProperty1<T, R>, updateUI: (R) -> Unit) {
     FlowStateHandler().run { bindTo(state, prop, updateUI) }
 }
+
+/**
+ * Function to set state without binding to UI
+ */
+fun <T, R> setState(state: FlowStateHandler.StateWrapper<T>, prop: KProperty1<T, R>, updateUI: (R) -> Unit) {
+    FlowStateHandler().run { bindTo(state, prop, updateUI) }
+}

@@ -1,4 +1,4 @@
-package com.dr10.terminal
+package com.dr10.terminal.ui
 
 import com.jediterm.terminal.emulator.ColorPalette
 import java.awt.Color

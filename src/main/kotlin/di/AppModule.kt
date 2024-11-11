@@ -10,5 +10,5 @@ import ui.viewModels.FileTreeViewModel
 val appModule = module {
     single { CodeEditorViewModel() }
     single { CodeEditorViewModel() }
-    single { FileTreeViewModel(get()) }
+    single { FileTreeViewModel(get(), get()) }
 }

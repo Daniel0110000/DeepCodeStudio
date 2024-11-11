@@ -3,7 +3,9 @@ package ui.components
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.DirectoryChooser
+import com.dr10.common.utilities.FlowStateHandler
 import com.dr10.common.utilities.UIStateManager
+import com.dr10.common.utilities.setState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,6 +26,7 @@ import javax.swing.JPanel
  */
 class VerticalBarOptions(
     private val codeEditorViewModel: CodeEditorViewModel,
+    private val codeEditorState: FlowStateHandler.StateWrapper<CodeEditorViewModel.CodeEditorState>,
     private val newDirectoryPath: (String?) -> Unit,
     private val collapseOrExtendSplitPane: () -> Unit,
     private val openTerminal: () -> Unit,
@@ -45,7 +48,11 @@ class VerticalBarOptions(
             10, Color(255, 255, 255, 25),
             ThemeApp.colors.secondColor.toAWTColor(), "images/ic_folder.svg",
             onClickListener = { collapseOrExtendSplitPane() },
-        )
+        ).apply {
+            setState(codeEditorState, CodeEditorViewModel.CodeEditorState::isCollapseSplitPane) { isCollapseSplitPane ->
+                isSelected = !isCollapseSplitPane
+            }
+        }
 
         val folderOption =  VerticalBarOption(
             10, Color(255, 255, 255, 25),
@@ -61,13 +68,21 @@ class VerticalBarOptions(
                 openTerminal()
                 codeEditorViewModel.setIsOpenSettings(false)
             }
-        )
+        ).apply {
+            setState(codeEditorState, CodeEditorViewModel.CodeEditorState::isOpenTerminal) { isOpenTerminal ->
+                isSelected = isOpenTerminal
+            }
+        }
 
         val settingsOption =  VerticalBarOption(
             10, Color(255, 255, 255, 25),
             ThemeApp.colors.secondColor.toAWTColor(), "images/ic_settings.svg",
             onClickListener = { openSettings() }
-        )
+        ).apply {
+            setState(codeEditorState, CodeEditorViewModel.CodeEditorState::isOpenSettings) { isOpenSettings ->
+                isSelected = isOpenSettings
+            }
+        }
 
         layout.setHorizontalGroup(
             layout.createSequentialGroup()
@@ -94,16 +109,6 @@ class VerticalBarOptions(
                 .addComponent(settingsOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addGap(10)
         )
-
-        // Set up a UI state manager to listen for changes in the code editor's state
-        UIStateManager(
-            stateFlow = codeEditorViewModel.state,
-            onStateChanged = { state: CodeEditorViewModel.CodeEditorState ->
-                settingsOption.isSelected = state.isOpenSettings
-                fileTreeOption.isSelected = !state.isCollapseSplitPane
-            }
-        )
-
     }
 
 }

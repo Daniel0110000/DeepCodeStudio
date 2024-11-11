@@ -2,7 +2,9 @@ package com.dr10.editor.ui.tabs
 
 import com.dr10.common.ui.AppIcons
 import com.dr10.common.ui.ThemeApp
+import com.dr10.common.ui.components.TabCloseButton
 import com.dr10.common.utilities.ColorUtils.toAWTColor
+import java.awt.Color
 import javax.swing.GroupLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -23,7 +25,6 @@ class TabView(
         val tabLayout = GroupLayout(this)
         layout = tabLayout
         isOpaque = false
-        background = ThemeApp.colors.secondColor.toAWTColor()
 
         val tabIcon = JLabel(AppIcons.asmIcon)
         val tabLabel = JLabel(tab.fileName).apply {

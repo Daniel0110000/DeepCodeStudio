@@ -3,6 +3,7 @@ package ui.viewModels
 import com.dr10.common.utilities.Constants
 import com.dr10.common.utilities.DocumentsManager
 import com.dr10.database.domain.repositories.EditorRepository
+import com.dr10.terminal.ui.viewModel.TerminalViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 class FileTreeViewModel(
-    private val editorRepository: EditorRepository
+    private val editorRepository: EditorRepository,
+    private val terminalViewModel: TerminalViewModel
 ) {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
@@ -41,14 +43,14 @@ class FileTreeViewModel(
 
     /**
      * Sets the [FileTreeState.currentPath] using the provided [value]
+     * ... and updates the current file tree path in [terminalViewModel]
      *
      * @param value The valur to assign
      */
     fun setCurrentPath(value: String) {
         coroutineScope.launch {
-            _state.update { it.copy(
-                currentPath = value
-            ) }
+            _state.update { it.copy(currentPath = value) }
+            terminalViewModel.setCurrentFileTreePath(value)
         }
     }
 

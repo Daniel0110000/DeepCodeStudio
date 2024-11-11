@@ -2,6 +2,7 @@ package com.dr10.common.ui
 
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme
+import java.awt.Color
 import java.awt.Insets
 import javax.swing.UIManager
 
@@ -19,11 +20,14 @@ object UIManagerConfig {
             UIManager.put("Tree.collapsedIcon", AppIcons.collapseIcon)
             UIManager.put("Tree.paintLines", false)
 
+            UIManager.put("TabbedPane.background", ThemeApp.awtColors.secondaryColor)
             UIManager.put("TabbedPane.hoverColor", ThemeApp.colors.hoverTab.toAWTColor())
-            UIManager.put("TabbedPane.selectedBackground", ThemeApp.colors.secondColor)
+            UIManager.put("TabbedPane.selectedBackground", ThemeApp.colors.secondColor.toAWTColor())
             UIManager.put("TabbedPane.underlineColor", ThemeApp.colors.buttonColor.toAWTColor())
             UIManager.put("TabbedPane.inactiveUnderlineColor", ThemeApp.colors.buttonColor.toAWTColor())
 
+            UIManager.put("ComboBox.buttonArrowColor", ThemeApp.awtColors.textColor)
+            UIManager.put("ComboBox.buttonBackground", ThemeApp.awtColors.secondaryColor)
         } catch (e: Exception) {
             println("Error: ${e.message}")
         }
