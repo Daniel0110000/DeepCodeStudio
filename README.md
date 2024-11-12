@@ -82,7 +82,7 @@ You can customize syntax highlighting colors in `Settings -> Syntax Keyword High
     - [ ] Syntax Highlighting ~
 - [ ] Program customization
 - [ ] Smarter autocompletion
-- [ ] Terminal type selection
+- [x] Terminal type selection
 - [ ] Automatic compilation and execution
 - [ ] Optimization
 - [ ] 🚀 New release
