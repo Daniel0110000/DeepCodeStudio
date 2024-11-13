@@ -16,7 +16,9 @@ import javax.swing.JTabbedPane
  *
  * @property tabsViewModel ViewModel that manages the state of the open tabs
  */
-class EditorPanel(private val tabsViewModel: TabsViewModel): JPanel() {
+class EditorPanel(
+    private val tabsViewModel: TabsViewModel
+): JPanel() {
 
     // Map to keep track of the open tabs
     private val openTabs = mutableMapOf<String, EditorTab>()
@@ -59,10 +61,11 @@ class EditorPanel(private val tabsViewModel: TabsViewModel): JPanel() {
                             // Get the index of the currently selected tab
                             val currentSelectedIndex = tabPanel.selectedIndex
                             if (tabIndex != -1 ) {
-                                // Remove the tab from the map and the tab panel
+                                // Remove the tab from the map and the tab panel, and close the auto save process
                                 openTabs.remove(tabToClose.filePath)
                                 tabPanel.remove(tabIndex)
                                 tabsViewModel.closeTab(tab)
+                                editorTab.cancelAutoSaveProcess()
 
                                 // Adjust the selected tab after closing the current one
                                 if (currentSelectedIndex == tabIndex) {

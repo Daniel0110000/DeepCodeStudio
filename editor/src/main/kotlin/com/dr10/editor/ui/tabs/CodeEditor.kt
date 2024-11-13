@@ -25,10 +25,13 @@ import org.fife.ui.rtextarea.Gutter.GutterBorder
 import org.fife.ui.rtextarea.RTextScrollPane
 import java.io.File
 import java.io.StringReader
+import java.nio.file.Paths
 import javax.swing.GroupLayout
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import javax.swing.border.EmptyBorder
+import javax.swing.event.DocumentEvent
+import javax.swing.event.DocumentListener
 
 
 /**
@@ -46,6 +49,8 @@ class CodeEditor(
 
     private val classLoader = JavaUtils.createCustomClasLoader()
     private val abstractTokenMakerFactory: AbstractTokenMakerFactory = TokenMakerFactory.getDefaultInstance() as AbstractTokenMakerFactory
+
+    private lateinit var autoSaveProcess: AutoSaveProcess
 
     init {
         onCreate()
@@ -76,6 +81,21 @@ class CodeEditor(
                 syntaxEditingStyle = syntaxKey
             }
         }
+
+        autoSaveProcess = AutoSaveProcess(
+            filePath = Paths.get(tab.filePath),
+            syntaxTextArea = editor
+        )
+
+        // Listens to document changes and trigger auto save
+        editor.document.addDocumentListener(object: DocumentListener {
+            override fun insertUpdate(e: DocumentEvent) { autoSaveProcess.contentChanged() }
+
+            override fun removeUpdate(e: DocumentEvent) { autoSaveProcess.contentChanged() }
+
+            override fun changedUpdate(e: DocumentEvent) { autoSaveProcess.contentChanged() }
+
+        })
 
         setState(editorTabState, EditorTabViewModel.EditorTabState::suggestionsFromJson) { suggestions ->
             val provider = createCompletionProvider(suggestions)
@@ -124,4 +144,7 @@ class CodeEditor(
 
         return provider
     }
+
+    fun cancelAutoSaveProcess() { autoSaveProcess.shutdown() }
+
 }

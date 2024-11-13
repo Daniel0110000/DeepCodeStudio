@@ -18,7 +18,11 @@ import javax.swing.SwingConstants
  *
  * @property tab The model containing the tab's information
  */
-class EditorTab(private val tab: TabModel): JPanel() {
+class EditorTab(
+    private val tab: TabModel
+): JPanel() {
+
+    private lateinit var codeEditor: CodeEditor
 
     private val viewModel: EditorTabViewModel = EditorTabViewModel(
         Inject().syntaxAndSuggestionsRepository,
@@ -40,9 +44,11 @@ class EditorTab(private val tab: TabModel): JPanel() {
         layout = editorTabLayout
         background = ThemeApp.colors.background.toAWTColor()
 
+        codeEditor = CodeEditor(tab, viewModel, editorTabState)
+
         val editorSplitPane = JSplitPane(
             SwingConstants.VERTICAL,
-            CodeEditor(tab, viewModel, editorTabState),
+            codeEditor,
             AutoCompleteOptions(viewModel, editorTabState) { model -> viewModel.insertOrUpdateSelectedConfig(model) }
         ).apply {
             setUI(CustomSplitPaneDivider())
@@ -74,7 +80,8 @@ class EditorTab(private val tab: TabModel): JPanel() {
             editorTabLayout.createSequentialGroup()
                 .addComponent(editorSplitPane, 0, 0, Short.MAX_VALUE.toInt())
         )
-
     }
+
+    fun cancelAutoSaveProcess() { codeEditor.cancelAutoSaveProcess() }
 
 }

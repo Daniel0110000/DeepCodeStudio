@@ -23,7 +23,7 @@ class TabsViewModel {
      * @property tabs List of currently open tabs
      */
     data class TabsState(
-        val tabs: List<TabModel> = emptyList(),
+        val tabs: List<TabModel> = emptyList()
     )
 
 
@@ -35,9 +35,7 @@ class TabsViewModel {
     fun openTab(file: File) {
         coroutineScope.launch {
             val newTab = TabModel(file.name, file.absolutePath)
-            _state.update { state -> state.copy(
-                tabs = state.tabs + newTab
-            ) }
+            _state.update { state -> state.copy(tabs = state.tabs + newTab) }
         }
     }
 
