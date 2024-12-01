@@ -76,7 +76,7 @@ You can customize syntax highlighting colors in `Settings -> Syntax Keyword High
 </div>
 
 ## 🚧 RoadMap
-- [ ] Complete migration from **Jetpack Compose Desktop** to **Swing**
+- [ ] Complete migration from **Jetpack Compose Desktop** to **Swing** ~
 - [ ] Default settings for different assemblers
     - [ ] Autocomplete
     - [ ] Syntax Highlighting ~
