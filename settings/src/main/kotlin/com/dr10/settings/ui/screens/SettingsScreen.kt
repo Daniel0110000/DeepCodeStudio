@@ -4,6 +4,7 @@ import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.CustomSplitPaneDivider
 import com.dr10.settings.di.Inject
 import com.dr10.settings.ui.components.VerticalSettingOptions
+import com.dr10.settings.ui.screens.colorScheme.ColorSchemeSettingsScreen
 import com.dr10.settings.ui.screens.syntaxAndSuggestions.SyntaxAndSuggestionsScreen
 import com.dr10.settings.ui.viewModels.SettingsViewModel
 import java.awt.CardLayout
@@ -30,7 +31,7 @@ class SettingsScreen: JPanel() {
         val screensContainer = CardLayout()
         val screensPanel = JPanel(screensContainer).apply {
             add(SyntaxAndSuggestionsScreen(), Screens.SYNTAX_KEYWORD_HIGHLIGHTER_SETTINGS.name)
-            add(SyntaxHighlightSettingsScreen(), Screens.COLOR_SCHEME_SETTINGS.name)
+            add(ColorSchemeSettingsScreen(), Screens.COLOR_SCHEME_SETTINGS.name)
         }
 
         val verticalSettingOptions = VerticalSettingOptions(viewModel) { option ->

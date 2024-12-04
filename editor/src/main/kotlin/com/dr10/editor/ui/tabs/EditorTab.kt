@@ -6,6 +6,8 @@ import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.FlowStateHandler
 import com.dr10.common.utilities.setState
 import com.dr10.editor.di.Inject
+import com.dr10.editor.ui.tabs.components.AutoCompleteOptions
+import com.dr10.editor.ui.tabs.components.CodeEditor
 import com.dr10.editor.ui.viewModels.EditorTabViewModel
 import java.awt.Dimension
 import javax.swing.GroupLayout
@@ -49,7 +51,7 @@ class EditorTab(
         val editorSplitPane = JSplitPane(
             SwingConstants.VERTICAL,
             codeEditor,
-            AutoCompleteOptions(viewModel, editorTabState) { model -> viewModel.insertOrUpdateSelectedConfig(model) }
+            AutoCompleteOptions(viewModel, editorTabState)
         ).apply {
             setUI(CustomSplitPaneDivider())
             resizeWeight = 1.0
@@ -65,6 +67,7 @@ class EditorTab(
                 editorSplitPane.dividerSize = 0
                 editorSplitPane.rightComponent.minimumSize = Dimension()
             } else {
+                viewModel.getAllConfigs()
                 editorSplitPane.setDividerLocation(dividerLocation)
                 editorSplitPane.dividerSize = 3
                 editorSplitPane.rightComponent.minimumSize = Dimension(200,  Short.MAX_VALUE.toInt())

@@ -2,7 +2,6 @@ package com.dr10.common.ui
 
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme
-import java.awt.Color
 import java.awt.Insets
 import javax.swing.UIManager
 
@@ -28,6 +27,13 @@ object UIManagerConfig {
 
             UIManager.put("ComboBox.buttonArrowColor", ThemeApp.awtColors.textColor)
             UIManager.put("ComboBox.buttonBackground", ThemeApp.awtColors.secondaryColor)
+
+            UIManager.put("Slider.trackColor", ThemeApp.awtColors.primaryColor)
+            UIManager.put("Slider.trackWidth", 5)
+            UIManager.put("Slider.trackValueColor", ThemeApp.awtColors.complementaryColor)
+            UIManager.put("Slider.trackColor", ThemeApp.awtColors.primaryColor)
+            UIManager.put("Slider.thumbColor", ThemeApp.awtColors.complementaryColor)
+
         } catch (e: Exception) {
             println("Error: ${e.message}")
         }

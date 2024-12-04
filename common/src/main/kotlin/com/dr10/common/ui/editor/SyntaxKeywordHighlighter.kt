@@ -3,7 +3,6 @@ package com.dr10.common.ui.editor
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import com.dr10.common.models.SyntaxHighlightOptionModel
 import com.dr10.common.models.SyntaxHighlightRegexModel
 import com.dr10.common.utilities.ColorUtils
@@ -26,24 +25,24 @@ object SyntaxKeywordHighlighter {
 
         val regExp = RegExpTest(model)
 
-        withStyle(SpanStyle(ColorUtils.hexToColor(colors.simpleColor))){
-            append(str)
-            addStyle(colors.instructionColor, str.lowercase(), regExp.instructions)
-            addStyle(colors.variableColor, str.lowercase(), regExp.variables)
-            addStyle(colors.constantColor, str.lowercase(), regExp.constants)
-            addStyle(colors.segmentColor, str.lowercase(), regExp.segments)
-            addStyle(colors.systemCallColor, str.lowercase(), regExp.systemCalls)
-            addStyle(colors.registerColor, str.lowercase(), regExp.registers)
-            addStyle(colors.arithmeticInstructionColor, str.lowercase(), regExp.arithmeticInstructions)
-            addStyle(colors.logicalInstructionColor, str.lowercase(), regExp.logicalInstructions)
-            addStyle(colors.conditionColor, str.lowercase(), regExp.conditions)
-            addStyle(colors.loopColor, str.lowercase(), regExp.loops)
-            addStyle(colors.memoryManagementColor, str.lowercase(), regExp.memoryManagements)
-            addStyle(colors.numberColor, str.lowercase(), regExp.number)
-            addStyle(colors.commentColor, str.lowercase(), regExp.comment)
-            addStyle(colors.stringColor, str.lowercase(), regExp.string)
-            addStyle(colors.labelColor, str.lowercase(), regExp.label)
-        }
+//        withStyle(SpanStyle(ColorUtils.hexToColor(colors.simpleColor))){
+//            append(str)
+//            addStyle(colors.instructionColor, str.lowercase(), regExp.instructions)
+//            addStyle(colors.variableColor, str.lowercase(), regExp.variables)
+//            addStyle(colors.constantColor, str.lowercase(), regExp.constants)
+//            addStyle(colors.segmentColor, str.lowercase(), regExp.segments)
+//            addStyle(colors.systemCallColor, str.lowercase(), regExp.systemCalls)
+//            addStyle(colors.registerColor, str.lowercase(), regExp.registers)
+//            addStyle(colors.arithmeticInstructionColor, str.lowercase(), regExp.arithmeticInstructions)
+//            addStyle(colors.logicalInstructionColor, str.lowercase(), regExp.logicalInstructions)
+//            addStyle(colors.conditionColor, str.lowercase(), regExp.conditions)
+//            addStyle(colors.loopColor, str.lowercase(), regExp.loops)
+//            addStyle(colors.memoryManagementColor, str.lowercase(), regExp.memoryManagements)
+//            addStyle(colors.numberColor, str.lowercase(), regExp.number)
+//            addStyle(colors.commentColor, str.lowercase(), regExp.comment)
+//            addStyle(colors.stringColor, str.lowercase(), regExp.string)
+//            addStyle(colors.labelColor, str.lowercase(), regExp.label)
+//        }
     }
 
     /**

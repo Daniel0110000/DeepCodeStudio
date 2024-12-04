@@ -39,7 +39,7 @@ class EditorTabViewModel(
      */
     data class EditorTabState(
         val currentFilePath: String = "",
-        val allConfigs: List<SyntaxAndSuggestionModel> = emptyList(),
+        val allConfigs: List<SelectedConfigHistoryModel> = emptyList(),
         val isEditable: Boolean = true,
         val isCollapseAutocompleteOptions: Boolean = true,
         val selectedConfig: SelectedConfigHistoryModel? = null,
@@ -53,12 +53,13 @@ class EditorTabViewModel(
     fun getSelectedConfig() {
         coroutineScope.launch {
             val config = editorRepository.getSelectedConfig(_state.value.currentFilePath)
-            setIsCollapseAutocompleteOptions(config != null)
-            if (config != null) _state.update {
-                it.copy(
+            updateState {
+                copy(
                     selectedConfig = config,
-                    suggestionsFromJson = JsonUtils.jsonToListString(config.jsonPath)
+                    suggestionsFromJson = config?.let { JsonUtils.jsonToListString(it.jsonPath) } ?: emptyList(),
+                    isCollapseAutocompleteOptions = config != null
                 )
+
             }
         }
     }
@@ -68,26 +69,27 @@ class EditorTabViewModel(
      *
      * @param model The [SyntaxAndSuggestionModel] to use for the configuration
      */
-    fun insertOrUpdateSelectedConfig(model: SyntaxAndSuggestionModel) {
+    fun insertOrUpdateSelectedConfig(model: SelectedConfigHistoryModel) {
         coroutineScope.launch {
-            val newModel = SelectedConfigHistoryModel(
-                uniqueId = model.uniqueId,
-                optionName = model.optionName,
-                className = model.className,
-                asmFilePath = _state.value.currentFilePath,
-                jsonPath = model.jsonPath
-            )
-            if (_state.value.selectedConfig != null) editorRepository.updateSelectedConfig(newModel)
-            else editorRepository.insertSelectedConfig(newModel)
-
-            _state.update {
-                it.copy(
-                    selectedConfig = newModel,
-                    suggestionsFromJson = JsonUtils.jsonToListString(newModel.jsonPath)
+            val currentState = _state.value
+            val newModel = model.copy(asmFilePath = currentState.currentFilePath)
+            if (currentState.selectedConfig != null) {
+                editorRepository.updateSelectedConfig(
+                    uniqueId = model.uniqueId,
+                    asmFilePath = currentState.currentFilePath
+                )
+            } else {
+                editorRepository.insertSelectedConfig(
+                    uniqueId = model.uniqueId,
+                    asmFilePath = currentState.currentFilePath
                 )
             }
 
-            setIsCollapseAutocompleteOptions(true)
+            updateState { copy(
+                selectedConfig = newModel,
+                suggestionsFromJson = JsonUtils.jsonToListString(newModel.jsonPath),
+                isCollapseAutocompleteOptions = true
+            ) }
         }
     }
 
@@ -96,22 +98,23 @@ class EditorTabViewModel(
      */
     fun getAllConfigs() {
         coroutineScope.launch {
-            _state.update { it.copy(
-                allConfigs = syntaxAndSuggestionsRepository.getConfigsAsList()
-            ) }
+            val configs = editorRepository.getAllConfigs()
+            updateState { copy(allConfigs = configs) }
         }
     }
-
+    
     fun setCurrentFilePath(value: String) {
-        _state.update { it.copy(currentFilePath = value) }
+        updateState { copy(currentFilePath = value) }
     }
 
     fun setIsEditable(value: Boolean) {
-        _state.update { it.copy(isEditable = value) }
+        updateState { copy(isEditable = value) }
     }
 
     fun setIsCollapseAutocompleteOptions(value: Boolean) {
-        _state.update { it.copy(isCollapseAutocompleteOptions = value) }
+        updateState { copy(isCollapseAutocompleteOptions = value) }
     }
+
+    private fun updateState(update: EditorTabState.() -> EditorTabState) { _state.update(update) }
 
 }

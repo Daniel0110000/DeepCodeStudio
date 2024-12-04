@@ -1,56 +1,60 @@
 package com.dr10.database.data.repositories
 
 import com.dr10.common.models.SelectedConfigHistoryModel
-import com.dr10.database.data.mappers.toEntity
-import com.dr10.database.data.mappers.toModel
-import com.dr10.database.data.room.SelectedConfigsHistoryDao
+import com.dr10.database.data.mappers.toHistoryModel
+import com.dr10.database.data.room.Queries
+import com.dr10.database.data.room.entities.SelectedConfigHistoryEntity
+import com.dr10.database.data.room.relations.ColorSchemeRelation
 import com.dr10.database.domain.repositories.EditorRepository
 
 class EditorRepositoryImpl(
-    private val selectedConfigsHistoryDao: SelectedConfigsHistoryDao
+    private val queries: Queries
 ): EditorRepository {
 
-    /**
-     * Gets the selected config associated with the [asmFile] param
-     *
-     * @param asmFile The assembly file path to get its configuration.
-     * @return The [SelectedConfigHistoryModel] associated with the [asmFile]
-     */
-    override suspend fun getSelectedConfig(asmFile: String): SelectedConfigHistoryModel? =
-        selectedConfigsHistoryDao.getSelectedConfig(asmFile)?.toModel()
+    override suspend fun getAllConfigs(): List<SelectedConfigHistoryModel> =
+        queries.getAllColorSchemesAsList().map(ColorSchemeRelation::toHistoryModel)
 
-    /**
-     * Inserts a new assembly file configuration
-     *
-     * @param model The model containing the necessary data to be added
-     */
-    override suspend fun insertSelectedConfig(model: SelectedConfigHistoryModel) {
-        selectedConfigsHistoryDao.insert(model.toEntity())
-    }
+    override suspend fun getSelectedConfig(asmFilePath: String): SelectedConfigHistoryModel? =
+        queries.getSelectedConfig(asmFilePath)?.let {
+            val syntaxEntity = it.syntaxAndSuggestionsEntity
+            val colorEntity = it.colorSchemesEntity
+            SelectedConfigHistoryModel(
+                uniqueId = syntaxEntity.uniqueId,
+                optionName = syntaxEntity.optionName,
+                className = syntaxEntity.className,
+                jsonPath = syntaxEntity.jsonPath,
+                simpleColor = colorEntity.simpleColor,
+                commentColor = colorEntity.commentColor,
+                reservedWordColor = colorEntity.reservedWordColor,
+                reservedWord2Color = colorEntity.reservedWord2Color,
+                hexadecimalColor = colorEntity.hexadecimalColor,
+                numberColor = colorEntity.numberColor,
+                functionColor = colorEntity.functionColor,
+                stringColor = colorEntity.stringColor,
+                dataTypeColor = colorEntity.dataTypeColor,
+                variableColor = colorEntity.variableColor,
+                operatorColor = colorEntity.operatorColor,
+                processorColor = colorEntity.processorColor
+            )
+        }
 
-    /**
-     * Updates the selected config using the asmFilePath as reference
-     *
-     * @param model The model containing the necessary data to update the configuration
-     */
-    override suspend fun updateSelectedConfig(model: SelectedConfigHistoryModel) {
-        selectedConfigsHistoryDao.update(
-            uniqueId = model.uniqueId,
-            optionName = model.optionName,
-            className = model.className,
-            asmFilePath = model.asmFilePath,
-            jsonPath = model.jsonPath
+    override suspend fun insertSelectedConfig(uniqueId: String, asmFilePath: String) {
+        queries.insertSelectedConfigHistory(
+            SelectedConfigHistoryEntity(
+                uniqueId = uniqueId,
+                asmFilePath = asmFilePath
+            )
         )
     }
 
-    /**
-     * Deletes the selected config using the [uniqueId] or [asmFilePath]
-     *
-     * @param uniqueId The unique id of the selected config
-     * @param asmFilePath The assembly file path of the selected config
-     */
-    override suspend fun deleteSelectedConfig(uniqueId: String, asmFilePath: String) {
-        selectedConfigsHistoryDao.delete(uniqueId, asmFilePath)
+    override suspend fun updateSelectedConfig(uniqueId: String, asmFilePath: String) {
+        queries.updateSelectedConfig(
+            uniqueId = uniqueId,
+            asmFilePath = asmFilePath
+        )
     }
 
+    override suspend fun deleteSelectedConfig(asmFilePath: String) {
+        queries.deleteSelectedConfig(asmFilePath)
+    }
 }

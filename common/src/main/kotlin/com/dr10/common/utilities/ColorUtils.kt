@@ -33,4 +33,24 @@ object ColorUtils {
      */
     fun Color.toAWTColor(): java.awt.Color =
         java.awt.Color(red, green, blue, alpha)
+
+    /**
+     * Converts a [String] to an AWT [java.awt.color]
+     *
+     * @param color The [String] to convert
+     * @return [java.awt.color] The converted color
+     */
+    fun stringToColor(color: String): java.awt.Color {
+        val colorValues = color.split(",").map { it.toInt() }
+        return java.awt.Color(colorValues[0], colorValues[1], colorValues[2])
+    }
+
+    /**
+     * Converts a [java.awt.Color] to a [String]
+     *
+     * @param color The [java.awt.Color] to convert
+     * @return [String] The converted string
+     */
+    fun colorToString(color: java.awt.Color): String = "${color.red},${color.green},${color.blue}"
+
 }

@@ -1,16 +1,11 @@
 package com.dr10.database.data.mappers
 
 import com.dr10.common.models.SyntaxAndSuggestionModel
-import com.dr10.database.data.room.SyntaxAndSuggestionsEntity
+import com.dr10.database.data.room.entities.SyntaxAndSuggestionsEntity
 
-/**
- * Convert [SyntaxAndSuggestionsEntity] model to a [SyntaxAndSuggestionModel] model
- *
- * @return The converted [SyntaxAndSuggestionModel] model
- */
 fun SyntaxAndSuggestionsEntity.toModel(): SyntaxAndSuggestionModel = SyntaxAndSuggestionModel(
-    uniqueId = uniqueId,
-    optionName = optionName,
-    className = className,
-    jsonPath = jsonPath
+    uniqueId = this.uniqueId,
+    optionName = this.optionName,
+    className = this.className,
+    jsonPath = this.jsonPath
 )

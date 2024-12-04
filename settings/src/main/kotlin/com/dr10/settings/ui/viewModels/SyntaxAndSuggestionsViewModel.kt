@@ -1,9 +1,10 @@
 package com.dr10.settings.ui.viewModels
 
+import com.dr10.common.models.ColorSchemeModel
 import com.dr10.common.models.SyntaxAndSuggestionModel
+import com.dr10.database.domain.repositories.ColorSchemeRepository
 import com.dr10.database.domain.repositories.EditorRepository
 import com.dr10.database.domain.repositories.SyntaxAndSuggestionsRepository
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +21,9 @@ import java.util.UUID
  */
 class SyntaxAndSuggestionsViewModel(
     private val syntaxAndSuggestionsRepository: SyntaxAndSuggestionsRepository,
+    private val colorSchemeRepository: ColorSchemeRepository,
     private val editorRepository: EditorRepository
-): ViewModel() {
+) {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -49,22 +51,25 @@ class SyntaxAndSuggestionsViewModel(
         val isCollapseJsonPreviewContainer: Boolean = false
     )
 
-    init {
+    init { retrieveConfigs() }
+
+    private fun retrieveConfigs() {
         // Retrieves all the syntax and suggestion configurations
         scope.launch {
-            syntaxAndSuggestionsRepository.getConfigs().collect {
-                _state.value = if (it.isNotEmpty()) {
+            syntaxAndSuggestionsRepository.getConfigs().collect { configs ->
+                val newState = if (configs.isNotEmpty()) {
                     _state.value.copy(
-                        allConfigs = it,
-                        selectedOption = it.first(),
+                        allConfigs = configs,
+                        selectedOption = configs.first(),
                         isCollapseJsonPreviewContainer = false
                     )
                 } else {
                     _state.value.copy(
-                        allConfigs = it,
+                        allConfigs = configs,
                         isCollapseJsonPreviewContainer = true
                     )
                 }
+                _state.emit(newState)
             }
         }
     }
@@ -73,18 +78,20 @@ class SyntaxAndSuggestionsViewModel(
      * Adds a new syntax and suggestion configuration
      */
     fun addConfig() {
-        if (
-            _state.value.optionName.isNotEmpty() &&
-            _state.value.jsonPath.isNotEmpty()
-        ) {
+        val currentState = _state.value
+        if (currentState.optionName.isNotEmpty() && currentState.jsonPath.isNotEmpty()) {
             scope.launch {
+                val uniqueId = UUID.randomUUID().toString()
                 syntaxAndSuggestionsRepository.addConfig(
                     SyntaxAndSuggestionModel(
-                        uniqueId = UUID.randomUUID().toString(),
-                        optionName = _state.value.optionName,
-                        jsonPath = _state.value.jsonPath
+                        uniqueId = uniqueId,
+                        optionName = currentState.optionName,
+                        jsonPath = currentState.jsonPath
                     )
-                ) { setIsLoading(it) }
+                ) {
+                    if (!it) colorSchemeRepository.insertColorScheme(ColorSchemeModel(uniqueId = uniqueId))
+                    setIsLoading(it)
+                }
                 clearFields()
             }
         }
@@ -97,19 +104,30 @@ class SyntaxAndSuggestionsViewModel(
         scope.launch {
             val selectedOption = _state.value.selectedOption
             syntaxAndSuggestionsRepository.deleteConfig(selectedOption)
-            editorRepository.deleteSelectedConfig(selectedOption.uniqueId)
-            _state.value =_state.value.copy(defaultIndexSelected = 1)
+            updateState { copy(defaultIndexSelected = 1) }
         }
     }
 
-    private fun clearFields() { _state.value = _state.value.copy(optionName = "", jsonPath = "") }
+    private fun clearFields() {
+        updateState { copy(optionName = "", jsonPath = "") }
+    }
 
-    fun setOptionName(name: String) { _state.value = _state.value.copy(optionName = name) }
+    fun setOptionName(name: String) {
+        updateState { copy(optionName = name) }
+    }
 
-    fun setJsonPath(path: String) { _state.value = _state.value.copy(jsonPath = path) }
+    fun setJsonPath(path: String) {
+        updateState { copy(jsonPath = path) }
+    }
 
     fun setSelectedOption(option: SyntaxAndSuggestionModel) { _state.value = _state.value.copy(selectedOption = option) }
 
-    private fun setIsLoading(isLoading: Boolean) { _state.value = _state.value.copy(isLoading = isLoading) }
+    private fun setIsLoading(isLoading: Boolean) {
+        updateState { copy(isLoading = isLoading) }
+    }
+
+    private fun updateState(update: SyntaxAndSuggestionsState.() -> SyntaxAndSuggestionsState) {
+        _state.value = _state.value.update()
+    }
 
 }

@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("app.cash.sqldelight") version "2.0.0"
     id("com.google.devtools.ksp")
     id("androidx.room")
 }
@@ -11,14 +10,6 @@ version = "1.0.0"
 repositories {
     mavenCentral()
     google()
-}
-
-sqldelight {
-    databases {
-        create("AppDatabase") {
-            packageName.set("app.deepCodeStudio.database")
-        }
-    }
 }
 
 room {
@@ -35,13 +26,9 @@ dependencies {
     implementation("io.insert-koin:koin-core:3.5.0")
 
     // Room
-    implementation("androidx.room:room-runtime:2.7.0-alpha10")
-    implementation("androidx.sqlite:sqlite-bundled-jvm:2.5.0-alpha10")
-    ksp("androidx.room:room-compiler:2.7.0-alpha02")
-
-    // SQLite
-    implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
-    implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
+    implementation("androidx.room:room-runtime-jvm:2.7.0-alpha11")
+    implementation("androidx.sqlite:sqlite-bundled-jvm:2.5.0-alpha11")
+    ksp("androidx.room:room-compiler:2.7.0-alpha11")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")

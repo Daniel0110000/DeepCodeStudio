@@ -7,7 +7,8 @@ import com.dr10.common.utilities.JFlexProcessor
 import com.dr10.common.utilities.JsonUtils
 import com.dr10.database.data.mappers.toEntity
 import com.dr10.database.data.mappers.toModel
-import com.dr10.database.data.room.SyntaxAndSuggestionsDao
+import com.dr10.database.data.room.Queries
+import com.dr10.database.data.room.entities.SyntaxAndSuggestionsEntity
 import com.dr10.database.domain.repositories.SyntaxAndSuggestionsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,10 +17,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class SyntaxAndSuggestionsRepositoryImpl(
-    private val syntaxAndSuggestionsDao: SyntaxAndSuggestionsDao
+    private val queries: Queries
 ): SyntaxAndSuggestionsRepository {
-
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     /**
      * Adds a new configuration for syntax highlighting and suggestions
@@ -30,17 +29,24 @@ class SyntaxAndSuggestionsRepositoryImpl(
      */
     override suspend fun addConfig(
         model: SyntaxAndSuggestionModel,
-        loading: (Boolean) -> Unit
+        loading: suspend (Boolean) -> Unit
     ) {
         CallHandler.callHandler {
             loading(true)
             val syntaxModel = JsonUtils.jsonToSyntaxHighlightModel(jsonPath = model.jsonPath)
             JFlexProcessor.generateAndCompileSyntaxFiles(
-                optionName = model.optionName,
+                optionNameBase = model.optionName,
                 syntaxHighlightModel = syntaxModel
             ) { className ->
-                scope.launch {
-                    syntaxAndSuggestionsDao.insert(model.copy(className = className).toEntity())
+                CoroutineScope(Dispatchers.IO).launch {
+                    queries.insertSyntaxAndSuggestion(
+                        SyntaxAndSuggestionsEntity(
+                            uniqueId = model.uniqueId,
+                            optionName = model.optionName,
+                            className = className,
+                            jsonPath = model.jsonPath
+                        )
+                    )
                     loading(false)
                 }
             }
@@ -56,7 +62,7 @@ class SyntaxAndSuggestionsRepositoryImpl(
     override suspend fun deleteConfig(model: SyntaxAndSuggestionModel) {
         CallHandler.callHandler {
             DocumentsManager.deleteGeneratedFiles(model.className)
-            syntaxAndSuggestionsDao.delete(model.uniqueId)
+            queries.deleteSyntaxAndSuggestion(model.toEntity())
         }
     }
 
@@ -65,8 +71,8 @@ class SyntaxAndSuggestionsRepositoryImpl(
      *
      * @return A flow emitting a list of all syntax and suggestion models
      */
-    override suspend fun getConfigs(): Flow<List<SyntaxAndSuggestionModel>>  =
-        syntaxAndSuggestionsDao.getAll().map { list -> list.map { it.toModel() } }
+    override suspend fun getConfigs(): Flow<List<SyntaxAndSuggestionModel>> =
+        queries.getAllSyntaxAndSuggestions().map { entities -> entities.map(SyntaxAndSuggestionsEntity::toModel) }
 
     /**
      * Retrieves all configurations as [List<SyntaxAndSuggestionModel>]
@@ -74,5 +80,6 @@ class SyntaxAndSuggestionsRepositoryImpl(
      * @return A [List<SyntaxAndSuggestionModel>] with all syntax and suggestion models
      */
     override suspend fun getConfigsAsList(): List<SyntaxAndSuggestionModel> =
-        syntaxAndSuggestionsDao.getAllAsList().map { it.toModel() }
+        queries.getAllSyntaxAndSuggestionsAsList().map(SyntaxAndSuggestionsEntity::toModel)
+
 }

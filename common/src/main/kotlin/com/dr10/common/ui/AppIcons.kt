@@ -21,9 +21,9 @@ object AppIcons {
 
     val closeIcon = ImageResourceUtils.loadResourceImage("images/ic_close.svg", 15, 15)
     val closeTerminalIcon = ImageResourceUtils.loadResourceImage("images/ic_close.svg", 18, 18)
-    val minimizeTerminalIcon = ImageResourceUtils.loadResourceImage("images/ic_minimize.svg", 18, 18)
     val newTerminalIcon = ImageResourceUtils.loadResourceImage("images/ic_new_terminal.svg", 18, 18)
-    val arrowDownIcon = ImageResourceUtils.loadResourceImage("images/ic_arrow.svg", 18, 18)
+    val arrowDownIcon = ImageResourceUtils.loadResourceImage("images/ic_arrow.svg", 20, 20)
+    val arrowRightIcon = ImageResourceUtils.loadResourceImage("images/ic_arrow_right.svg", 20, 20)
 
     val defaultShellLinux = ImageResourceUtils.loadResourceImage("images/ic_linux.svg", 15, 15)
     val defaultShellWindows = ImageResourceUtils.loadResourceImage("images/ic_windows.svg", 15, 15)

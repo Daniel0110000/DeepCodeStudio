@@ -4,7 +4,7 @@ import com.dr10.common.models.SyntaxAndSuggestionModel
 import kotlinx.coroutines.flow.Flow
 
 interface SyntaxAndSuggestionsRepository {
-    suspend fun addConfig(model: SyntaxAndSuggestionModel, loading: (Boolean) -> Unit)
+    suspend fun addConfig(model: SyntaxAndSuggestionModel, loading: suspend (Boolean) -> Unit)
 
     suspend fun deleteConfig(model: SyntaxAndSuggestionModel)
 

@@ -2,20 +2,16 @@ package com.dr10.database.di
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import app.deepCodeStudio.database.AppDatabase
 import com.dr10.common.utilities.Constants
 import com.dr10.common.utilities.DocumentsManager
-import com.dr10.database.data.repositories.AutocompleteSettingsRepositoryImpl
+import com.dr10.database.data.repositories.ColorSchemeRepositoryImpl
 import com.dr10.database.data.repositories.EditorRepositoryImpl
 import com.dr10.database.data.repositories.SyntaxAndSuggestionsRepositoryImpl
-import com.dr10.database.data.repositories.SyntaxHighlightSettingsRepositoryImpl
-import com.dr10.database.data.room.SelectedConfigsHistoryDao
-import com.dr10.database.data.room.SyntaxAndSuggestionsDao
-import com.dr10.database.domain.repositories.AutocompleteSettingsRepository
+import com.dr10.database.data.room.AppDatabase
+import com.dr10.database.data.room.Queries
+import com.dr10.database.domain.repositories.ColorSchemeRepository
 import com.dr10.database.domain.repositories.EditorRepository
 import com.dr10.database.domain.repositories.SyntaxAndSuggestionsRepository
-import com.dr10.database.domain.repositories.SyntaxHighlightSettingsRepository
 import org.koin.dsl.module
 import java.io.File
 
@@ -24,31 +20,19 @@ import java.io.File
  */
 val databaseModule = module {
     single<AppDatabase> {
-        val driver = JdbcSqliteDriver("${JdbcSqliteDriver.IN_MEMORY}/${DocumentsManager.databaseDirectory.absolutePath}/${Constants.DATABASE_NAME}")
-        AppDatabase.Schema.create(driver)
-        AppDatabase(driver)
-    }
-
-    single<com.dr10.database.data.room.AppDatabase> {
         val dbFilePath = File("${DocumentsManager.getUserHome()}/${Constants.DEFAULT_LOCAL_DIRECTORY_NAME}", Constants.DATABASE_NAME)
-        Room.databaseBuilder<com.dr10.database.data.room.AppDatabase>(name = dbFilePath.absolutePath)
+        Room.databaseBuilder<AppDatabase>(name = dbFilePath.absolutePath)
             .setDriver(BundledSQLiteDriver())
             .build()
     }
 
-    single<SyntaxAndSuggestionsDao> {
-        val dbInstance = get<com.dr10.database.data.room.AppDatabase>()
-        dbInstance.syntaxAndSuggestionsDao()
+    single<Queries> {
+        val dbInstance = get<AppDatabase>()
+        dbInstance.getQueries()
     }
 
-    single<SelectedConfigsHistoryDao> {
-        val dbInstance = get<com.dr10.database.data.room.AppDatabase>()
-        dbInstance.selectedConfigsHistoryDao()
-    }
-
-    single<AutocompleteSettingsRepository> { AutocompleteSettingsRepositoryImpl(get()) }
-    single<SyntaxHighlightSettingsRepository> { SyntaxHighlightSettingsRepositoryImpl(get()) }
     single<SyntaxAndSuggestionsRepository> { SyntaxAndSuggestionsRepositoryImpl(get()) }
     single<EditorRepository> { EditorRepositoryImpl(get()) }
+    single<ColorSchemeRepository> { ColorSchemeRepositoryImpl(get()) }
 
 }
