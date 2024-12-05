@@ -76,12 +76,12 @@ You can customize syntax highlighting colors in `Settings -> Syntax Keyword High
 </div>
 
 ## 🚧 RoadMap
-- [ ] Complete migration from **Jetpack Compose Desktop** to **Swing** ~
+- [x] Complete migration from **Jetpack Compose Desktop** to **Swing**
 - [ ] Default settings for different assemblers
     - [ ] Autocomplete
     - [ ] Syntax Highlighting ~
 - [ ] Program customization
-- [ ] Smarter autocompletion
+- [ ] Smarter autocompletion ~ 🏗️
 - [x] Terminal type selection
 - [ ] Automatic compilation and execution
 - [ ] Optimization
