@@ -2,6 +2,9 @@ package com.dr10.settings.ui.screens.colorScheme
 
 object AssemblyCodeExamples {
     private val WIN_ASM_EXAMPLE = """
+        ; ---------------------------------------------------------------------------------------------------
+        ; Basic example of assembly code to preview the colors assigned to the editor's syntax highlighting -
+        ; ---------------------------------------------------------------------------------------------------
         section .data
             msg db "DeepCode Studio", 0xd, 0xa, 0
             
