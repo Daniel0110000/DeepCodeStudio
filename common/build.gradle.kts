@@ -44,6 +44,9 @@ dependencies {
     // Java Parser
     implementation("com.github.javaparser:javaparser-core:3.26.2")
 
+    // RSyntaxTextArea
+    implementation("com.fifesoft:rsyntaxtextarea:3.5.1")
+
 }
 
 tasks.test {

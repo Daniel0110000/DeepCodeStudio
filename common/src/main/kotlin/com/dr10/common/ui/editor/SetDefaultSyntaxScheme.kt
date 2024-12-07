@@ -1,4 +1,4 @@
-package com.dr10.editor.ui.tabs.utilities
+package com.dr10.common.ui.editor
 
 import com.dr10.common.utilities.ColorUtils
 import com.dr10.common.utilities.Constants

@@ -78,7 +78,7 @@ class ColorSchemeSettingsScreen: JPanel() {
             font = ThemeApp.text.fontJetBrains
             caretPosition = 0
             border = EmptyBorder(5, 5, 5, 5)
-            textFieldColorTests.font = ThemeApp.text.fontJetBrains
+            font = ThemeApp.text.fontJetBrains
             currentLineHighlightColor = ThemeApp.awtColors.hoverColor
             caretColor = ThemeApp.awtColors.complementaryColor
             selectionColor = ThemeApp.awtColors.complementaryColor

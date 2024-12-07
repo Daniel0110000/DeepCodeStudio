@@ -7,6 +7,7 @@ import com.dr10.autocomplete.DefaultCompletionProvider
 import com.dr10.common.models.SelectedConfigHistoryModel
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.CustomScrollBar
+import com.dr10.common.ui.editor.setDefaultSyntaxScheme
 import com.dr10.common.utilities.ColorUtils
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.Constants
@@ -17,7 +18,6 @@ import com.dr10.common.utilities.setState
 import com.dr10.editor.lexers.DefaultAssemblerTokenMaker
 import com.dr10.editor.ui.tabs.TabModel
 import com.dr10.editor.ui.tabs.utilities.AutoSaveProcess
-import com.dr10.editor.ui.tabs.utilities.setDefaultSyntaxScheme
 import com.dr10.editor.ui.tabs.utilities.setDocumentListener
 import com.dr10.editor.ui.tabs.utilities.setSyntaxSchemeColor
 import com.dr10.editor.ui.viewModels.EditorTabViewModel

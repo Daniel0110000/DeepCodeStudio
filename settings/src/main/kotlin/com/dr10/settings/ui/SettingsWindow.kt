@@ -43,5 +43,4 @@ class SettingsWindow(
             isVisible = true
         }
     }
-
 }

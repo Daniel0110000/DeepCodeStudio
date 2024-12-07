@@ -1,4 +1,4 @@
-package com.dr10.settings.model
+package com.dr10.settings.domain.model
 
 import com.dr10.settings.ui.screens.Screens
 

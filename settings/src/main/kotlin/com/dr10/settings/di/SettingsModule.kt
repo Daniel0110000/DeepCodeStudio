@@ -1,5 +1,6 @@
 package com.dr10.settings.di
 
+import com.dr10.settings.ui.viewModels.CodeExtractionViewModel
 import com.dr10.settings.ui.viewModels.ColorSchemesViewModel
 import com.dr10.settings.ui.viewModels.SettingsViewModel
 import com.dr10.settings.ui.viewModels.SyntaxAndSuggestionsViewModel
@@ -13,4 +14,5 @@ val settingsModule = module {
     single { SyntaxAndSuggestionsViewModel(get(), get(), get()) }
     single { SettingsViewModel() }
     single { ColorSchemesViewModel(get()) }
+    single { CodeExtractionViewModel(get()) }
 }

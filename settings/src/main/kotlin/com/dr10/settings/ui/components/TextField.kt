@@ -1,9 +1,6 @@
-package com.dr10.settings.ui.screens.syntaxAndSuggestions.components
+package com.dr10.settings.ui.components
 
 import com.dr10.common.ui.ThemeApp
-import com.dr10.common.utilities.FlowStateHandler
-import com.dr10.common.utilities.setState
-import com.dr10.settings.ui.viewModels.SyntaxAndSuggestionsViewModel
 import java.awt.BorderLayout
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -13,14 +10,7 @@ import javax.swing.JTextField
 import javax.swing.SwingUtilities
 import javax.swing.border.EmptyBorder
 
-/**
- * [JPanel] to display the option name text field
- *
- * @param state The state wrapper that handles the state of the syntax and suggestions
- */
-class OptionNameTextField(
-    private val state: FlowStateHandler.StateWrapper<SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState>
-): JPanel() {
+class TextField: JPanel() {
 
     private val textField = JTextField()
 
@@ -36,10 +26,7 @@ class OptionNameTextField(
             background = ThemeApp.awtColors.secondaryColor
             caretColor = ThemeApp.awtColors.complementaryColor
             selectionColor = ThemeApp.awtColors.complementaryColor
-            font = ThemeApp.text.fontInterRegular(12f)
-            setState(state, SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState::optionName) { name ->
-                if (name.isBlank()) text = name
-            }
+            font = ThemeApp.text.fontInterRegular(13f)
         }
 
         add(textField, BorderLayout.CENTER)
@@ -49,6 +36,8 @@ class OptionNameTextField(
     }
 
     fun getText(): String = textField.text
+
+    fun setText(text: String) { textField.text = text }
 
     override fun paintComponent(graphics: Graphics) {
         val graphics2D = graphics as Graphics2D

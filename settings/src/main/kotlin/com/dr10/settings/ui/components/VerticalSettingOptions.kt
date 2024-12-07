@@ -1,7 +1,7 @@
 package com.dr10.settings.ui.components
 
 import com.dr10.common.ui.ThemeApp
-import com.dr10.settings.model.Option
+import com.dr10.settings.domain.model.Option
 import com.dr10.settings.ui.viewModels.SettingsViewModel
 import java.awt.Color
 import java.awt.Dimension

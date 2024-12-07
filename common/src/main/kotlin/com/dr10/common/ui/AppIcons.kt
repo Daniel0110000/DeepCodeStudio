@@ -48,4 +48,7 @@ object AppIcons {
     val errorIcon = ImageResourceUtils.loadResourceImage("images/ic_error.svg", 18, 18)
     val infoIcon = ImageResourceUtils.loadResourceImage("images/ic_info.svg", 18, 18)
     val warningIcon = ImageResourceUtils.loadResourceImage("images/ic_warning.svg", 18, 18)
+
+    val executeIcon = ImageResourceUtils.loadResourceImage("images/ic_execute.svg", 18, 18)
+    val regexIcon = ImageResourceUtils.loadResourceImage("images/ic_regex.svg", 18, 18)
 }

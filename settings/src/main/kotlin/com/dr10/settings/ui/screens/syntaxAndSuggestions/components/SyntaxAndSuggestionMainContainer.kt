@@ -1,10 +1,13 @@
 package com.dr10.settings.ui.screens.syntaxAndSuggestions.components
 
 import com.dr10.common.models.SyntaxAndSuggestionModel
+import com.dr10.common.ui.AppIcons
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.CustomScrollBar
 import com.dr10.common.utilities.FlowStateHandler
 import com.dr10.common.utilities.setState
+import com.dr10.settings.ui.components.IconButton
+import com.dr10.settings.ui.components.TextField
 import com.dr10.settings.ui.viewModels.SyntaxAndSuggestionsViewModel
 import java.awt.BorderLayout
 import java.awt.event.MouseAdapter
@@ -80,14 +83,18 @@ class SyntaxAndSuggestionMainContainer(
             font = ThemeApp.text.fontInterRegular(13f)
             foreground = ThemeApp.awtColors.textColor
         }
-        val optionNameTextField = OptionNameTextField(state)
+        val optionNameTextField = TextField().apply {
+            setState(state, SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState::optionName) { name ->
+                if (name.isNotBlank()) setText(name)
+            }
+        }
 
         val locationTitle = JLabel("Location").apply {
             font = ThemeApp.text.fontInterRegular(13f)
             foreground = ThemeApp.awtColors.textColor
         }
         val locationContainer = LocationContainer(syntaxAndSuggestionsViewModel, state)
-        val addButton = AddButton {
+        val addButton = IconButton(AppIcons.addIcon) {
             syntaxAndSuggestionsViewModel.setOptionName(optionNameTextField.getText())
             syntaxAndSuggestionsViewModel.addConfig()
         }
