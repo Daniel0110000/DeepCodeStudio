@@ -1,6 +1,7 @@
 package com.dr10.settings.ui
 
 import com.dr10.common.ui.ThemeApp
+import com.dr10.common.ui.notification.NotificationManager
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.settings.ui.screens.SettingsScreen
 import java.awt.event.WindowAdapter
@@ -20,27 +21,27 @@ class SettingsWindow(
     private val onCloseWindow: () -> Unit
 ): JFrame() {
 
+    private val notificationManager = NotificationManager(this)
+
     init { onCreate() }
 
-    private fun onCreate() {
-        SwingUtilities.invokeLater {
-            defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
-            setSize(1200, 800)
-            contentPane.background = ThemeApp.colors.background.toAWTColor()
-            title = "Settings"
-            setLocationRelativeTo(window)
+    private fun onCreate() = SwingUtilities.invokeLater {
+        defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+        setSize(1200, 800)
+        contentPane.background = ThemeApp.colors.background.toAWTColor()
+        title = "Settings"
+        setLocationRelativeTo(window)
 
-            addWindowListener(object : WindowAdapter() {
-                override fun windowClosed(e: WindowEvent?) {
-                    onCloseWindow()
-                    window.isEnabled = true
-                }
-            })
+        addWindowListener(object : WindowAdapter() {
+            override fun windowClosed(e: WindowEvent?) {
+                onCloseWindow()
+                window.isEnabled = true
+            }
+        })
 
-            contentPane.add(SettingsScreen())
+        contentPane.add(SettingsScreen { data -> notificationManager.show(data.copy(xMargin = 10)) })
 
-            window.isEnabled = false
-            isVisible = true
-        }
+        window.isEnabled = false
+        isVisible = true
     }
 }

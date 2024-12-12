@@ -14,7 +14,9 @@ import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.border.EmptyBorder
 
-class AddAndOptionsContainer: JPanel() {
+class AddAndOptionsContainer(
+    private val onExecuteRegex: (String) -> Unit
+): JPanel() {
 
     init { onCreate() }
 
@@ -27,13 +29,13 @@ class AddAndOptionsContainer: JPanel() {
             EmptyBorder(0, 5, 8, 5)
         )
 
+        val patternTitle = createTitle("Regex")
+        val patternTextField = TextField()
+
         val regexNameTitle = createTitle("Regex Name")
         val regexNameTextField = TextField()
         val addButton = IconButton(AppIcons.addIcon) {}
-        val executeRegexButton = IconButton(AppIcons.executeIcon) {}
-
-        val patternTitle = createTitle("Regex")
-        val patternTextField = TextField()
+        val executeRegexButton = IconButton(AppIcons.executeIcon) { onExecuteRegex(patternTextField.getText()) }
 
         val regexRulesTitle = createTitle("Regex Rules")
         val regexRules: JList<RegexRuleModel> = JList<RegexRuleModel>().apply {
@@ -92,5 +94,4 @@ class AddAndOptionsContainer: JPanel() {
         font = ThemeApp.text.fontInterRegular(13f)
         foreground = ThemeApp.awtColors.textColor
     }
-
 }

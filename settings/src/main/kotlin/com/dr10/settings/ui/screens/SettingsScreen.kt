@@ -1,5 +1,6 @@
 package com.dr10.settings.ui.screens
 
+import com.dr10.common.models.NotificationData
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.CustomSplitPaneDivider
 import com.dr10.settings.di.Inject
@@ -18,7 +19,9 @@ import javax.swing.SwingConstants
 /**
  * [JPanel] that contains all the settings screens
  */
-class SettingsScreen: JPanel() {
+class SettingsScreen(
+    private val onDisplayNotification: (NotificationData) -> Unit
+): JPanel() {
 
     private val viewModel: SettingsViewModel = Inject().settingsViewModel
 
@@ -33,7 +36,7 @@ class SettingsScreen: JPanel() {
         val screensPanel = JPanel(screensContainer).apply {
             add(SyntaxAndSuggestionsScreen(), Screens.SYNTAX_AND_SUGGESTIONS.name)
             add(ColorSchemeSettingsScreen(), Screens.COLOR_SCHEME_SETTINGS.name)
-            add(RegexRulesScreen(), Screens.REGEX_RULES.name)
+            add(RegexRulesScreen { onDisplayNotification(it) }, Screens.REGEX_RULES.name)
         }
 
         val verticalSettingOptions = VerticalSettingOptions(viewModel) { option ->

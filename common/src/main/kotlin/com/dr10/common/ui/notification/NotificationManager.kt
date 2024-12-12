@@ -1,5 +1,6 @@
 package com.dr10.common.ui.notification
 
+import com.dr10.common.models.NotificationData
 import java.awt.Point
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
@@ -15,28 +16,16 @@ class NotificationManager(private val parentWindow: JFrame){
     /**
      * Shows the notification on the screen
      *
-     * @param message The message to be displayed in the notification
-     * @param type The type of the notification
-     * @param isAutoDismiss Whether the notification should be automatically dismissed
-     * @param delay The delay in milliseconds before the notification is dismissed
-     * @param xMargin The horizontal margin to be added to the notification
-     * @param yMargin The vertical margin to be added to the notification
+     * @param data The data of the notification to be displayed
      */
-    fun show(
-        message: String,
-        type: NotificationType,
-        isAutoDismiss: Boolean = false,
-        delay: Int = 5000,
-        xMargin: Int = 0,
-        yMargin: Int = 0
-    ) {
-        val notification = Notification(notificationMessage = message, notificationType = type) {
+    fun show(data: NotificationData) {
+        val notification = Notification(notificationMessage = data.message, notificationType = data.type) {
             timer?.stop()
             closeNotification(it)
         }
         notifications.add(notification)
-        setPositionNotification(notification, xMargin, yMargin)
-        setupAutoDismiss(notification, isAutoDismiss, delay)
+        setPositionNotification(notification, data.xMargin, data.yMargin)
+        setupAutoDismiss(notification, data.isAutoDismiss, data.delay)
         notification.isVisible = true
 
     }

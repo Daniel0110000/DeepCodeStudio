@@ -35,6 +35,7 @@ object ThemeApp {
         val primaryColor: java.awt.Color = java.awt.Color(40, 44, 52),
         val secondaryColor: java.awt.Color = java.awt.Color(30, 34, 41),
         val complementaryColor: java.awt.Color = java.awt.Color(31, 111, 235),
+        val highlighter: java.awt.Color = java.awt.Color(31, 111, 235, 80),
         val textColor: java.awt.Color = java.awt.Color(171, 178, 191),
         val thumbColor: java.awt.Color = java.awt.Color(250, 250, 250, 30),
         val hoverColor: java.awt.Color = java.awt.Color(255, 255, 255, 25)
