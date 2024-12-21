@@ -1,27 +1,42 @@
 package com.dr10.settings.ui.screens.regexRules.components
 
+import com.dr10.common.models.RegexRuleModel
 import com.dr10.common.ui.AppIcons
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.CustomScrollBar
+import com.dr10.common.utilities.FlowStateHandler
+import com.dr10.common.utilities.setState
 import com.dr10.settings.ui.components.IconButton
 import com.dr10.settings.ui.components.TextField
-import com.dr10.settings.ui.screens.regexRules.RegexRuleModel
+import com.dr10.settings.ui.viewModels.RegexRulesViewModel
 import javax.swing.BorderFactory
 import javax.swing.GroupLayout
 import javax.swing.JLabel
-import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.border.EmptyBorder
 
 class AddAndOptionsContainer(
+    private val regexRulesViewModel: RegexRulesViewModel,
+    private val state: FlowStateHandler.StateWrapper<RegexRulesViewModel.RegexRulesState>,
     private val onExecuteRegex: (String) -> Unit
 ): JPanel() {
 
-    init { onCreate() }
+    private val addAndOptionsContainerLayout = GroupLayout(this)
 
-    private fun onCreate() {
-        val addAndOptionsContainerLayout = GroupLayout(this)
+    private lateinit var patternTitle: JLabel
+    private lateinit var patternTextField: TextField
+    private lateinit var regexNameTitle: JLabel
+    private lateinit var regexNameTextField: TextField
+
+    private lateinit var addButton: IconButton
+    private lateinit var executeRegexButton: IconButton
+
+    private lateinit var regexRulesTitle: JLabel
+    private lateinit var regexRules: RegexRulesList<RegexRuleModel>
+    private lateinit var regexRulesScrollPanel: JScrollPane
+
+    init {
         layout = addAndOptionsContainerLayout
         background = ThemeApp.awtColors.primaryColor
         border = BorderFactory.createCompoundBorder(
@@ -29,27 +44,55 @@ class AddAndOptionsContainer(
             EmptyBorder(0, 5, 8, 5)
         )
 
-        val patternTitle = createTitle("Regex")
-        val patternTextField = TextField()
+        initializeComponents()
+        setComponentsStructure()
 
-        val regexNameTitle = createTitle("Regex Name")
-        val regexNameTextField = TextField()
-        val addButton = IconButton(AppIcons.addIcon) {}
-        val executeRegexButton = IconButton(AppIcons.executeIcon) { onExecuteRegex(patternTextField.getText()) }
+        setState(state, RegexRulesViewModel.RegexRulesState::clearFields) { clear ->
+            if (clear) {
+                regexNameTextField.setText("")
+                patternTextField.setText("")
+                regexRulesViewModel.clearFields(false)
+            }
+        }
+    }
 
-        val regexRulesTitle = createTitle("Regex Rules")
-        val regexRules: JList<RegexRuleModel> = JList<RegexRuleModel>().apply {
-            background = ThemeApp.awtColors.primaryColor
-            setCellRenderer(RegexRulesCellRender())
-            setListData(emptyArray())
+    private fun initializeComponents() {
+        patternTitle = createTitle("Regex")
+        patternTextField = TextField()
+
+        regexNameTitle = createTitle("Regex Name")
+        regexNameTextField = TextField()
+
+        addButton = IconButton(AppIcons.addIcon) { regexRulesViewModel.addRegexRule(
+            name = regexNameTextField.getText(),
+            pattern = patternTextField.getText()
+        ) }
+        executeRegexButton = IconButton(AppIcons.executeIcon) { onExecuteRegex(patternTextField.getText()) }
+
+        regexRulesTitle = createTitle("Regex Rules")
+        regexRules = RegexRulesList<RegexRuleModel>(
+            onClickListener = { onExecuteRegex(it.regexPattern) }
+        ).apply {
+            setItemUI(RegexRuleItem::class.java)
+            itemListener = object: ItemListener<RegexRuleModel> {
+                override fun onItemDeleted(item: RegexRuleModel) {
+                    regexRulesViewModel.deleteRegexRule(item) }
+            }
+            setState(state, RegexRulesViewModel.RegexRulesState::regexRules) { rules ->
+                setListData(rules)
+            }
         }
 
-        val regexRulesScrollPanel = JScrollPane(regexRules).apply {
+        regexRulesScrollPanel = JScrollPane(regexRules).apply {
+            verticalScrollBar.unitIncrement = 25
+            viewport.background = ThemeApp.awtColors.primaryColor
             border = EmptyBorder(0, 0, 0, 0)
             verticalScrollBar.setUI(CustomScrollBar())
             horizontalScrollBar.setUI(CustomScrollBar())
         }
+    }
 
+    private fun setComponentsStructure() {
         addAndOptionsContainerLayout.setHorizontalGroup(
             addAndOptionsContainerLayout.createParallelGroup()
                 .addComponent(regexNameTitle)

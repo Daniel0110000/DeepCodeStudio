@@ -6,11 +6,13 @@ import com.dr10.common.utilities.Constants
 import com.dr10.common.utilities.DocumentsManager
 import com.dr10.database.data.repositories.ColorSchemeRepositoryImpl
 import com.dr10.database.data.repositories.EditorRepositoryImpl
+import com.dr10.database.data.repositories.RegexRulesRepositoryImpl
 import com.dr10.database.data.repositories.SyntaxAndSuggestionsRepositoryImpl
 import com.dr10.database.data.room.AppDatabase
 import com.dr10.database.data.room.Queries
 import com.dr10.database.domain.repositories.ColorSchemeRepository
 import com.dr10.database.domain.repositories.EditorRepository
+import com.dr10.database.domain.repositories.RegexRulesRepository
 import com.dr10.database.domain.repositories.SyntaxAndSuggestionsRepository
 import org.koin.dsl.module
 import java.io.File
@@ -34,5 +36,6 @@ val databaseModule = module {
     single<SyntaxAndSuggestionsRepository> { SyntaxAndSuggestionsRepositoryImpl(get()) }
     single<EditorRepository> { EditorRepositoryImpl(get()) }
     single<ColorSchemeRepository> { ColorSchemeRepositoryImpl(get()) }
+    single<RegexRulesRepository> { RegexRulesRepositoryImpl(get()) }
 
 }

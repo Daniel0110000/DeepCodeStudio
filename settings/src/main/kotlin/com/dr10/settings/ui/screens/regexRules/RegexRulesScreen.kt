@@ -7,15 +7,16 @@ import com.dr10.common.ui.components.CustomSplitPaneDivider
 import com.dr10.common.ui.editor.setDefaultSyntaxScheme
 import com.dr10.common.ui.notification.NotificationType
 import com.dr10.common.utilities.FlowStateHandler
+import com.dr10.common.utilities.RegexUtils
+import com.dr10.common.utilities.setState
 import com.dr10.settings.di.Inject
 import com.dr10.settings.ui.screens.colorScheme.AssemblyCodeExamples
 import com.dr10.settings.ui.screens.regexRules.components.AddAndOptionsContainer
 import com.dr10.settings.ui.screens.regexRules.components.HighlightPainterWithBorder
 import com.dr10.settings.ui.screens.regexRules.components.SyntaxAndSuggestionsContainer
-import com.dr10.settings.ui.viewModels.CodeExtractionViewModel
+import com.dr10.settings.ui.viewModels.RegexRulesViewModel
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
-import java.util.regex.Pattern
 import javax.swing.BorderFactory
 import javax.swing.GroupLayout
 import javax.swing.JPanel
@@ -29,30 +30,36 @@ class RegexRulesScreen(
     private val onDisplayNotification: (NotificationData) -> Unit
 ): JPanel(){
 
-    private val viewModel: CodeExtractionViewModel = Inject().codeExtractionViewModel
-    private val codeExtractionState = FlowStateHandler().run {
-        viewModel.state.collectAsState(CodeExtractionViewModel.CodeExtractionState())
+    private val viewModel: RegexRulesViewModel = Inject().regexRulesViewModel
+    private val regexRulesState = FlowStateHandler().run {
+        viewModel.state.collectAsState(RegexRulesViewModel.RegexRulesState())
     }
 
-    private var textFieldRegexRuleTests = RSyntaxTextArea()
+    private val codeExtractionLayout = GroupLayout(this)
+
+    private val syntaxAndSuggestionsContainer = SyntaxAndSuggestionsContainer(viewModel, regexRulesState)
+    private val addAndOptionsContainer = AddAndOptionsContainer(viewModel, regexRulesState) { pattern -> regexRuleTest(pattern) }
+
+    private lateinit var splitPane: JSplitPane
+    private lateinit var textFieldRegexRuleTests: RSyntaxTextArea
+    private lateinit var scrollPane: JScrollPane
+
     private val painter: Highlighter.HighlightPainter = HighlightPainterWithBorder(
         ThemeApp.awtColors.highlighter,
         ThemeApp.awtColors.complementaryColor
     )
 
-    init { onCreate() }
-
-    private fun onCreate() {
-        val codeExtractionLayout = GroupLayout(this)
+    init {
         layout = codeExtractionLayout
         background = ThemeApp.awtColors.primaryColor
         border = EmptyBorder(10, 10, 10, 10)
 
-        val syntaxAndSuggestionsContainer = SyntaxAndSuggestionsContainer(codeExtractionState)
+        initializeComponents()
+        setComponentsStructure()
+    }
 
-        val addAndOptionsContainer = AddAndOptionsContainer { pattern -> regexRuleTest(pattern) }
-
-        val splitPane = JSplitPane(
+    private fun initializeComponents() {
+        splitPane = JSplitPane(
             SwingConstants.VERTICAL,
             syntaxAndSuggestionsContainer,
             addAndOptionsContainer
@@ -77,13 +84,22 @@ class RegexRulesScreen(
             selectionColor = ThemeApp.awtColors.complementaryColor
         }
 
-        val scrollPane = JScrollPane(textFieldRegexRuleTests).apply {
+        scrollPane = JScrollPane(textFieldRegexRuleTests).apply {
             background = ThemeApp.awtColors.secondaryColor
             border = BorderFactory.createLineBorder(ThemeApp.awtColors.hoverColor)
             verticalScrollBar.setUI(CustomScrollBar(ThemeApp.awtColors.secondaryColor))
             horizontalScrollBar.setUI(CustomScrollBar(ThemeApp.awtColors.secondaryColor))
         }
 
+        setState(regexRulesState, RegexRulesViewModel.RegexRulesState::notificationData) { data ->
+            if(data != null) {
+                onDisplayNotification(data)
+                viewModel.clearNotificationData()
+            }
+        }
+    }
+
+    private fun setComponentsStructure() {
         codeExtractionLayout.setHorizontalGroup(
             codeExtractionLayout.createParallelGroup()
                 .addComponent(splitPane, 0, 0, Short.MAX_VALUE.toInt())
@@ -96,7 +112,6 @@ class RegexRulesScreen(
                 .addGap(10)
                 .addComponent(scrollPane, 0, 0, Short.MAX_VALUE.toInt())
         )
-
     }
 
     /**
@@ -105,13 +120,12 @@ class RegexRulesScreen(
      *
      * @param pattern The regex pattern to be tested
      */
-    private fun regexRuleTest(pattern: String) = kotlin.runCatching {
-        Pattern.compile(pattern)
-        highlightMatches(pattern)
-    }.onFailure {
-        onDisplayNotification(
+    private fun regexRuleTest(pattern: String) {
+        val isValidPattern = RegexUtils.isValidPattern(pattern)
+        if (isValidPattern.first) highlightMatches(pattern)
+        else onDisplayNotification(
             NotificationData(
-                message = it.message.toString(),
+                message = isValidPattern.second,
                 type = NotificationType.ERROR,
                 isAutoDismiss = true
             )

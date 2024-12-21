@@ -6,8 +6,10 @@ import com.dr10.common.ui.components.CustomScrollBar
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.FlowStateHandler
 import com.dr10.common.utilities.setState
-import com.dr10.settings.ui.viewModels.CodeExtractionViewModel
+import com.dr10.settings.ui.viewModels.RegexRulesViewModel
 import java.awt.Dimension
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.BorderFactory
 import javax.swing.GroupLayout
 import javax.swing.JLabel
@@ -17,38 +19,56 @@ import javax.swing.JScrollPane
 import javax.swing.border.EmptyBorder
 
 class SyntaxAndSuggestionsContainer(
-    private val state: FlowStateHandler.StateWrapper<CodeExtractionViewModel.CodeExtractionState>
+    private val regexRulesViewModel: RegexRulesViewModel,
+    private val state: FlowStateHandler.StateWrapper<RegexRulesViewModel.RegexRulesState>
 ): JPanel() {
 
-    init { onCreate() }
+    private val syntaxAndSuggestionsContainerLayout = GroupLayout(this)
 
-    private fun onCreate() {
-        val syntaxAndSuggestionsContainerLayout = GroupLayout(this)
+    private lateinit var title: JLabel
+    private lateinit var options: JList<SyntaxAndSuggestionModel>
+    private lateinit var optionsScrollPanel: JScrollPane
+
+    init {
         layout = syntaxAndSuggestionsContainerLayout
         preferredSize = Dimension(300, Short.MAX_VALUE.toInt())
         background = ThemeApp.awtColors.primaryColor
         border = BorderFactory.createLineBorder(ThemeApp.awtColors.hoverColor)
 
-        val title = JLabel("Options").apply {
+        initializeComponents()
+        setComponentsStructure()
+
+        options.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                regexRulesViewModel.setSelectedOption(options.selectedValue.uniqueId)
+            }
+        })
+    }
+
+    private fun initializeComponents() {
+        title = JLabel("Options").apply {
             font = ThemeApp.text.fontInterBold()
             foreground = ThemeApp.colors.textColor.toAWTColor()
             border = EmptyBorder(10, 0, 10, 0)
         }
 
-        val options: JList<SyntaxAndSuggestionModel> = JList<SyntaxAndSuggestionModel>().apply {
+        options = JList<SyntaxAndSuggestionModel>().apply {
             setCellRenderer(SAndSRegexRulesCellRender())
             background = ThemeApp.awtColors.primaryColor
-            setState(state, CodeExtractionViewModel.CodeExtractionState::allConfigs) { configs ->
+            setState(state, RegexRulesViewModel.RegexRulesState::allConfigs) { configs ->
                 setListData(configs.toTypedArray())
+                selectedIndex = 0
             }
         }
 
-        val optionsScrollPanel = JScrollPane(options).apply {
+        optionsScrollPanel = JScrollPane(options).apply {
             border = EmptyBorder(0, 5, 8, 5)
             verticalScrollBar.setUI(CustomScrollBar())
             horizontalScrollBar.setUI(CustomScrollBar())
         }
+    }
 
+    private fun setComponentsStructure() {
         syntaxAndSuggestionsContainerLayout.setHorizontalGroup(
             syntaxAndSuggestionsContainerLayout.createParallelGroup()
                 .addGroup(
@@ -65,7 +85,6 @@ class SyntaxAndSuggestionsContainer(
                 .addComponent(title)
                 .addComponent(optionsScrollPanel, 0, 0, Short.MAX_VALUE.toInt())
         )
-
     }
 
 }

@@ -7,6 +7,7 @@ import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Upsert
 import com.dr10.database.data.room.entities.ColorSchemesEntity
+import com.dr10.database.data.room.entities.RegexRulesEntity
 import com.dr10.database.data.room.entities.SelectedConfigHistoryEntity
 import com.dr10.database.data.room.entities.SyntaxAndSuggestionsEntity
 import com.dr10.database.data.room.relations.ColorSchemeRelation
@@ -25,8 +26,14 @@ interface Queries {
     @Upsert
     suspend fun insertSelectedConfigHistory(selectedConfigHistoryEntity: SelectedConfigHistoryEntity)
 
+    @Upsert
+    suspend fun insertRegexRule(regexRulesEntity: RegexRulesEntity)
+
     @Delete
     suspend fun deleteSyntaxAndSuggestion(syntaxAndSuggestionsEntity: SyntaxAndSuggestionsEntity)
+
+    @Delete
+    suspend fun deleteRegexRule(regexRulesEntity: RegexRulesEntity)
 
     @Query("SELECT * FROM syntax_and_suggestions")
     fun getAllSyntaxAndSuggestions(): Flow<List<SyntaxAndSuggestionsEntity>>
@@ -49,6 +56,9 @@ interface Queries {
         INNER JOIN syntax_and_suggestions sas ON cs.unique_id = sas.unique_id
     """)
     suspend fun getAllColorSchemesAsList(): List<ColorSchemeRelation>
+
+    @Query("SELECT * FROM regex_rules WHERE unique_id = :uniqueId")
+    suspend fun getRegexRulesByUniqueId(uniqueId: String): List<RegexRulesEntity>
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction

@@ -1,6 +1,8 @@
 package com.dr10.common.ui.notification
 
 import com.dr10.common.models.NotificationData
+import com.dr10.common.utilities.ErrorType
+import com.dr10.common.utilities.getErrorMessage
 import java.awt.Point
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
@@ -19,7 +21,10 @@ class NotificationManager(private val parentWindow: JFrame){
      * @param data The data of the notification to be displayed
      */
     fun show(data: NotificationData) {
-        val notification = Notification(notificationMessage = data.message, notificationType = data.type) {
+        val notification = Notification(
+            notificationMessage = if(data.errorType == ErrorType.CUSTOM) data.message else data.errorType.getErrorMessage(),
+            notificationType = data.type
+        ) {
             timer?.stop()
             closeNotification(it)
         }
