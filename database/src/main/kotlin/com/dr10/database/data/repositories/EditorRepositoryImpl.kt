@@ -1,8 +1,11 @@
 package com.dr10.database.data.repositories
 
+import com.dr10.common.models.RegexRuleModel
 import com.dr10.common.models.SelectedConfigHistoryModel
 import com.dr10.database.data.mappers.toHistoryModel
+import com.dr10.database.data.mappers.toModel
 import com.dr10.database.data.room.Queries
+import com.dr10.database.data.room.entities.RegexRulesEntity
 import com.dr10.database.data.room.entities.SelectedConfigHistoryEntity
 import com.dr10.database.data.room.relations.ColorSchemeRelation
 import com.dr10.database.domain.repositories.EditorRepository
@@ -37,6 +40,9 @@ class EditorRepositoryImpl(
                 processorColor = colorEntity.processorColor
             )
         }
+
+    override suspend fun getRegexRules(uniqueId: String): List<RegexRuleModel> =
+        queries.getRegexRulesByUniqueId(uniqueId).map(RegexRulesEntity::toModel)
 
     override suspend fun insertSelectedConfig(uniqueId: String, asmFilePath: String) {
         queries.insertSelectedConfigHistory(

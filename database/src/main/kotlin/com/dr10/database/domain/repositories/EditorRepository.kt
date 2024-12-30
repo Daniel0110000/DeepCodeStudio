@@ -1,11 +1,14 @@
 package com.dr10.database.domain.repositories
 
+import com.dr10.common.models.RegexRuleModel
 import com.dr10.common.models.SelectedConfigHistoryModel
 
 interface EditorRepository {
     suspend fun getAllConfigs(): List<SelectedConfigHistoryModel>
 
     suspend fun getSelectedConfig(asmFilePath: String): SelectedConfigHistoryModel?
+
+    suspend fun getRegexRules(uniqueId: String): List<RegexRuleModel>
 
     suspend fun insertSelectedConfig(uniqueId: String, asmFilePath: String)
 

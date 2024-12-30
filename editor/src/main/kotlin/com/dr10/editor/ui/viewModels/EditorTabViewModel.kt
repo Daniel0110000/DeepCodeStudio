@@ -1,10 +1,10 @@
 package com.dr10.editor.ui.viewModels
 
+import com.dr10.common.models.RegexRuleModel
 import com.dr10.common.models.SelectedConfigHistoryModel
 import com.dr10.common.models.SyntaxAndSuggestionModel
 import com.dr10.common.utilities.JsonUtils
 import com.dr10.database.domain.repositories.EditorRepository
-import com.dr10.database.domain.repositories.SyntaxAndSuggestionsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,13 +16,12 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for managing editor tab state
  *
- * @property syntaxAndSuggestionsRepository Repository for accessing syntax and suggestion configurations
  * @property editorRepository Repository for managing editor-related data
  */
 class EditorTabViewModel(
-    private val syntaxAndSuggestionsRepository: SyntaxAndSuggestionsRepository,
     private val editorRepository: EditorRepository
 ) {
+
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
     private val _state = MutableStateFlow(EditorTabState())
@@ -40,8 +39,10 @@ class EditorTabViewModel(
     data class EditorTabState(
         val currentFilePath: String = "",
         val allConfigs: List<SelectedConfigHistoryModel> = emptyList(),
+        val patterns: List<RegexRuleModel> = emptyList(),
         val isEditable: Boolean = true,
         val isCollapseAutocompleteOptions: Boolean = true,
+        val isAnalyzing: Boolean = false,
         val selectedConfig: SelectedConfigHistoryModel? = null,
         val suggestionsFromJson: List<String> = emptyList()
     )
@@ -53,9 +54,11 @@ class EditorTabViewModel(
     fun getSelectedConfig() {
         coroutineScope.launch {
             val config = editorRepository.getSelectedConfig(_state.value.currentFilePath)
+            val patterns = editorRepository.getRegexRules(config?.uniqueId ?: "")
             updateState {
                 copy(
                     selectedConfig = config,
+                    patterns = patterns,
                     suggestionsFromJson = config?.let { JsonUtils.jsonToListString(it.jsonPath) } ?: emptyList(),
                     isCollapseAutocompleteOptions = config != null
                 )
@@ -113,6 +116,10 @@ class EditorTabViewModel(
 
     fun setIsCollapseAutocompleteOptions(value: Boolean) {
         updateState { copy(isCollapseAutocompleteOptions = value) }
+    }
+
+    fun setIsAnalyzing(value: Boolean) {
+        updateState { copy(isAnalyzing = value) }
     }
 
     private fun updateState(update: EditorTabState.() -> EditorTabState) { _state.update(update) }

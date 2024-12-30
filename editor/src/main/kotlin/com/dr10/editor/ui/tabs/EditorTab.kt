@@ -26,10 +26,7 @@ class EditorTab(
 
     private lateinit var codeEditor: CodeEditor
 
-    private val viewModel: EditorTabViewModel = EditorTabViewModel(
-        Inject().syntaxAndSuggestionsRepository,
-        Inject().editorRepository
-    )
+    private val viewModel: EditorTabViewModel = EditorTabViewModel(Inject().editorRepository)
 
     private val editorTabState = FlowStateHandler().run {
         viewModel.state.collectAsState(EditorTabViewModel.EditorTabState())

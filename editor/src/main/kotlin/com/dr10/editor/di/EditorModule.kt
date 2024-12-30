@@ -9,5 +9,5 @@ import org.koin.dsl.module
  */
 val editorModule = module {
     single { TabsViewModel() }
-    single { EditorTabViewModel(get(), get()) }
+    single { EditorTabViewModel(get()) }
 }

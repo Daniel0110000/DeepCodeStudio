@@ -2,8 +2,8 @@ package com.dr10.editor.ui.tabs.components
 
 import com.dr10.autocomplete.AutoCompletion
 import com.dr10.autocomplete.BasicCompletion
-import com.dr10.autocomplete.CompletionProvider
 import com.dr10.autocomplete.DefaultCompletionProvider
+import com.dr10.common.models.RegexRuleModel
 import com.dr10.common.models.SelectedConfigHistoryModel
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.CustomScrollBar
@@ -18,6 +18,7 @@ import com.dr10.common.utilities.setState
 import com.dr10.editor.lexers.DefaultAssemblerTokenMaker
 import com.dr10.editor.ui.tabs.TabModel
 import com.dr10.editor.ui.tabs.utilities.AutoSaveProcess
+import com.dr10.editor.ui.tabs.utilities.CodeAnalyzer
 import com.dr10.editor.ui.tabs.utilities.setDocumentListener
 import com.dr10.editor.ui.tabs.utilities.setSyntaxSchemeColor
 import com.dr10.editor.ui.viewModels.EditorTabViewModel
@@ -32,6 +33,7 @@ import org.fife.ui.rtextarea.Gutter.GutterBorder
 import org.fife.ui.rtextarea.RTextScrollPane
 import java.io.File
 import java.io.StringReader
+import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.GroupLayout
 import javax.swing.JPanel
@@ -52,18 +54,31 @@ class CodeEditor(
     private val editorTabState: FlowStateHandler.StateWrapper<EditorTabViewModel.EditorTabState>
 ): JPanel() {
 
+    private val codeEditorLayout = GroupLayout(this)
+
     private val classLoader = JavaUtils.createCustomClasLoader()
     private val tokenMakerFactory: AbstractTokenMakerFactory = TokenMakerFactory.getDefaultInstance() as AbstractTokenMakerFactory
 
+    private val codeAnalyzer = CodeAnalyzer()
+    private lateinit var completionProvider: DefaultCompletionProvider
+    private lateinit var autoCompletion: AutoCompletion
+
     private lateinit var editor: RSyntaxTextArea
+    private lateinit var editorScrollPane: RTextScrollPane
     private lateinit var autoSaveProcess: AutoSaveProcess
 
-    init { onCreate() }
+    private val bottomActionsRow = BottomActionsRow(viewModel, editorTabState)
 
-    private fun onCreate() = CoroutineScope(Dispatchers.Swing).launch {
-        val codeEditorLayout = GroupLayout(this@CodeEditor)
-        layout = codeEditorLayout
+    init {
+        CoroutineScope(Dispatchers.Swing).launch {
+            layout = codeEditorLayout
+            initializeComponents()
+            setComponentsStructure()
+            SwingUtilities.invokeLater { editor.requestFocusInWindow() }
+        }
+    }
 
+    private fun initializeComponents() {
         editor = RSyntaxTextArea().apply {
             read(StringReader(File(tab.filePath).readText()), null)
             isCodeFoldingEnabled = false
@@ -87,11 +102,11 @@ class CodeEditor(
             updateSuggestions(suggestions)
         }
 
+        setState(editorTabState, EditorTabViewModel.EditorTabState::patterns) { patterns ->
+            analyzeCode(patterns)
+        }
 
-        val bottomActionsRow = BottomActionsRow(viewModel, editorTabState)
-
-
-        val scrollPane = RTextScrollPane(editor).apply {
+        editorScrollPane = RTextScrollPane(editor).apply {
             border = EmptyBorder(0, 0, 0, 0)
             foreground = ThemeApp.colors.lineNumberTextColor.toAWTColor()
             font = ThemeApp.text.fontInterRegular(13f)
@@ -102,20 +117,20 @@ class CodeEditor(
             verticalScrollBar.setUI(CustomScrollBar())
             horizontalScrollBar.setUI(CustomScrollBar())
         }
+    }
 
+    private fun setComponentsStructure() {
         codeEditorLayout.setHorizontalGroup(
             codeEditorLayout.createParallelGroup()
-                .addComponent(scrollPane, 0, 0, Short.MAX_VALUE.toInt())
+                .addComponent(editorScrollPane, 0, 0, Short.MAX_VALUE.toInt())
                 .addComponent(bottomActionsRow, 0, 0, Short.MAX_VALUE.toInt())
         )
 
         codeEditorLayout.setVerticalGroup(
             codeEditorLayout.createSequentialGroup()
-                .addComponent(scrollPane, 0, 0, Short.MAX_VALUE.toInt())
+                .addComponent(editorScrollPane, 0, 0, Short.MAX_VALUE.toInt())
                 .addComponent(bottomActionsRow, 0, 0, 25)
         )
-
-        SwingUtilities.invokeLater { editor.requestFocusInWindow() }
     }
 
     private fun updateSelectedConfig(config: SelectedConfigHistoryModel?) {
@@ -132,12 +147,41 @@ class CodeEditor(
     }
 
     private fun updateSuggestions(suggestions: List<String>) {
-        val provider = createCompletionProvider(suggestions)
-        val autoCompletion = AutoCompletion(provider).apply { isAutoActivationEnabled = true }
+        completionProvider = createCompletionProvider(suggestions)
+        autoCompletion = AutoCompletion(completionProvider).apply { isAutoActivationEnabled = true }
         autoCompletion.install(editor)
     }
 
-    private fun createCompletionProvider(suggestions: List<String>): CompletionProvider {
+    /**
+     * Analyzes the code in the editor using the provided patterns
+     *
+     * @param patterns The list of regex patterns to use for analysis
+     */
+    private fun analyzeCode(patterns: List<RegexRuleModel>) {
+        if (patterns.isNotEmpty()) {
+            viewModel.setIsAnalyzing(true)
+            // Adds all the patterns to be used for the analysis
+            patterns.forEach { pattern ->
+                codeAnalyzer.addPattern(
+                    name = pattern.regexName,
+                    pattern = pattern.regexPattern
+                )
+            }
+            // Analyzes the content of the current file
+            codeAnalyzer.analyzeFile(Path.of(tab.filePath)) {
+                patterns.flatMap { pattern ->
+                    // Gets all the symbols that match the pattern using the regex name
+                    // And creates a BasicCompletion for each symbol
+                    codeAnalyzer.getSymbols(pattern.regexName).map { symbol ->
+                        BasicCompletion(completionProvider, symbol.name)
+                    }
+                }.forEach { completionProvider.addCompletion(it) } // Adds all the completions to the provider
+                viewModel.setIsAnalyzing(false)
+            }
+        }
+    }
+
+    private fun createCompletionProvider(suggestions: List<String>): DefaultCompletionProvider {
         val provider = DefaultCompletionProvider()
         provider.setAutoActivationRules(true, ".")
 

@@ -1,5 +1,6 @@
 package com.dr10.editor.ui.tabs.components
 
+import com.dr10.common.ui.AppIcons
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.extensions.mouseEventListener
 import com.dr10.common.utilities.ColorUtils.toAWTColor
@@ -12,6 +13,7 @@ import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
 import java.awt.RenderingHints
+import javax.swing.GroupLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
 
@@ -31,7 +33,8 @@ class ChangeSelectedOption(
     init { onCreate() }
 
     private fun onCreate() {
-        layout = GridBagLayout()
+        val changeSelectedOptionLayout = GroupLayout(this)
+        layout = changeSelectedOptionLayout
 
         this.mouseEventListener(
             onEnter = { backgroundColor = ThemeApp.colors.hoverTab.toAWTColor() },
@@ -39,19 +42,41 @@ class ChangeSelectedOption(
             onClick = { viewModel.setIsCollapseAutocompleteOptions(!state.value.isCollapseAutocompleteOptions) }
         )
 
+        val optionIcon = JLabel(AppIcons.asmBottomIcon)
+
         val optionName = JLabel().apply {
+            font = ThemeApp.text.fontInterRegular(13f)
+            foreground = ThemeApp.awtColors.textColor
             setState(state, EditorTabViewModel.EditorTabState::selectedConfig) { config ->
                 text = config?.optionName ?: "..."
             }
         }
 
-        add(
-            optionName,
-            GridBagConstraints().apply {
-                anchor = GridBagConstraints.CENTER
-                insets = Insets(0, 10, 0, 10)
-            }
+        changeSelectedOptionLayout.setHorizontalGroup(
+            changeSelectedOptionLayout.createSequentialGroup()
+                .addGap(5)
+                .addComponent(optionIcon)
+                .addGap(3)
+                .addComponent(optionName)
+                .addGap(5)
         )
+        changeSelectedOptionLayout.setVerticalGroup(
+            changeSelectedOptionLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE.toInt())
+                .addGroup(
+                    changeSelectedOptionLayout.createParallelGroup()
+                        .addComponent(optionIcon)
+                        .addComponent(optionName)
+                )
+                .addGap(0, 0, Short.MAX_VALUE.toInt())
+        )
+//        add(
+//            optionName,
+//            GridBagConstraints().apply {
+//                anchor = GridBagConstraints.CENTER
+//                insets = Insets(0, 10, 0, 10)
+//            }
+//        )
 
     }
 
