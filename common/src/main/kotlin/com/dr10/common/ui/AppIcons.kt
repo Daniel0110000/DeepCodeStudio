@@ -1,8 +1,6 @@
 package com.dr10.common.ui
 
 import com.dr10.common.utilities.ImageResourceUtils
-import java.awt.Image
-import javax.swing.ImageIcon
 import javax.swing.plaf.IconUIResource
 
 object AppIcons {

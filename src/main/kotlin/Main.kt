@@ -5,7 +5,6 @@ import com.dr10.common.utilities.DocumentsManager
 import com.dr10.database.di.databaseModule
 import com.dr10.editor.di.editorModule
 import com.dr10.settings.di.settingsModule
-import com.dr10.settings.ui.SettingsWindow
 import com.dr10.terminal.di.terminalModule
 import di.appModule
 import org.koin.core.context.GlobalContext.startKoin

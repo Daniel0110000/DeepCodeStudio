@@ -9,9 +9,6 @@ import com.dr10.common.utilities.setState
 import com.dr10.editor.ui.viewModels.EditorTabViewModel
 import java.awt.Graphics
 import java.awt.Graphics2D
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.Insets
 import java.awt.RenderingHints
 import javax.swing.GroupLayout
 import javax.swing.JLabel
