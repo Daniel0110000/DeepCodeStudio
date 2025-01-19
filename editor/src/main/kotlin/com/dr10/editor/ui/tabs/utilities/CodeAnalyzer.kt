@@ -7,7 +7,9 @@ import java.io.FileInputStream
 import java.nio.file.Path
 
 class CodeAnalyzer {
-    private val symbolTable = mutableMapOf<String, MutableSet<CodeSymbol>>()
+
+    private val symbolTable = mutableMapOf<String, HashSet<CodeSymbol>>()
+    private val returnedSymbols = mutableMapOf<String, HashSet<CodeSymbolReturned>>()
     private val regexPatterns = mutableMapOf<String, Regex>()
 
     /**
@@ -41,24 +43,61 @@ class CodeAnalyzer {
      *
      * @param lines The sequence of lines to process
      */
-    private fun processLines(lines: Sequence<String>) {
-        lines.forEachIndexed { lineNumber, line ->
-            regexPatterns.forEach { (patternName, regex) ->
-                regex.findAll(line).forEach { match ->
-                    val index = if (match.groupValues.size > 1) 1 else 0
-                    val symbol = CodeSymbol(
-                        name = match.groupValues[index].takeIf { it.isNotEmpty() } ?: match.value,
-                        lineNumber = lineNumber,
-                        content = line.trim()
-                    )
-                    symbolTable.getOrPut(patternName){ mutableSetOf() }.add(symbol)
-                }
+     fun processLines(lines: Sequence<String>) {
+        lines.forEachIndexed { lineNumber, line -> processLine(line, lineNumber) }
+    }
+
+    /**
+     * Processes a single line using the regex patterns and populates the symbol table
+     *
+     * @param line The line to process
+     * @param lineNumber The line number of the line
+     */
+    fun processLine(line: String, lineNumber: Int) {
+        regexPatterns.forEach { (patternName, regex) ->
+            regex.findAll(line).forEach { match ->
+                val index = if (match.groupValues.size > 1) 1 else 0
+                val symbol = CodeSymbol(
+                    name = match.groupValues[index].takeIf { it.isNotEmpty() } ?: match.value,
+                    lineNumber = lineNumber,
+                    content = line.trim()
+                )
+                symbolTable.getOrPut(patternName){ HashSet() }.add(symbol)
             }
         }
     }
 
     /**
-     * Gets all the symbols that match the provided type
+     * Returns the new symbols found in the analyzed file
+     *
+     * @return The new symbols found in the analyzed file
      */
-    fun getSymbols(type: String): Set<CodeSymbol> = symbolTable[type]?.toSet() ?: emptySet()
+    fun getNewAllSymbols(): Set<CodeSymbol> {
+        val returnedLookup = returnedSymbols.values.flatten().groupBy { it.name to it.lineNumber }
+        val symbolByKey = symbolTable.values.flatten().groupBy { it.name to it.lineNumber }
+        val newSymbols = symbolByKey.filterKeys { it !in returnedLookup }.values.flatten().toSet()
+
+        newSymbols.forEach { symbol ->
+            val type = symbolTable.entries.find { (_, symbols) -> symbol in symbols }?.key ?: return@forEach
+
+            returnedSymbols.getOrPut(type) { HashSet() }.add(
+                CodeSymbolReturned(
+                    name = symbol.name,
+                    lineNumber = symbol.lineNumber
+                )
+            )
+        }
+
+        return newSymbols
+    }
+
+    /**
+     * Clears the analyzer's data
+     */
+    fun clear() {
+        symbolTable.clear()
+        returnedSymbols.clear()
+        regexPatterns.clear()
+    }
+
 }

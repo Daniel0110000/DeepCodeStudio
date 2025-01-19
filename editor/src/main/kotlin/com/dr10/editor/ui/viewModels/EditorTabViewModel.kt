@@ -87,9 +87,10 @@ class EditorTabViewModel(
                     asmFilePath = currentState.currentFilePath
                 )
             }
-
+            val patterns = editorRepository.getRegexRules(newModel.uniqueId)
             updateState { copy(
                 selectedConfig = newModel,
+                patterns = patterns,
                 suggestionsFromJson = JsonUtils.jsonToListString(newModel.jsonPath),
                 isCollapseAutocompleteOptions = true
             ) }

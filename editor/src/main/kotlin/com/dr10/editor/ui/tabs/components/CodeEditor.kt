@@ -11,6 +11,7 @@ import com.dr10.common.ui.editor.setDefaultSyntaxScheme
 import com.dr10.common.utilities.ColorUtils
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.Constants
+import com.dr10.common.utilities.DrLogging
 import com.dr10.common.utilities.FlowStateHandler
 import com.dr10.common.utilities.JavaUtils
 import com.dr10.common.utilities.TextUtils.deleteWhiteSpaces
@@ -54,7 +55,11 @@ class CodeEditor(
     private val editorTabState: FlowStateHandler.StateWrapper<EditorTabViewModel.EditorTabState>
 ): JPanel() {
 
+    private val logger = DrLogging(this::class.java)
+
     private val codeEditorLayout = GroupLayout(this)
+
+    private val suggestionsExtracted = HashSet<BasicCompletion>()
 
     private val classLoader = JavaUtils.createCustomClasLoader()
     private val tokenMakerFactory: AbstractTokenMakerFactory = TokenMakerFactory.getDefaultInstance() as AbstractTokenMakerFactory
@@ -91,7 +96,14 @@ class CodeEditor(
             caretPosition = 0
             selectionColor = ThemeApp.awtColors.complementaryColor
             autoSaveProcess = AutoSaveProcess(filePath = Paths.get(tab.filePath), syntaxTextArea = this)
-            setDocumentListener(autoSaveProcess)
+            setDocumentListener(
+                autoSaveProcess,
+                codeAnalyzer,
+                codeAnalyzeResults = { suggestions ->
+                    addNewSuggestions(suggestions.map { it.name })
+                    logger.info("NEW::SUGGESTIONS::$suggestions")
+                }
+            )
             setState(editorTabState, EditorTabViewModel.EditorTabState::isEditable) { value -> isEditable = value }
             setState(editorTabState, EditorTabViewModel.EditorTabState::selectedConfig) { config ->
                 updateSelectedConfig(config)
@@ -99,10 +111,12 @@ class CodeEditor(
         }
 
         setState(editorTabState, EditorTabViewModel.EditorTabState::suggestionsFromJson) { suggestions ->
-            updateSuggestions(suggestions)
+            addSuggestionsFromJson(suggestions)
         }
 
         setState(editorTabState, EditorTabViewModel.EditorTabState::patterns) { patterns ->
+            // Deleted all the old patterns
+            deleteSuggestionsExtracted()
             analyzeCode(patterns)
         }
 
@@ -146,10 +160,18 @@ class CodeEditor(
         }
     }
 
-    private fun updateSuggestions(suggestions: List<String>) {
-        completionProvider = createCompletionProvider(suggestions)
-        autoCompletion = AutoCompletion(completionProvider).apply { isAutoActivationEnabled = true }
-        autoCompletion.install(editor)
+    /**
+     * Adds suggestions from JSON to the completion provider
+     *
+     * @param suggestions The list of suggestions to add
+     */
+    private fun addSuggestionsFromJson(suggestions: List<String>) {
+        if (!::completionProvider.isInitialized) completionProvider = createCompletionProvider()
+        suggestions.forEach { suggestion ->
+            completionProvider.addCompletion(BasicCompletion(completionProvider, suggestion))
+        }
+
+        autoCompleteInitialized()
     }
 
     /**
@@ -169,27 +191,58 @@ class CodeEditor(
             }
             // Analyzes the content of the current file
             codeAnalyzer.analyzeFile(Path.of(tab.filePath)) {
-                patterns.flatMap { pattern ->
-                    // Gets all the symbols that match the pattern using the regex name
-                    // And creates a BasicCompletion for each symbol
-                    codeAnalyzer.getSymbols(pattern.regexName).map { symbol ->
-                        BasicCompletion(completionProvider, symbol.name)
-                    }
-                }.forEach { completionProvider.addCompletion(it) } // Adds all the completions to the provider
+                val result = codeAnalyzer.getNewAllSymbols().map { symbol -> symbol.name }
+                addNewSuggestions(result)
                 viewModel.setIsAnalyzing(false)
+            }
+
+        }
+    }
+
+    /**
+     * Adds new suggestions to the completion provider
+     *
+     * @param newSuggestions The list of new suggestions to add
+     */
+    private fun addNewSuggestions(newSuggestions: List<String>) {
+        newSuggestions.forEach { suggestion ->
+            if (suggestionsExtracted.none { it.inputText == suggestion }) {
+                val completion = BasicCompletion(completionProvider, suggestion)
+                completionProvider.addCompletion(completion)
+                suggestionsExtracted.add(completion)
+            }
+        }
+
+        autoCompleteInitialized()
+    }
+
+    /**
+     * Initializes the auto-completion feature if it hasn't been already
+     */
+    private fun autoCompleteInitialized() {
+        if (!::autoCompletion.isInitialized) {
+            autoCompletion = AutoCompletion(completionProvider).apply {
+                isAutoActivationEnabled = true
+                install(editor)
             }
         }
     }
 
-    private fun createCompletionProvider(suggestions: List<String>): DefaultCompletionProvider {
-        val provider = DefaultCompletionProvider()
-        provider.setAutoActivationRules(true, ".")
-
-        suggestions.forEach { suggestion ->
-            provider.addCompletion(BasicCompletion(provider, suggestion.replace(".", "")))
+    /**
+     * Creates a new instance of [DefaultCompletionProvider]
+     */
+    private fun createCompletionProvider(): DefaultCompletionProvider =
+        DefaultCompletionProvider().apply {
+            setAutoActivationRules(true, ".")
         }
 
-        return provider
+    /**
+     * Deletes all the suggestions extracted from the code
+     */
+    private fun deleteSuggestionsExtracted() {
+        suggestionsExtracted.forEach { suggestion -> completionProvider.removeCompletion(suggestion) }
+        suggestionsExtracted.clear()
+        codeAnalyzer.clear()
     }
 
     fun cancelAutoSaveProcess() { autoSaveProcess.shutdown() }

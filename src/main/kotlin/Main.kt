@@ -9,6 +9,7 @@ import com.dr10.terminal.di.terminalModule
 import di.appModule
 import org.koin.core.context.GlobalContext.startKoin
 import ui.CodeEditorScreen
+import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
@@ -28,6 +29,9 @@ fun main() = SwingUtilities.invokeLater {
     // Initialize Koin
     startKoin { modules(appModule, databaseModule, settingsModule, editorModule, terminalModule) }
 
+    val graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
+    val screenDevices = graphicsEnvironment.screenDevices
+
     val window = JFrame().apply {
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         setSize(toolkit.width - 100, toolkit.height - 100)
@@ -35,6 +39,14 @@ fun main() = SwingUtilities.invokeLater {
         title = "DeepCode Studio"
         setLocationRelativeTo(null)
     }
+
+    // Just debug mode
+//    if (screenDevices.size > 1) {
+//        val secondMonitor = screenDevices[1]
+//        val bounds = secondMonitor.defaultConfiguration.bounds
+//        window.setSize(bounds.width - 100, bounds.height - 100)
+//        window.setLocation(bounds.x + 50, bounds.y + 50)
+//    }
 
     CodeEditorScreen(window)
 
