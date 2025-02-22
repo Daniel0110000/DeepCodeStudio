@@ -27,6 +27,7 @@ class FileTreeCellRenderer: DefaultTreeCellRenderer() {
             label.icon = when {
                 file.isDirectory -> AppIcons.folderIconFT
                 (file.name.endsWith(".asm") || file.name.endsWith(".s")) -> AppIcons.asmIcon
+                file.name.equals("Makefile")  -> AppIcons.makefileIcon
                 else -> AppIcons.unknownFile
             }
 

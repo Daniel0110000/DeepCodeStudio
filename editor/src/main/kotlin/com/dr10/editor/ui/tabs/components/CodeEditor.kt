@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.swing.Swing
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory
 import org.fife.ui.rtextarea.Gutter.GutterBorder
 import org.fife.ui.rtextarea.RTextScrollPane
@@ -153,7 +154,7 @@ class CodeEditor(
         if(config != null) tokenMakerFactory.putMapping(syntaxKey, config.className, classLoader)
         // If the config is null, use default assembler syntax
         else tokenMakerFactory.putMapping(syntaxKey, DefaultAssemblerTokenMaker::class.java.name)
-        editor.syntaxEditingStyle = syntaxKey
+        editor.syntaxEditingStyle = if (tab.fileName == "Makefile") SyntaxConstants.SYNTAX_STYLE_MAKEFILE else syntaxKey
         config?.let {
             editor.syntaxScheme.setSyntaxSchemeColor(it)
             foreground = ColorUtils.stringToColor(it.simpleColor)

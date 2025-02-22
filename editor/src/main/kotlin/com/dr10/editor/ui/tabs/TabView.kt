@@ -4,7 +4,6 @@ import com.dr10.common.ui.AppIcons
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.TabCloseButton
 import com.dr10.common.utilities.ColorUtils.toAWTColor
-import java.awt.Color
 import javax.swing.GroupLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -26,7 +25,11 @@ class TabView(
         layout = tabLayout
         isOpaque = false
 
-        val tabIcon = JLabel(AppIcons.asmIcon)
+        val tabIcon = JLabel(
+            if (tab.fileName.endsWith(".asm") || tab.fileName.endsWith(".s")) AppIcons.asmIcon
+            else AppIcons.makefileIcon
+        )
+
         val tabLabel = JLabel(tab.fileName).apply {
             font = ThemeApp.text.fontInterRegular(13f)
             foreground = ThemeApp.colors.textColor.toAWTColor()

@@ -9,6 +9,7 @@ object AppIcons {
 
     val folderIconFT = ImageResourceUtils.loadResourceImage("images/ic_folder_ft.svg", 20, 20)
     val asmIcon = ImageResourceUtils.loadResourceImage("images/ic_asm.svg", 20, 20)
+    val makefileIcon = ImageResourceUtils.loadResourceImage("images/ic_makefile.svg", 17, 17)
     val asmBottomIcon = ImageResourceUtils.loadResourceImage("images/ic_asm.svg", 17, 17)
     val analyzerIcon = ImageResourceUtils.loadResourceImage("images/ic_analyzing.svg", 19, 19)
     val unknownFile = ImageResourceUtils.loadResourceImage("images/ic_unknown.svg", 20, 20)

@@ -61,9 +61,13 @@ class FileTreeView(
                     e.clickCount == 2 -> {
                         val selectedFile = fileTree.lastSelectedPathComponent as File
                         selectedFile.takeIf { it.isFile }?.let { file ->
-                            if (file.name.endsWith(".s") || file.name.endsWith(".asm")) {
-                                tabsViewModel.openTab(file)
+                            when {
+                                file.name.endsWith(".s") || file.name.endsWith(".asm") -> tabsViewModel.openTab(file)
+                                file.name.equals("Makefile") -> { tabsViewModel.openTab(file) }
                             }
+//                            if (file.name.endsWith(".s") || file.name.endsWith(".asm")) {
+//                                tabsViewModel.openTab(file)
+//                            }
                         }
                     }
                     SwingUtilities.isRightMouseButton(e) -> {
