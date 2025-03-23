@@ -4,7 +4,6 @@ import com.dr10.common.ui.ThemeApp
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.DirectoryChooser
 import com.dr10.common.utilities.FlowStateHandler
-import com.dr10.common.utilities.UIStateManager
 import com.dr10.common.utilities.setState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,15 +21,13 @@ import javax.swing.JPanel
  * @param newDirectoryPath A callback function to handle the selection fo a new directory
  * @param collapseOrExtendSplitPane A callback function to collapse or extend the split pane
  * @param openTerminal A callback function to open the terminal
- * @param openSettings A callback function to open the settings
  */
 class VerticalBarOptions(
     private val codeEditorViewModel: CodeEditorViewModel,
     private val codeEditorState: FlowStateHandler.StateWrapper<CodeEditorViewModel.CodeEditorState>,
     private val newDirectoryPath: (String?) -> Unit,
     private val collapseOrExtendSplitPane: () -> Unit,
-    private val openTerminal: () -> Unit,
-    private val openSettings: () -> Unit
+    private val openTerminal: () -> Unit
 ): JPanel() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
@@ -74,16 +71,6 @@ class VerticalBarOptions(
             }
         }
 
-        val settingsOption =  VerticalBarOption(
-            10, Color(255, 255, 255, 25),
-            ThemeApp.colors.secondColor.toAWTColor(), "images/ic_settings.svg",
-            onClickListener = { openSettings() }
-        ).apply {
-            setState(codeEditorState, CodeEditorViewModel.CodeEditorState::isOpenSettings) { isOpenSettings ->
-                isSelected = isOpenSettings
-            }
-        }
-
         layout.setHorizontalGroup(
             layout.createSequentialGroup()
                 .addGap(0, Short.MAX_VALUE.toInt(), Short.MAX_VALUE.toInt())
@@ -92,7 +79,6 @@ class VerticalBarOptions(
                         .addComponent(fileTreeOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addComponent(folderOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addComponent(terminalOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addComponent(settingsOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                 )
                 .addGap(0, Short.MAX_VALUE.toInt(), Short.MAX_VALUE.toInt())
         )
@@ -105,8 +91,6 @@ class VerticalBarOptions(
                 .addComponent(folderOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addGap(0, Short.MAX_VALUE.toInt(), Short.MAX_VALUE.toInt())
                 .addComponent(terminalOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addGap(5)
-                .addComponent(settingsOption, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addGap(10)
         )
     }

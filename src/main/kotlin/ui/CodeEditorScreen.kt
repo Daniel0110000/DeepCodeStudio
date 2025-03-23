@@ -10,6 +10,7 @@ import com.dr10.settings.ui.SettingsWindow
 import com.dr10.terminal.ui.TerminalView
 import com.dr10.terminal.ui.viewModel.TerminalViewModel
 import di.Inject
+import ui.components.TopActionsBar
 import ui.components.VerticalBarOptions
 import ui.fileTree.FileTreeView
 import ui.viewModels.CodeEditorViewModel
@@ -49,12 +50,16 @@ class CodeEditorScreen(
         val windowLayout = GroupLayout(window.contentPane)
         window.contentPane.layout = windowLayout
 
+        val topActionsBar = TopActionsBar(
+            codeEditorState = codeEditorState,
+            openSettings = { codeEditorViewModel.setIsOpenSettings(true) }
+        )
+
         val verticalBarOptions = VerticalBarOptions(
             codeEditorViewModel = codeEditorViewModel,
             codeEditorState = codeEditorState,
             collapseOrExtendSplitPane = { codeEditorViewModel.setIsCollapseSplitPane(collapseOrExtend) },
             newDirectoryPath = { it?.let { fileTreeViewModel.setCurrentPath(it) } },
-            openSettings = { codeEditorViewModel.setIsOpenSettings(true)  },
             openTerminal = { codeEditorViewModel.setIsOpenTerminal(!codeEditorViewModel.state.value.isOpenTerminal) }
         )
 
@@ -63,7 +68,7 @@ class CodeEditorScreen(
         val editorSplitPane = JSplitPane(
             SwingConstants.VERTICAL,
             fileTreeView,
-            EditorPanel(tabsViewModel)
+            EditorPanel(tabsViewModel) { codeEditorViewModel.setCurrentPath(it) }
         ).apply {
             setUI(CustomSplitPaneDivider())
             isContinuousLayout = true
@@ -111,15 +116,23 @@ class CodeEditorScreen(
         }
 
         windowLayout.setHorizontalGroup(
-            windowLayout.createSequentialGroup()
-                .addComponent(verticalBarOptions, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addComponent(codeEditorSplitPane, 0, 0, Short.MAX_VALUE.toInt())
+            windowLayout.createParallelGroup()
+                .addComponent(topActionsBar, 0, 0, Short.MAX_VALUE.toInt())
+                .addGroup(
+                    windowLayout.createSequentialGroup()
+                        .addComponent(verticalBarOptions, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(codeEditorSplitPane, 0, 0, Short.MAX_VALUE.toInt())
+                )
         )
 
         windowLayout.setVerticalGroup(
-            windowLayout.createParallelGroup()
-                .addComponent(verticalBarOptions)
-                .addComponent(codeEditorSplitPane, 0, 0, Short.MAX_VALUE.toInt())
+            windowLayout.createSequentialGroup()
+                .addComponent(topActionsBar, 40, 40, 40)
+                .addGroup(
+                    windowLayout.createParallelGroup()
+                        .addComponent(verticalBarOptions)
+                        .addComponent(codeEditorSplitPane, 0, 0, Short.MAX_VALUE.toInt())
+                )
         )
 
         setState(codeEditorState, CodeEditorViewModel.CodeEditorState::isOpenSettings) { isOpenSettings ->

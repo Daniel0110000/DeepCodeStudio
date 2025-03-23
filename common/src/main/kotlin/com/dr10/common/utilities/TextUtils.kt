@@ -14,6 +14,14 @@ object TextUtils {
     fun String.deleteWhiteSpaces(): String = this.replace(" ", "")
 
     /**
+     * Replaces the home path in the string to '~'
+     *
+     * @return The string with the home path replaced
+     */
+    fun String.replaceHomePath(): String =
+        this.replace(DocumentsManager.getUserHome(), "~")
+
+    /**
      * Converts a [MutableList] of [Any] to a formatted string
      *
      * @return An string with the format: "word1 | word2 | word3 | ..."

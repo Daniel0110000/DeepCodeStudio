@@ -17,7 +17,8 @@ import javax.swing.JTabbedPane
  * @property tabsViewModel ViewModel that manages the state of the open tabs
  */
 class EditorPanel(
-    private val tabsViewModel: TabsViewModel
+    private val tabsViewModel: TabsViewModel,
+    private val onChangeTabSelected: (String) -> Unit
 ): JPanel() {
 
     // Map to keep track of the open tabs
@@ -30,7 +31,13 @@ class EditorPanel(
 
         val cardLayout = CardLayout()
         val mainPanel = JPanel(cardLayout)
-        val tabPanel = JTabbedPane().apply { background = ThemeApp.colors.secondColor.toAWTColor() }
+        val tabPanel = JTabbedPane().apply {
+            background = ThemeApp.colors.secondColor.toAWTColor()
+            addChangeListener {
+                if (this.selectedIndex != -1) onChangeTabSelected(tabsViewModel.state.value.tabs[this.selectedIndex].filePath)
+                else onChangeTabSelected("~")
+            }
+        }
         val emptyPanel = EmptyEditorPanel()
 
         mainPanel.add(emptyPanel, EMPTY_PANEL)

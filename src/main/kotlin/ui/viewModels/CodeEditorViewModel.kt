@@ -23,6 +23,7 @@ class CodeEditorViewModel {
      * @property isOpenSettings Indicated if the settings is open
      */
     data class CodeEditorState(
+        val currentPathSelected: String = "",
         val isCollapseSplitPane: Boolean = false,
         val isOpenTerminal: Boolean = false,
         val isOpenSettings: Boolean = false
@@ -63,6 +64,19 @@ class CodeEditorViewModel {
         coroutineScope.launch {
             _state.update { it.copy(
                 isOpenTerminal = value
+            ) }
+        }
+    }
+
+    /**
+     * Sets the [CodeEditorState.currentPathSelected] using the provided [path]
+     *
+     * @param path The path to assign
+     */
+    fun setCurrentPath(path: String) {
+        coroutineScope.launch {
+            _state.update { it.copy(
+                currentPathSelected = path
             ) }
         }
     }
