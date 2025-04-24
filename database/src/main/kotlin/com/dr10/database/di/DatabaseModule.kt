@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.dr10.common.utilities.Constants
 import com.dr10.common.utilities.DocumentsManager
+import com.dr10.common.utilities.OsUtils
 import com.dr10.database.data.repositories.ColorSchemeRepositoryImpl
 import com.dr10.database.data.repositories.EditorRepositoryImpl
 import com.dr10.database.data.repositories.RegexRulesRepositoryImpl
@@ -22,7 +23,8 @@ import java.io.File
  */
 val databaseModule = module {
     single<AppDatabase> {
-        val dbFilePath = File("${DocumentsManager.getUserHome()}/${Constants.DEFAULT_LOCAL_DIRECTORY_NAME}", Constants.DATABASE_NAME)
+        val parentPath = "${DocumentsManager.getUserHome()}/${if (OsUtils.isWindows) Constants.DEFAULT_WINDOWS_LOCAL_DIRECTORY_NAME else Constants.DEFAULT_LINUX_LOCAL_DIRECTORY_NAME}"
+        val dbFilePath = File(parentPath, Constants.DATABASE_NAME)
         Room.databaseBuilder<AppDatabase>(name = dbFilePath.absolutePath)
             .setDriver(BundledSQLiteDriver())
             .build()

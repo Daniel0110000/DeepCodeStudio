@@ -8,8 +8,7 @@ import java.nio.file.Paths
 object DocumentsManager {
 
     private val projectsDirectory = File("${getUserHome()}/${Constants.DEFAULT_PROJECTS_DIRECTORY_NAME}")
-    val databaseDirectory = File("${projectsDirectory.absolutePath}/${Constants.DEFAULT_DATABASE_DIRECTORY_NAME}")
-    val localDirectory = File("${getUserHome()}/${Constants.DEFAULT_LOCAL_DIRECTORY_NAME}")
+    val localDirectory = File("${getUserHome()}/${if (OsUtils.isWindows) Constants.DEFAULT_WINDOWS_LOCAL_DIRECTORY_NAME else Constants.DEFAULT_LINUX_LOCAL_DIRECTORY_NAME}")
     val javaFilesDirectory = File("${localDirectory}/${Constants.JAVA_DIRECTORY_NAME}")
     val classFilesDirectory = File("${localDirectory}/${Constants.CLASSES_DIRECTORY_NAME}")
 
@@ -28,16 +27,10 @@ object DocumentsManager {
             kotlin.runCatching { projectsDirectory.mkdir() }
                 .onFailure { exception -> println("An error occurred while creating the projects directory: ${exception.message}") }
         }
-        if(!databaseDirectory.exists()) {
-            kotlin.runCatching { databaseDirectory.mkdir() }
-                .onFailure { exception -> println("An error occurred while creating the data directory: ${exception.message}") }
-        }
-
         if(!localDirectory.exists()) {
             kotlin.runCatching { localDirectory.mkdir() }
                 .onFailure { exception -> println("An error occurred while creating the local directory: ${exception.message}") }
         }
-
     }
 
     /**

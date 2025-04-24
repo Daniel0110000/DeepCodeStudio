@@ -2,8 +2,8 @@ package com.dr10.common.utilities
 
 object Constants {
     const val DEFAULT_PROJECTS_DIRECTORY_NAME = "DeepCodeProjects"
-    const val DEFAULT_DATABASE_DIRECTORY_NAME = ".data"
-    const val DEFAULT_LOCAL_DIRECTORY_NAME = ".local/share/DeepCodeStudio"
+    const val DEFAULT_LINUX_LOCAL_DIRECTORY_NAME = ".local/share/DeepCodeStudio"
+    const val DEFAULT_WINDOWS_LOCAL_DIRECTORY_NAME = "AppData/Local/DeepCodeStudio"
     const val DEFAULT_ASM_SYNTAX_NAME = "defaultAssemblerSyntax"
     const val JAVA_DIRECTORY_NAME = "java"
     const val CLASSES_DIRECTORY_NAME = "classes"
