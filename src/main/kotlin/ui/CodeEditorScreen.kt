@@ -35,9 +35,17 @@ class CodeEditorScreen(
         codeEditorViewModel.state.collectAsState(CodeEditorViewModel.CodeEditorState())
     }
 
-    private val terminalViewModel: TerminalViewModel = Inject().terminalViewModel
-    private val fileTreeViewModel: FileTreeViewModel = Inject().fileTreeViewModel
     private val tabsViewModel: TabsViewModel = Inject().tabsViewModel
+    private val tabsState = FlowStateHandler().run {
+        tabsViewModel.state.collectAsState(TabsViewModel.TabsState())
+    }
+
+    private val fileTreeViewModel: FileTreeViewModel = Inject().fileTreeViewModel
+    private val fileTreeState = FlowStateHandler().run {
+        fileTreeViewModel.state.collectAsState(FileTreeViewModel.FileTreeState())
+    }
+
+    private val terminalViewModel: TerminalViewModel = Inject().terminalViewModel
 
     // State variables for split pane behavior
     private var collapseOrExtend: Boolean = true
@@ -63,12 +71,21 @@ class CodeEditorScreen(
             openTerminal = { codeEditorViewModel.setIsOpenTerminal(!codeEditorViewModel.state.value.isOpenTerminal) }
         )
 
-        val fileTreeView = FileTreeView(window, fileTreeViewModel, tabsViewModel)
+        val fileTreeView = FileTreeView(
+            window = window,
+            fileTreeState = fileTreeState,
+            onOpenTab = { tabsViewModel.openTab(it) },
+            onDeleteSelectedConfig = { fileTreeViewModel.deleteSelectedConfig(it) }
+        )
 
         val editorSplitPane = JSplitPane(
             SwingConstants.VERTICAL,
             fileTreeView,
-            EditorPanel(tabsViewModel) { codeEditorViewModel.setCurrentPath(it) }
+            EditorPanel(
+                tabsState = tabsState,
+                onChangeTabSelected = { codeEditorViewModel.setCurrentPath(it) },
+                onCloseTab = { tabsViewModel.closeTab(it) }
+            )
         ).apply {
             setUI(CustomSplitPaneDivider())
             isContinuousLayout = true

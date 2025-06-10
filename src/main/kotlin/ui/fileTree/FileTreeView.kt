@@ -3,8 +3,11 @@ package ui.fileTree
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.components.CustomScrollBar
 import com.dr10.common.utilities.ColorUtils.toAWTColor
-import com.dr10.common.utilities.UIStateManager
-import com.dr10.editor.ui.viewModels.TabsViewModel
+import com.dr10.common.utilities.FlowStateHandler
+import com.dr10.common.utilities.setState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ui.viewModels.FileTreeViewModel
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -12,25 +15,22 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.io.File
-import javax.swing.JFrame
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JScrollPane
-import javax.swing.JTree
-import javax.swing.SwingConstants
-import javax.swing.SwingUtilities
+import javax.swing.*
 import javax.swing.border.EmptyBorder
 
 /**
  * JPanel representing the file tree view in the code editor
  *
  * @property window The main application window [JFrame]
- * @property fileTreeViewModel The viewModel that manages the state of the file tree
+ * @property fileTreeState Current [ui.fileTree.FileTreeView] state
+ * @property onOpenTab Callback function invoked when a tab need to be opened
+ * @property onDeleteSelectedConfig Callback function invoked when a [.s] or [.asm] file is deleted from the [ui.fileTree.FileTreeView] to remove the configuration related to the file
  */
 class FileTreeView(
     private val window: JFrame,
-    private val fileTreeViewModel: FileTreeViewModel,
-    private val tabsViewModel: TabsViewModel
+    private val fileTreeState: FlowStateHandler.StateWrapper<FileTreeViewModel.FileTreeState>,
+    private val onOpenTab: (File) -> Unit,
+    private val onDeleteSelectedConfig: (File) -> Unit
 ): JPanel() {
 
     init { onCreate() }
@@ -62,12 +62,9 @@ class FileTreeView(
                         val selectedFile = fileTree.lastSelectedPathComponent as File
                         selectedFile.takeIf { it.isFile }?.let { file ->
                             when {
-                                file.name.endsWith(".s") || file.name.endsWith(".asm") -> tabsViewModel.openTab(file)
-                                file.name.equals("Makefile") -> { tabsViewModel.openTab(file) }
+                                file.name.endsWith(".s") || file.name.endsWith(".asm") -> onOpenTab(file)
+                                file.name.equals("Makefile") -> { onOpenTab(file) }
                             }
-//                            if (file.name.endsWith(".s") || file.name.endsWith(".asm")) {
-//                                tabsViewModel.openTab(file)
-//                            }
                         }
                     }
                     SwingUtilities.isRightMouseButton(e) -> {
@@ -97,18 +94,17 @@ class FileTreeView(
 
         add(title, BorderLayout.NORTH)
 
-        // Manage the UI state based on change in the file tree's state
-        UIStateManager(
-            stateFlow = fileTreeViewModel.state,
-            onStateChanged = { state: FileTreeViewModel.FileTreeState ->
+        setState(fileTreeState, FileTreeViewModel.FileTreeState::currentPath) { path ->
+            CoroutineScope(Dispatchers.Default).launch {
                 fileTree.model = FileSystemModel(
-                    File(state.currentPath),
-                    fileTree,
+                    root = File(path),
+                    jTree = fileTree,
                     isLoading = {
                         if (it) {
                             // Show the loading label while the file tree is loading
                             remove(scrollPanel)
                             add(labelLoading, BorderLayout.CENTER)
+
                         } else {
                             // Show the file tree once loading is complete
                             remove(labelLoading)
@@ -118,10 +114,10 @@ class FileTreeView(
                         revalidate()
                         repaint()
                     },
-                    onDeleteFile = { fileTreeViewModel.deleteSelectedConfig(it) }
+                    onDeleteFile = { onDeleteSelectedConfig(it) }
                 )
             }
-        )
+        }
 
     }
 }

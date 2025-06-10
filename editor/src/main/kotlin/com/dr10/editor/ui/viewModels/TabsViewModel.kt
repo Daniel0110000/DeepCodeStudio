@@ -35,7 +35,8 @@ class TabsViewModel {
     fun openTab(file: File) {
         coroutineScope.launch {
             val newTab = TabModel(file.name, file.absolutePath)
-            _state.update { state -> state.copy(tabs = state.tabs + newTab) }
+            // Check if the new tab's data doesn't already exits before adding it
+            if (!_state.value.tabs.contains(newTab)) _state.update { state -> state.copy(tabs = state.tabs + newTab) }
         }
     }
 

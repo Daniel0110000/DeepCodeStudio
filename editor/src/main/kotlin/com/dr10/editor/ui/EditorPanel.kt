@@ -2,8 +2,10 @@ package com.dr10.editor.ui
 
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.utilities.ColorUtils.toAWTColor
-import com.dr10.common.utilities.UIStateManager
+import com.dr10.common.utilities.FlowStateHandler
+import com.dr10.common.utilities.setState
 import com.dr10.editor.ui.tabs.EditorTab
+import com.dr10.editor.ui.tabs.TabModel
 import com.dr10.editor.ui.tabs.TabView
 import com.dr10.editor.ui.viewModels.TabsViewModel
 import java.awt.BorderLayout
@@ -14,11 +16,14 @@ import javax.swing.JTabbedPane
 /**
  * Panel that will contain all the editor tabs
  *
- * @property tabsViewModel ViewModel that manages the state of the open tabs
+ * @property tabsState Current tabs state
+ * @property onChangeTabSelected Callback function invoked when the state of the selected tab needs to be changed
+ * @property onCloseTab Callback function invoked when a tab needs to be closed
  */
 class EditorPanel(
-    private val tabsViewModel: TabsViewModel,
-    private val onChangeTabSelected: (String) -> Unit
+    private val tabsState: FlowStateHandler.StateWrapper<TabsViewModel.TabsState>,
+    private val onChangeTabSelected: (String) -> Unit,
+    private val onCloseTab: (TabModel) -> Unit
 ): JPanel() {
 
     // Map to keep track of the open tabs
@@ -34,7 +39,7 @@ class EditorPanel(
         val tabPanel = JTabbedPane().apply {
             background = ThemeApp.colors.secondColor.toAWTColor()
             addChangeListener {
-                if (this.selectedIndex != -1) onChangeTabSelected(tabsViewModel.state.value.tabs[this.selectedIndex].filePath)
+                if (this.selectedIndex != -1) onChangeTabSelected(tabsState.value.tabs[this.selectedIndex].filePath)
                 else onChangeTabSelected("~")
             }
         }
@@ -45,57 +50,50 @@ class EditorPanel(
 
         add(mainPanel, BorderLayout.CENTER)
 
-        UIStateManager(
-            stateFlow = tabsViewModel.state,
-            onStateChanged = { state: TabsViewModel.TabsState ->
-                // Retain only the tabs that are still in the state, removing closed tabs from the map
-                openTabs.keys.retainAll(state.tabs.map { it.filePath }.toSet())
+        setState(tabsState, TabsViewModel.TabsState::tabs) { tabs ->
+            openTabs.keys.retainAll(tabs.map { it.filePath }.toSet())
+            tabs.forEach { tab ->
+                if (!openTabs.containsKey(tab.filePath)) {
+                    // Create a new EditorTab for the tab and add it to the openTabs map
+                    val editorTab = EditorTab(tab)
+                    openTabs[tab.filePath] = editorTab
 
-                // Iterate through the tabs in the state and add any new ones to the UI
-                state.tabs.forEach { tab ->
-                    if (!openTabs.containsKey(tab.filePath)) {
-                        // Create a new EditorTab for the tab and add it to the openTabs map
-                        val editorTab = EditorTab(tab)
-                        openTabs[tab.filePath] = editorTab
+                    // Add the new tab to the [JTabbedPane]
+                    tabPanel.addTab(tab.filePath.hashCode().toString(), editorTab)
 
-                        // Add the new tab to the [JTabbedPane]
-                        tabPanel.addTab(tab.filePath.hashCode().toString(), editorTab)
+                    // A custom design is assigned to the tab
+                    tabPanel.setTabComponentAt(tabPanel.tabCount - 1, TabView(tab) { tabToClose ->
+                        // Find the index of the tab to close using the hashCode of its filePath
+                        val tabIndex = tabPanel.indexOfTab(tabToClose.filePath.hashCode().toString())
+                        // Get the index of the currently selected tab
+                        val currentSelectedIndex = tabPanel.selectedIndex
+                        if (tabIndex != -1 ) {
+                            // Remove the tab from the map and the tab panel, and close the auto save process
+                            openTabs.remove(tabToClose.filePath)
+                            tabPanel.remove(tabIndex)
+                            onCloseTab(tab)
+                            editorTab.cancelAutoSaveProcess()
 
-                        // A custom design is assigned to the tab
-                        tabPanel.setTabComponentAt(tabPanel.tabCount - 1, TabView(tab) { tabToClose ->
-                            // Find the index of the tab to close using the hashCode of its filePath
-                            val tabIndex = tabPanel.indexOfTab(tabToClose.filePath.hashCode().toString())
-                            // Get the index of the currently selected tab
-                            val currentSelectedIndex = tabPanel.selectedIndex
-                            if (tabIndex != -1 ) {
-                                // Remove the tab from the map and the tab panel, and close the auto save process
-                                openTabs.remove(tabToClose.filePath)
-                                tabPanel.remove(tabIndex)
-                                tabsViewModel.closeTab(tab)
-                                editorTab.cancelAutoSaveProcess()
-
-                                // Adjust the selected tab after closing the current one
-                                if (currentSelectedIndex == tabIndex) {
-                                    val indexToSelected = tabIndex - 1
-                                    tabPanel.selectedIndex = if (indexToSelected == -1) tabPanel.tabCount - 1
-                                    else indexToSelected
-                                }
-
-                                // Show emptyPanel if no tabs are left
-                                if (tabPanel.tabCount == 0) cardLayout.show(mainPanel, EMPTY_PANEL)
+                            // Adjust the selected tab after closing the current one
+                            if (currentSelectedIndex == tabIndex) {
+                                val indexToSelected = tabIndex - 1
+                                tabPanel.selectedIndex = if (indexToSelected == -1) tabPanel.tabCount - 1
+                                else indexToSelected
                             }
-                        })
-                        // Set the newly added tab as the selected tab
-                        tabPanel.selectedIndex = tabPanel.tabCount - 1
-                    }
+
+                            // Show emptyPanel if no tabs are left
+                            if (tabPanel.tabCount == 0) cardLayout.show(mainPanel, EMPTY_PANEL)
+                        }
+                    })
+                    // Set the newly added tab as the selected tab
+                    tabPanel.selectedIndex = tabPanel.tabCount - 1
                 }
-
-                // Show the appropriate panel based on whether there are tabs or not
-                if (state.tabs.isEmpty()) cardLayout.show(mainPanel, EMPTY_PANEL)
-                else cardLayout.show(mainPanel, TABS_PANEL)
-
             }
-        )
+
+            // Show the appropriate panel based on whether there are tabs or not
+            if (tabs.isEmpty()) cardLayout.show(mainPanel, EMPTY_PANEL)
+            else cardLayout.show(mainPanel, TABS_PANEL)
+        }
     }
 
      companion object {
