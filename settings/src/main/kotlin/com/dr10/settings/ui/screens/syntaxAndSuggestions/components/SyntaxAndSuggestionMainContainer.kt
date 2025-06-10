@@ -12,12 +12,7 @@ import com.dr10.settings.ui.viewModels.SyntaxAndSuggestionsViewModel
 import java.awt.BorderLayout
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.GroupLayout
-import javax.swing.JLabel
-import javax.swing.JList
-import javax.swing.JPanel
-import javax.swing.JScrollPane
-import javax.swing.SwingConstants
+import javax.swing.*
 import javax.swing.border.EmptyBorder
 
 /**
@@ -84,9 +79,7 @@ class SyntaxAndSuggestionMainContainer(
             foreground = ThemeApp.awtColors.textColor
         }
         val optionNameTextField = TextField().apply {
-            setState(state, SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState::optionName) { name ->
-                if (name.isNotBlank()) setText(name)
-            }
+            setState(state, SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState::optionName) { name -> setText(name) }
         }
 
         val locationTitle = JLabel("Location").apply {

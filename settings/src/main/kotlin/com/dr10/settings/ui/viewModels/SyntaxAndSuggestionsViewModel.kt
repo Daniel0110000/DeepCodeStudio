@@ -3,7 +3,6 @@ package com.dr10.settings.ui.viewModels
 import com.dr10.common.models.ColorSchemeModel
 import com.dr10.common.models.SyntaxAndSuggestionModel
 import com.dr10.database.domain.repositories.ColorSchemeRepository
-import com.dr10.database.domain.repositories.EditorRepository
 import com.dr10.database.domain.repositories.SyntaxAndSuggestionsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
+import java.util.*
 
 /**
  * ViewModel for managing syntax and suggestions screen state
@@ -21,8 +20,7 @@ import java.util.UUID
  */
 class SyntaxAndSuggestionsViewModel(
     private val syntaxAndSuggestionsRepository: SyntaxAndSuggestionsRepository,
-    private val colorSchemeRepository: ColorSchemeRepository,
-    private val editorRepository: EditorRepository
+    private val colorSchemeRepository: ColorSchemeRepository
 ) {
 
     private val scope = CoroutineScope(Dispatchers.IO)
