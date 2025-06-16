@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.*
 import javax.swing.border.EmptyBorder
+import javax.swing.text.AbstractDocument
 
 /**
  * [JPanel] that contains the main container for the syntax and suggestions panel
@@ -79,6 +80,8 @@ class SyntaxAndSuggestionMainContainer(
             foreground = ThemeApp.awtColors.textColor
         }
         val optionNameTextField = TextField().apply {
+            val document = this.getJTextField().document as AbstractDocument
+            document.documentFilter = FirstCharAlphaFilter()
             setState(state, SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState::optionName) { name -> setText(name) }
         }
 
