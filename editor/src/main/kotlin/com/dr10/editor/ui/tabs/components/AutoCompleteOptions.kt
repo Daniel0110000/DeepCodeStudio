@@ -11,11 +11,7 @@ import java.awt.Dimension
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
-import javax.swing.GroupLayout
-import javax.swing.JLabel
-import javax.swing.JList
-import javax.swing.JPanel
-import javax.swing.JScrollPane
+import javax.swing.*
 import javax.swing.border.EmptyBorder
 
 /**
@@ -65,13 +61,14 @@ class AutoCompleteOptions(
         }
 
         autoCompleteOptionsLayout.setHorizontalGroup(
-            autoCompleteOptionsLayout.createParallelGroup()
+            autoCompleteOptionsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
                 .addComponent(title)
                 .addComponent(scroll)
         )
 
         autoCompleteOptionsLayout.setVerticalGroup(
             autoCompleteOptionsLayout.createSequentialGroup()
+                .addGap(5)
                 .addComponent(title)
                 .addComponent(scroll)
         )
