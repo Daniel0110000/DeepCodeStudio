@@ -16,7 +16,7 @@ import java.util.*
  * ViewModel for managing syntax and suggestions screen state
  *
  * @property syntaxAndSuggestionsRepository Repository for accessing syntax and suggestion configurations
- * @property editorRepository Repository for managing editor-related data
+ * @property colorSchemeRepository Repository for accessing color scheme of the syntax highlight
  */
 class SyntaxAndSuggestionsViewModel(
     private val syntaxAndSuggestionsRepository: SyntaxAndSuggestionsRepository,
@@ -44,7 +44,7 @@ class SyntaxAndSuggestionsViewModel(
         val jsonPath: String = "",
         val allConfigs: List<SyntaxAndSuggestionModel> = emptyList(),
         val selectedOption: SyntaxAndSuggestionModel = SyntaxAndSuggestionModel(),
-        val isLoading: Boolean = false,
+        val isLoading: Boolean? = null,
         val defaultIndexSelected: Int = -1,
         val isCollapseJsonPreviewContainer: Boolean = false
     )

@@ -4,6 +4,7 @@ import com.dr10.common.models.NotificationData
 import com.dr10.common.utilities.ErrorType
 import com.dr10.common.utilities.getErrorMessage
 import java.awt.Point
+import java.util.*
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
 import javax.swing.Timer
@@ -22,6 +23,7 @@ class NotificationManager(private val parentWindow: JFrame){
      */
     fun show(data: NotificationData) {
         val notification = Notification(
+            notificationId = data.notificationId,
             notificationMessage = if(data.errorType == ErrorType.CUSTOM) data.message else data.errorType.getErrorMessage(),
             notificationType = data.type
         ) {
@@ -33,6 +35,17 @@ class NotificationManager(private val parentWindow: JFrame){
         setupAutoDismiss(notification, data.isAutoDismiss, data.delay)
         notification.isVisible = true
 
+    }
+
+
+    /**
+     * Closes the notification using its [UUID]
+     *
+     * @param id The [UUID] associated with the notification to close
+     */
+    fun closeNotificationById(id: UUID) {
+        val notificationToClose = notifications.find { it.notificationId == id }
+        notificationToClose?.let { closeNotification(it) }
     }
 
     /**

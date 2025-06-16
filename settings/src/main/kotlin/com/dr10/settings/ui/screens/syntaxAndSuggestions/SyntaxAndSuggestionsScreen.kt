@@ -7,8 +7,10 @@ import com.dr10.common.utilities.setState
 import com.dr10.settings.di.Inject
 import com.dr10.settings.ui.screens.syntaxAndSuggestions.components.JsonPreviewContainer
 import com.dr10.settings.ui.screens.syntaxAndSuggestions.components.SyntaxAndSuggestionMainContainer
+import com.dr10.settings.ui.viewModels.SettingsNotificationsViewModel
 import com.dr10.settings.ui.viewModels.SyntaxAndSuggestionsViewModel
 import java.awt.Dimension
+import java.util.*
 import javax.swing.GroupLayout
 import javax.swing.JPanel
 import javax.swing.JSplitPane
@@ -19,10 +21,13 @@ import javax.swing.SwingConstants
  */
 class SyntaxAndSuggestionsScreen: JPanel() {
 
+    private val notificationsViewModel: SettingsNotificationsViewModel = Inject().settingsNotificationsViewModel
     private val viewModel: SyntaxAndSuggestionsViewModel = Inject().syntaxAndSuggestionsViewModel
     private val syntaxAndSuggestionsState = FlowStateHandler().run {
         viewModel.state.collectAsState(SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState())
     }
+
+    private var notificationId: UUID = UUID.randomUUID()
 
     init { onCreate() }
 
@@ -35,7 +40,7 @@ class SyntaxAndSuggestionsScreen: JPanel() {
         val splitPane = JSplitPane(
             SwingConstants.VERTICAL,
             SyntaxAndSuggestionMainContainer(viewModel, syntaxAndSuggestionsState),
-            JsonPreviewContainer(viewModel, syntaxAndSuggestionsState)
+            JsonPreviewContainer(viewModel, syntaxAndSuggestionsState, notificationsViewModel)
         ).apply {
             setUI(CustomSplitPaneDivider())
             resizeWeight = 1.0
@@ -51,6 +56,16 @@ class SyntaxAndSuggestionsScreen: JPanel() {
                 splitPane.dividerSize = 3
                 splitPane.dividerLocation = splitPane.width - 300 - splitPane.dividerSize
                 splitPane.rightComponent.minimumSize = Dimension(300,  Short.MAX_VALUE.toInt())
+            }
+        }
+
+        setState(syntaxAndSuggestionsState, SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState::isLoading) { isLoading ->
+            isLoading?.let {
+                if (it) notificationsViewModel.showNotification(notificationId = notificationId, message = "Adding new option...", isAutoDismiss = false)
+                else {
+                    notificationsViewModel.closeNotificationById(notificationId)
+                    notificationsViewModel.showNotification(message = "Option added successfully!")
+                }
             }
         }
 

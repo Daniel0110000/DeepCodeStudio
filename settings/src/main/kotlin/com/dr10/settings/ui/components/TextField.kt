@@ -39,6 +39,8 @@ class TextField: JPanel() {
 
     fun setText(text: String) { textField.text = text }
 
+    fun getJTextField(): JTextField = textField
+
     override fun paintComponent(graphics: Graphics) {
         val graphics2D = graphics as Graphics2D
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)

@@ -6,6 +6,7 @@ import com.dr10.common.ui.components.CustomScrollBar
 import com.dr10.common.utilities.ColorUtils.toAWTColor
 import com.dr10.common.utilities.FlowStateHandler
 import com.dr10.common.utilities.setState
+import com.dr10.settings.ui.viewModels.SettingsNotificationsViewModel
 import com.dr10.settings.ui.viewModels.SyntaxAndSuggestionsViewModel
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
@@ -29,7 +30,8 @@ import javax.swing.JPanel
  */
 class JsonPreviewContainer(
     private val syntaxAndSuggestionsViewModel: SyntaxAndSuggestionsViewModel,
-    private val state: FlowStateHandler.StateWrapper<SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState>
+    private val state: FlowStateHandler.StateWrapper<SyntaxAndSuggestionsViewModel.SyntaxAndSuggestionsState>,
+    private val notificationsViewModel: SettingsNotificationsViewModel
 ): JPanel() {
 
     init { onCreate() }
@@ -55,6 +57,7 @@ class JsonPreviewContainer(
             addMouseListener(object : MouseAdapter(){
                 override fun mouseClicked(e: MouseEvent?) {
                     syntaxAndSuggestionsViewModel.deleteConfig()
+                    notificationsViewModel.showNotification(message = "Option deleted!")
                 }
             })
         }

@@ -6,16 +6,12 @@ import com.dr10.common.ui.components.CustomScrollBar
 import java.awt.Cursor
 import java.awt.Dimension
 import java.awt.event.MouseAdapter
-import javax.swing.BorderFactory
-import javax.swing.GroupLayout
-import javax.swing.JDialog
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JScrollPane
-import javax.swing.JTextArea
+import java.util.*
+import javax.swing.*
 import javax.swing.Timer
 
 class Notification(
+    val notificationId: UUID,
     private val notificationMessage: String,
     private val notificationType: NotificationType,
     private val onDismiss: (Notification) -> Unit = {}

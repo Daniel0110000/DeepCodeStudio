@@ -3,12 +3,15 @@ package com.dr10.settings.ui
 import com.dr10.common.ui.ThemeApp
 import com.dr10.common.ui.notification.NotificationManager
 import com.dr10.common.utilities.ColorUtils.toAWTColor
+import com.dr10.common.utilities.FlowStateHandler
+import com.dr10.common.utilities.setState
+import com.dr10.settings.di.Inject
 import com.dr10.settings.ui.screens.SettingsScreen
+import com.dr10.settings.ui.viewModels.SettingsNotificationsViewModel
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
-import javax.swing.WindowConstants
 
 /**
  * Settings window for configuring the code editor
@@ -21,12 +24,16 @@ class SettingsWindow(
     private val onCloseWindow: () -> Unit
 ): JFrame() {
 
+    private val notificationsViewModel: SettingsNotificationsViewModel = Inject().settingsNotificationsViewModel
     private val notificationManager = NotificationManager(this)
+    private val notificationStates = FlowStateHandler().run {
+        notificationsViewModel.state.collectAsState(SettingsNotificationsViewModel.SettingsNotificationsState())
+    }
 
     init { onCreate() }
 
     private fun onCreate() = SwingUtilities.invokeLater {
-        defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+        defaultCloseOperation = DISPOSE_ON_CLOSE
         setSize(1200, 800)
         contentPane.background = ThemeApp.colors.background.toAWTColor()
         title = "Settings"
@@ -43,5 +50,21 @@ class SettingsWindow(
 
         window.isEnabled = false
         isVisible = true
+
+        setState(notificationStates, SettingsNotificationsViewModel.SettingsNotificationsState::data) { notificationData ->
+            if (notificationData != null) {
+                notificationManager.show(notificationData.copy(xMargin = 15))
+
+                notificationsViewModel.clearNotificationData()
+            }
+        }
+
+        setState(notificationStates, SettingsNotificationsViewModel.SettingsNotificationsState::notificationIdToClose) { id ->
+            if (id != null) {
+                notificationManager.closeNotificationById(id)
+
+                notificationsViewModel.clearNotificationId()
+            }
+        }
     }
 }

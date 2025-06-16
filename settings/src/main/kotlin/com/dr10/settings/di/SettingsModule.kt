@@ -1,9 +1,6 @@
 package com.dr10.settings.di
 
-import com.dr10.settings.ui.viewModels.ColorSchemesViewModel
-import com.dr10.settings.ui.viewModels.RegexRulesViewModel
-import com.dr10.settings.ui.viewModels.SettingsViewModel
-import com.dr10.settings.ui.viewModels.SyntaxAndSuggestionsViewModel
+import com.dr10.settings.ui.viewModels.*
 import org.koin.dsl.module
 
 /**
@@ -11,8 +8,9 @@ import org.koin.dsl.module
  */
 val settingsModule = module {
     single { SettingsViewModel() }
-    single { SyntaxAndSuggestionsViewModel(get(), get(), get()) }
+    single { SyntaxAndSuggestionsViewModel(get(), get()) }
     single { SettingsViewModel() }
     single { ColorSchemesViewModel(get()) }
     single { RegexRulesViewModel(get(), get()) }
+    single { SettingsNotificationsViewModel() }
 }
