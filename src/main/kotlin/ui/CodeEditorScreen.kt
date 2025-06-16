@@ -16,10 +16,11 @@ import ui.fileTree.FileTreeView
 import ui.viewModels.CodeEditorViewModel
 import ui.viewModels.FileTreeViewModel
 import java.awt.Dimension
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
 import javax.swing.GroupLayout
 import javax.swing.JFrame
 import javax.swing.JSplitPane
-import javax.swing.SwingConstants
 
 /**
  * Main screen for the code editor
@@ -79,7 +80,7 @@ class CodeEditorScreen(
         )
 
         val editorSplitPane = JSplitPane(
-            SwingConstants.VERTICAL,
+            JSplitPane.HORIZONTAL_SPLIT,
             fileTreeView,
             EditorPanel(
                 tabsState = tabsState,
@@ -93,7 +94,7 @@ class CodeEditorScreen(
                 if (isCollapseSplitPane) {
                     // Collapse the split pane if [state.isCollapseSplitPane] is true
                     currentEditorDividerLocation = dividerLocation
-                    setDividerLocation(0.0)
+                    setDividerLocation(0)
                     dividerSize = 0
                 } else {
                     // Restore the split pane if [state.isCollapseSplitPane] is false
@@ -103,6 +104,11 @@ class CodeEditorScreen(
                 // Toggle the collapse/extend state
                 collapseOrExtend = !isCollapseSplitPane
             }
+            addComponentListener(object: ComponentAdapter() {
+                override fun componentResized(e: ComponentEvent?) {
+                    if (codeEditorState.value.isCollapseSplitPane) setDividerLocation(0)
+                }
+            })
         }
 
         val terminalView = TerminalView(terminalViewModel) {
@@ -110,26 +116,33 @@ class CodeEditorScreen(
         }
 
         val codeEditorSplitPane = JSplitPane(
-            SwingConstants.HORIZONTAL,
+            JSplitPane.VERTICAL_SPLIT,
             editorSplitPane,
             terminalView
         ).apply {
             setUI(CustomSplitPaneDivider(ThemeApp.awtColors.primaryColor))
             isContinuousLayout = true
-            leftComponent.minimumSize = Dimension(0, 100)
-            rightComponent.minimumSize = Dimension(0, 100)
+            topComponent.minimumSize = Dimension(0, 100)
             setState(codeEditorState, CodeEditorViewModel.CodeEditorState::isOpenTerminal) { isOpenTerminal ->
                 if (isOpenTerminal) {
+                    bottomComponent.minimumSize = Dimension(0, 100)
                     terminalViewModel.openInitialTerminal()
                     if (currentCodeEditorDividerLocation == -1) setDividerLocation(0.6)
                     else dividerLocation = currentCodeEditorDividerLocation
                     dividerSize = 3
                 } else {
+                    bottomComponent.minimumSize = Dimension(0, 0)
                     currentCodeEditorDividerLocation = dividerLocation
-                    dividerLocation = Short.MAX_VALUE.toInt()
+                    setDividerLocation(1.0)
                     dividerSize = 0
                 }
             }
+
+            addComponentListener(object: ComponentAdapter() {
+                override fun componentResized(e: ComponentEvent?) {
+                    if (!codeEditorState.value.isOpenTerminal) setDividerLocation(1.0)
+                }
+            })
         }
 
         windowLayout.setHorizontalGroup(
