@@ -84,6 +84,7 @@ class CodeEditorScreen(
             fileTreeView,
             EditorPanel(
                 tabsState = tabsState,
+                tabsViewModel = tabsViewModel,
                 onChangeTabSelected = { codeEditorViewModel.setCurrentPath(it) },
                 onCloseTab = { tabsViewModel.closeTab(it) }
             )

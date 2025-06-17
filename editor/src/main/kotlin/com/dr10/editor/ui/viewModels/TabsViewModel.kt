@@ -23,7 +23,8 @@ class TabsViewModel {
      * @property tabs List of currently open tabs
      */
     data class TabsState(
-        val tabs: List<TabModel> = emptyList()
+        val tabs: List<TabModel> = emptyList(),
+        val openedTabAgain: TabModel? = null
     )
 
 
@@ -35,8 +36,10 @@ class TabsViewModel {
     fun openTab(file: File) {
         coroutineScope.launch {
             val newTab = TabModel(file.name, file.absolutePath)
-            // Check if the new tab's data doesn't already exits before adding it
+            // Check if the new tab's data doesn't already exists before adding it
             if (!_state.value.tabs.contains(newTab)) _state.update { state -> state.copy(tabs = state.tabs + newTab) }
+            // If the tab exists, it is added to [openedTabAgain] to automatically select the tab in the editor
+            else _state.update { state ->  state.copy(openedTabAgain = newTab) }
         }
     }
 
@@ -51,5 +54,12 @@ class TabsViewModel {
                 tabs = state.tabs.filterNot { it.filePath == tab.filePath }
             ) }
         }
+    }
+
+    /**
+     * Clears the [TabsState.openedTabAgain] value
+     */
+    fun clearOpenedTabAgain() {
+        _state.update { state ->  state.copy(openedTabAgain = null) }
     }
 }
