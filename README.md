@@ -77,8 +77,8 @@ You can customize syntax highlighting colors in `Settings -> Syntax Keyword High
 
 ## 🚧 RoadMap
 - [x] Complete migration from **Jetpack Compose Desktop** to **Swing**
-- [ ] Default settings for different assemblers
-    - [ ] Autocomplete
+- [x] Default settings for different assemblers
+    - [x] Autocomplete
     - [x] Syntax Highlighting 
 - [ ] Program customization
 - [x] Smarter autocompletion
