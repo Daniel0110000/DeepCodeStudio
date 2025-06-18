@@ -80,11 +80,11 @@ You can customize syntax highlighting colors in `Settings -> Syntax Keyword High
 - [x] Default settings for different assemblers
     - [x] Autocomplete
     - [x] Syntax Highlighting 
-- [ ] Program customization
+- [x] Program customization
 - [x] Smarter autocompletion
 - [x] Terminal type selection
 - [ ] Automatic compilation and execution ~ 🏗️
-- [ ] Optimization
+- [x] Optimization
 - [ ] 🚀 New release
 
 ## 📜 License
