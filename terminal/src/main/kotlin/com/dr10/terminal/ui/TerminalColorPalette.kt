@@ -21,7 +21,7 @@ class TerminalColorPalette private constructor(private val colors: Array<Color>)
             Color(0x1e90ff),
             Color(0xcd00cd),
             Color(0x00cdcd),
-            Color(0x1E2229),
+            Color(0x1B1F27),
             // --------------------------------
             Color(0xABB2BF),
             Color(0xff0000),
@@ -30,7 +30,7 @@ class TerminalColorPalette private constructor(private val colors: Array<Color>)
             Color(0x4682b4),
             Color(0xff00ff),
             Color(0x00ffff),
-            Color(0x1E2229)
+            Color(0x1B1F27)
         )
         val PALETTE: ColorPalette = TerminalColorPalette(XTERM_COLORS)
     }

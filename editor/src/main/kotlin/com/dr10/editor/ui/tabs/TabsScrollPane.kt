@@ -11,7 +11,6 @@ class TabsScrollPane: JScrollPane() {
         horizontalScrollBarPolicy = HORIZONTAL_SCROLLBAR_AS_NEEDED
         verticalScrollBarPolicy = VERTICAL_SCROLLBAR_NEVER
         horizontalScrollBar.unitIncrement = 20
-        border = null
         preferredSize = Dimension(0, 46)
         viewport.scrollMode = JViewport.SIMPLE_SCROLL_MODE
         horizontalScrollBar.setUI(TabsScrollbar())
