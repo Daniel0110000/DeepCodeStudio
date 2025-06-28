@@ -7,6 +7,16 @@ DeepCode Studio (DCS) is a code editor for assembly languages of any architectur
 
 ![image](https://github.com/user-attachments/assets/7d027551-5912-451e-ae23-e62462f27d46)
 
+![GitHub](https://img.shields.io/github/license/daniel0110000/deepcodestudio?style=for-the-badge&labelColor=282C34&color=1F6FEB) ![GitHub](https://img.shields.io/github/v/release/daniel0110000/deepcodestudio?style=for-the-badge&labelColor=282C34&color=1F6FEB)
+
+<a href="https://github.com/Daniel0110000/DeepCodeStudio/releases/tag/v1.0.0-alpha.2">
+  <img src="https://img.shields.io/badge/Linux-282C34?style=for-the-badge&logo=linux&logoColor=white"/>
+</a>
+
+<a href="https://github.com/Daniel0110000/DeepCodeStudio/releases/tag/v1.0.0-alpha.2">
+  <img src="https://img.shields.io/badge/Windows-282C34?style=for-the-badge&logo=window&logoColor=white"/>
+</a>
+
 Updating ...
 
 ## 📜 License
