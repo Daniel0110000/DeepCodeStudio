@@ -5,7 +5,7 @@
 # DeepCode Studio
 DeepCode Studio (DCS) is a code editor for assembly languages of any architecture, with support for Linux and Windows, where you have full control over syntax highlighting and autocompletion. The main goal of DCS is to become the best IDE for assembly languages, helping developers work more efficiently and easily.
 
-![image](https://github.com/user-attachments/assets/7d027551-5912-451e-ae23-e62462f27d46)
+![dcs_screenshot](https://github.com/user-attachments/assets/242437af-51a5-434e-a806-08a67a1b1eb0)
 
 ![GitHub](https://img.shields.io/github/license/daniel0110000/deepcodestudio?style=for-the-badge&labelColor=282C34&color=1F6FEB) ![GitHub](https://img.shields.io/github/v/release/daniel0110000/deepcodestudio?style=for-the-badge&labelColor=282C34&color=1F6FEB)
 
