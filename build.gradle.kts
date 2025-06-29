@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.daniel"
-version = "1.0.0"
+version = "0.0.1-rc1"
 
 kotlin {
     jvmToolchain(17)
@@ -55,9 +55,9 @@ compose.desktop {
         nativeDistributions {
             modules("java.sql")
             packageName = "DeepCodeStudio"
-            packageVersion = "1.0.0"
+            packageVersion = "0.0.1-rc1"
             vendor = "Dr10 Technology"
-            copyright = "© 2023 Dr10 Technology. All rights reserved."
+            copyright = "© 2024 Dr10 Technology. All rights reserved."
             licenseFile.set(project.file("LICENSE"))
             windows{ iconFile.set(project.file("ic_launcher.ico")) }
             linux{ iconFile.set(project.file("ic_launcher.png")) }
