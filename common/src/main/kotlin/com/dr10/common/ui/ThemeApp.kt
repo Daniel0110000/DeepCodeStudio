@@ -40,7 +40,7 @@ object ThemeApp {
         val fontFamily: FontFamily = FontFamily(Font(resource = "font/Inter-Regular.ttf")),
         val codeTextFontFamily: FontFamily = FontFamily(Font(resource = "font/JetBrainsMonoItalic.ttf")),
         val fontJetBrains: Font = useResource("font/JetBrainsMonoItalic.ttf") {
-            Font.createFont(Font.TRUETYPE_FONT, it).deriveFont(13f)
+            Font.createFont(Font.TRUETYPE_FONT, it).deriveFont(14f)
         }
     ) {
 

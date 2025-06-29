@@ -224,6 +224,8 @@ class CodeEditor(
         if (!::autoCompletion.isInitialized) {
             autoCompletion = AutoCompletion(completionProvider).apply {
                 isAutoActivationEnabled = true
+                autoActivationDelay = 200
+                autoCompleteSingleChoices = false
                 install(editor)
             }
         }
@@ -232,9 +234,9 @@ class CodeEditor(
     /**
      * Creates a new instance of [DefaultCompletionProvider]
      */
-    private fun createCompletionProvider(): DefaultCompletionProvider =
-        DefaultCompletionProvider().apply {
-            setAutoActivationRules(true, ".")
+    private fun createCompletionProvider(): DefaultCompletionProviderImpl =
+        DefaultCompletionProviderImpl().apply {
+            setAutoActivationRules(true, ".%@#\$_-:/\\&*+=!?|^~`[]{}()<>")
         }
 
     /**
