@@ -94,6 +94,7 @@ You can contribute in the following ways:
 - [ ] Improvement of the extension system.
 - [ ] Improvement of the autocomplete suggestion system.
 - [ ] Improvement of the file and folder selection system.
+- [ ] Functionality to split the code editor horizontally and vertically.
 - [ ] Fix bugs that have arisen.
 - [ ] Optimizations
 - [ ] 🚀 New release
