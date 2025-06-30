@@ -18,6 +18,13 @@ DeepCode Studio (DCS) is a code editor for assembly languages of any architectur
 </a>
 
 Updating ...
+</div>
 
-## 📜 License
+# Usage
+
+# Contribute
+
+# Roadmap
+
+# 📜 License
 [Apache-2.0](/LICENSE)
